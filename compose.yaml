@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: credit_sim
+      POSTGRES_USER: sim
+      POSTGRES_PASSWORD: local-simulator-only
+    ports:
+      - "127.0.0.1:54329:5432"
+    volumes:
+      - simulator_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sim -d credit_sim"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+volumes:
+  simulator_pg:
+
