@@ -70,7 +70,7 @@ ExecutionCapability 包含：
 | 授权前提 | approval_id、policy_version、catalog_version、authorization_policy_version、expected_case_revision |
 | 生命周期 | issued_at、expires_at、max_effects=1 |
 
-HMAC-SHA256 覆盖 canonical JSON 完整 payload；验证使用 `hmac.compare_digest`。环境变量 `CAPABILITY_SIGNING_SECRET` 至少 32 字节，禁止代码默认 key；测试 key 均明显 synthetic。TTL 默认 300 秒，配置只允许 1–300 秒，approval 默认 300 秒。数据库保存已签发 payload 和 used_effect_id，不保存 secret 或签名 token；一个签名正确但未注册、或与已注册 payload 不符的 token 仍被拒绝。
+HMAC-SHA256 覆盖 canonical JSON 完整 payload；验证使用 `hmac.compare_digest`。环境变量 `CAPABILITY_SIGNING_SECRET` 至少 32 字节，禁止代码默认 key；测试 key 均明显 synthetic。TTL 默认 300 秒，配置只允许 1–300 秒，approval 默认 300 秒。数据库保存已签发 payload 和 used_effect_id，不保存 secret。Step 9 为 PREPARED 原授权恢复另设 Runtime 私有 `capability_signatures` 表持久化原签名，不进入 Audit、Context 或公开 API；旧记录缺少原签名时不能恢复首次发送。一个签名正确但未注册、或与已注册 payload 不符的 token 仍被拒绝。
 
 Capability 是 Runtime 授权域的对象；它的签名、完整 token、approval actor 均不进入模型输入。Demo 只打印最小范围/TTL 摘要，Audit 保留链路 ID、不保留签名。Approval 是人的决定，Capability 是受限执行凭据；两者都不证明业务成功。
 
@@ -142,7 +142,7 @@ S7 同理通过 ASSET_DELIVERY Read 产生新 DELIVERED Evidence。执行不消�
 
 ## 明确保留给后续阶段
 
-没有 Durable Recovery、orphan reconciliation、UNKNOWN 查询/重试、自动恢复循环、独立 Evaluator、VERIFIED / CLOSED、UI-1、真实 money movement。没有 OAuth、完整 IAM/RBAC/ABAC、HSM/KMS、密钥轮换/分发服务、银行 tokenization 或真实 MQ/银行客户端。所有身份、任务与资金数据均为 synthetic fixtures。
+Step 8 的普通重复 execution 请求依然不会重发；后续 [Step 9 Durable Recovery](recovery.md) 增加 orphan reconciliation、PREPARED 原授权恢复，以及 DISPATCHED / UNKNOWN / ACCEPTED 的独立只读 status lookup 与 proof-gated transition。上述 Step 8 terminal 标记描述普通执行路径，UNKNOWN 只可由该恢复证明路径改变，不可直接 retry。仍没有后台自动恢复循环、独立 Evaluator、VERIFIED / CLOSED、UI-1、真实 money movement，也没有 OAuth、完整 IAM/RBAC/ABAC、HSM/KMS、密钥轮换/分发服务、银行 tokenization 或真实 MQ/银行客户端。所有身份、任务与资金数据均为 synthetic fixtures。
 
 本阶段已建立可运行的持久化授权和非资金副作用边界；没有宣称跨系统 exactly-once，也没有把一次 APPLIED 当作金融三方业务已经收敛。
 

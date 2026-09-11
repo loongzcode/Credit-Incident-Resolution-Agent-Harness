@@ -92,8 +92,9 @@ class RemediationAuthorizationService:
             approval_id=approval_id, policy_version=intent.policy_version, catalog_version=intent.catalog_version,
             authorization_policy_version=versions.AUTHORIZATION_POLICY_VERSION, expected_case_revision=case.updated_at,
             issued_at=now, expires_at=now + timedelta(seconds=self.ttl))
-        self.store.issue(intent, capability, self.clock)
-        return self.signer.sign(capability)
+        signed = self.signer.sign(capability)
+        self.store.issue(intent, capability, self.clock, signature=signed.signature)
+        return signed
 
 
 class RemediationExecutionService:
@@ -131,6 +132,13 @@ class RemediationExecutionService:
                 idempotent_replay=ledger.capability_id != cap.capability_id or ledger.status != S.NOOP)
         # PREPARED and durable capability consumption have committed before this.
         ledger = self.store.dispatch_prepared(cap, self.clock)
+        return self._complete_dispatch(command, ledger)
+
+    def _complete_dispatch(self, command, ledger):
+        """Shared initial/resumed dispatch tail; caller already committed DISPATCHED.
+
+        Trusted internal method, not an execution entry point or retry API.
+        """
         failure, receipt = None, None
         try:
             receipt = self.adapter.dispatch(command, ledger.dispatch_correlation_id)

@@ -36,6 +36,13 @@ class EffectRow(Base):
     payload: Mapped[dict] = mapped_column(JSON)
 
 
+class CapabilitySignatureRow(Base):
+    """Private issuance envelope for PREPARED recovery. Never model/audit data."""
+    __tablename__ = "capability_signatures"
+    capability_id: Mapped[str] = mapped_column(ForeignKey("execution_capabilities.capability_id"), primary_key=True)
+    signature: Mapped[str] = mapped_column(String(64))
+
+
 class AuthorizationAuditRow(Base):
     __tablename__ = "authorization_audit"
     sequence: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -46,4 +53,6 @@ class AuthorizationAuditRow(Base):
 
 def create_authorization_schema(engine):
     Base.metadata.create_all(engine, tables=[AuthorizedIntentRow.__table__, ApprovalRow.__table__,
-        CapabilityRow.__table__, EffectRow.__table__, AuthorizationAuditRow.__table__])
+        CapabilityRow.__table__, CapabilitySignatureRow.__table__, EffectRow.__table__, AuthorizationAuditRow.__table__])
+    from credit_harness.recovery.tables import create_recovery_schema
+    create_recovery_schema(engine)

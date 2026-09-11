@@ -51,7 +51,8 @@ def ready_projection(original):
     return project
 
 
-def run_demo(engine, *, scenario=ScenarioId.S6, administrative=False, reject=False, timeout=False):
+def run_demo(engine, *, scenario=ScenarioId.S6, administrative=False, reject=False, timeout=False,
+             read_after_execution=True):
     signer = HMACCapabilitySigner()  # required environment secret; never printed
     create_schema(engine)
     create_harness_schema(engine)
@@ -125,7 +126,7 @@ def run_demo(engine, *, scenario=ScenarioId.S6, administrative=False, reject=Fal
             "case_id", "internal_order_id", "action_type", "max_effects", "expires_at"}),
             execution=result.model_dump(mode="json"), duplicate_execution=duplicate.model_dump(mode="json"),
             business_verification="NOT_YET_VERIFIED", evidence_before=len(before), evidence_after_execution=len(before))
-        if intent.action_type in (A.REPLAY_CALLBACK_CONSUMPTION, A.REDELIVER_ASSET_NOTIFICATION):
+        if read_after_execution and intent.action_type in (A.REPLAY_CALLBACK_CONSUMPTION, A.REDELIVER_ASSET_NOTIFICATION):
             read(T.MESSAGES if intent.action_type == A.REPLAY_CALLBACK_CONSUMPTION else T.ASSET_DELIVERY)
         old_ids = {e.evidence_id for e in before}
         new = [e for e in evidence.list(case.case_id) if e.evidence_id not in old_ids]

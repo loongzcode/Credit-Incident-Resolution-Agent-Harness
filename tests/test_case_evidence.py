@@ -618,6 +618,13 @@ def test_additive_correlation_upgrade_preserves_legacy_rows(harness, query, engi
         quote = connection.dialect.identifier_preparer.quote
         for table in ("tool_observations", "case_tool_calls"):
             qualified = f"{quote(schema)}.{quote(table)}" if schema else quote(table)
+            # Step 9 adds correlation lookup indexes. SQLite requires removing
+            # the dependent index before reproducing the pre-correlation schema.
+            from sqlalchemy import inspect
+            for index in inspect(connection).get_indexes(table, schema=schema):
+                if index["column_names"] == ["dispatch_correlation_id"]:
+                    index_name = f"{quote(schema)}.{quote(index['name'])}" if schema else quote(index["name"])
+                    connection.exec_driver_sql(f"DROP INDEX {index_name}")
             connection.exec_driver_sql(f"ALTER TABLE {qualified} DROP COLUMN dispatch_correlation_id")
     create_schema(engine)
     create_harness_schema(engine)

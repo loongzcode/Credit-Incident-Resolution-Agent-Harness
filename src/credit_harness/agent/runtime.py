@@ -17,6 +17,8 @@ from .progress import knowledge_progress
 from .query import build_tool_query
 from .revalidation import RuntimeActionRevalidator, execution_precondition
 from .trace import InMemoryAgentRunTraceStore
+from credit_harness.recovery.case import CaseRecoveryCoordinator
+from credit_harness.recovery.checkpoint import AgentCheckpointStore
 
 
 class InvestigationAgentRuntime:
@@ -32,6 +34,8 @@ class InvestigationAgentRuntime:
         self.config = config or AgentRunConfig()
         self.revalidator = RuntimeActionRevalidator()
         self.trace_store = trace_store if trace_store is not None else InMemoryAgentRunTraceStore()
+        self.recovery = CaseRecoveryCoordinator(cases, evidence)
+        self.checkpoints = AgentCheckpointStore(cases)
 
     def load_current_context(self, case_id):
         # Never use an old snapshot, observation, conversation or previous summary
@@ -41,7 +45,10 @@ class InvestigationAgentRuntime:
         return case, evidence, self.assembler.build(case, evidence)
 
     def run(self, case_id: str) -> AgentRunResult:
+        self.recovery.before_investigation(case_id)
         case, evidence, initial = self.load_current_context(case_id)
+        run_id = str(uuid4())
+        self.checkpoints.save(run_id, case_id, 0, initial.snapshot_id)
         current = initial
         turns, decision_ids = [], []
         dispatched, no_progress = 0, 0
@@ -136,6 +143,8 @@ class InvestigationAgentRuntime:
                 tool_name=tool_name, tool_call_id=call_id, new_evidence_refs=new_refs,
                 after_snapshot_id=current.snapshot_id, knowledge_progress=progress,
                 case_status_after=case.status, turn_outcome=outcome, attempts=tuple(attempts)))
+            self.checkpoints.save(run_id, case_id, number, current.snapshot_id,
+                                  last.decision.decision_id if last else None, call_id, turn_stop)
             if turn_stop is not None:
                 stop = turn_stop
                 break
@@ -143,9 +152,12 @@ class InvestigationAgentRuntime:
             if no_progress >= self.config.max_consecutive_no_knowledge_progress:
                 stop = Stop.NO_KNOWLEDGE_PROGRESS
                 break
-        result = AgentRunResult(run_id=str(uuid4()), case_id=case_id,
+        result = AgentRunResult(run_id=run_id, case_id=case_id,
             initial_snapshot_id=initial.snapshot_id, final_snapshot_id=current.snapshot_id,
             status=stop, turn_count=len(turns), tool_calls_dispatched=dispatched,
             planner_decision_ids=tuple(decision_ids), turns=tuple(turns), final_case_status=case.status)
         self.trace_store.append(result)
+        last_turn = turns[-1] if turns else None
+        self.checkpoints.save(run_id, case_id, len(turns), current.snapshot_id,
+            last_turn.planner_decision_id if last_turn else None, last_turn.tool_call_id if last_turn else None, stop)
         return result

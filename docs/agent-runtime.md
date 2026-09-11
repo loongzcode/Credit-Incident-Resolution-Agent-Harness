@@ -105,7 +105,7 @@ HTTP client 抛异常时，CaseToolExecutor 已预留的预算不能退回，Cas
 
 Runtime 记录 TOOL_EXECUTION_ERROR，重新加载并构造 Snapshot，再安全停止，不盲重试。新 Context 会显示预算消耗及 Observation provenance 不足导致的 lookup_history_complete=false，未来再次运行仍受 INCOMPLETE_LOOKUP_HISTORY 硬约束。
 
-Observation 可能已在服务端提交，而 HTTP Response 丢失。本版保留 orphan Observation / correlation 与 CaseCall ERROR，**不自动按 correlation 查回、不补造 Evidence、不自动重发**。这些属于后续 Crash Recovery。HTTP 错误不等于业务失败。
+Observation 可能已在服务端提交，而 HTTP Response 丢失。发生错误的当前 Run 保留 orphan Observation / correlation 与 CaseCall ERROR，不在该失败调用中重发或制造 Evidence。Step 9 在下一次 Run 前按原 correlation 确定性查回，并经原 provenance 校验与 extractor 发布 Evidence；不增加 Tool Budget。HTTP 错误不等于业务失败，见 [Recovery 文档](recovery.md)。
 
 ## Knowledge Progress 与运行限制
 
@@ -158,11 +158,11 @@ S8：三轮 PAYMENT 都是真实 TIMEOUT，保留三条 SOURCE_LOOKUP_STATUS Evi
 
 ## 当前耐久性与后续边界
 
-Case、CaseCall、Observation、Evidence 已持久化；AgentRunTraceStore 与 Planner Audit 当前为 append-only 内存实现，导出 JSON 用于检查。进程崩溃会丢失未导出的 Trace，没有 durable run checkpoint / resume。
+Case、CaseCall、Observation、Evidence 已持久化；AgentRunTraceStore 与 Planner Audit 当前为 append-only 内存实现，进程崩溃仍可能丢失未导出的详细 Trace。Step 9 新增最小 DurableAgentCheckpoint，保存 run / turn / snapshot / decision / call ID 与停止状态，不保存模型会话。下一次 Run 先补齐 orphan reads，再从最新 Case + Evidence 生成 Snapshot，采用新的 run_id 和 Planner Decision；checkpoint 不授权继续执行旧 Decision。
 
-本次没有实现 Write Tool、金融 Repair、Capability、SideEffectLedger、Approval、Independent Evaluator、Crash Recovery、自动 WAIT 恢复、worker lease/fencing、UI-1、完整 IAM 或真实 PII/银行接入。只读 CAS 不能当作未来金融写操作的幂等与授权体系；写边界仍需独立授权、操作身份、幂等台账、版本检查、恢复和业务验收。
+Step 6 调查循环仍保持只读。独立的 Step 8 授权/副作用边界和 Step 9 Recovery 已实现，但未决效果的恢复 dispatch 不会隐式接入调查循环。自动 WAIT 调度、Independent Evaluator、UI-1、完整 IAM 与真实 PII/银行接入仍未实现。只读 CAS 不能替代独立写授权与业务验收。
 
-## 验收
+## Step 6 历史验收（Step 9 回归见 Recovery 文档）
 
 本次新增 67 个 Agent Runtime 测试实例，原有 518 个测试实例全部保留。唯一修改的既有测试是 Graph aggregate ruleset 元数据从 3 升为 4，Relation v3 和所有业务确认条件仍原样检查。
 

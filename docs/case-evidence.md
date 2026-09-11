@@ -159,6 +159,8 @@ SQLite 跳过的是原有 PostgreSQL 专用 reopen 测试；PostgreSQL 执行全
 
 ## Step 2.5 实测结果
 
+后续 Step 9 增加 [Read Orphan Recovery](recovery.md)：服务端已提交但调用方未收到的 Observation 可按原 dispatch correlation 找回。恢复沿用此处的全部 provenance 校验及确定性 extractor，在同一事务内发布原 Evidence 与恢复记录；重复恢复不重复 Evidence、不再次扣减 Tool Budget，也不再次 dispatch。没有可验证 Observation 时保持未决，不从网络异常制造业务 TIMEOUT/FAILED Evidence。以下保留原阶段历史测试结果。
+
 在保留原有 101 项测试语义的基础上增加 17 项测试实例；S6 计数按新增两个原子事实更新为 27。
 
 | 后端 | 全量命令 | 结果 |

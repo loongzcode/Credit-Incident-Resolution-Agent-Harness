@@ -37,48 +37,54 @@ class EvidenceRepository:
 
     def record_call(self, case_id: str, call_id: str, observation: Observation) -> tuple[str, ...]:
         with Session(self.engine) as session, session.begin():
-            # Serialize claim insertion per case, portable to SQLite and PostgreSQL.
-            result = session.execute(update(CaseRow).where(
-                CaseRow.case_id == case_id, CaseRow.tenant_id == self.cases.tenant_id,
-            ).values(updated_at=CaseRow.updated_at))
-            if result.rowcount != 1:
-                raise CaseAccessError("case unavailable")
-            case_row = self.cases._row(session, case_id)
-            call = session.get(CaseCallRow, call_id)
-            if call is None or call.case_id != case_id or call.state != CallState.DISPATCHED.value:
-                raise ProvenanceError("missing pending case dispatch")
-            row = session.get(ObservationRow, observation.observation_id)
-            if row is None:
-                raise ProvenanceError("observation must be persisted before evidence")
-            raw = raw_observation(row)
-            if (row.simulation_id != case_row.simulation_id or row.grant_hash != case_row.grant_hash
-                    or row.tool != call.tool or row.request != call.request
-                    or raw.observation != observation):
-                raise ProvenanceError("observation does not match case, credential or dispatch")
-            # A returned observation may not be replayed as a new dispatch (even in
-            # another case bound to the same upstream grant).
-            if session.scalar(select(CaseCallRow.call_id).where(
-                CaseCallRow.observation_id == row.id,
-            )) is not None:
-                raise ProvenanceError("observation already assigned to a case dispatch")
-            if (not call.dispatch_correlation_id or not row.dispatch_correlation_id
-                    or call.dispatch_correlation_id != row.dispatch_correlation_id):
-                raise ProvenanceError("missing or mismatched dispatch correlation")
-            case = hydrate(case_row)
-            evidence = self.extractor.extract(case, raw.observation, query=raw.request)
-            # Publication invalidates proposals made before this evidence commit,
-            # including a response from a call reserved before that proposal.
-            case_row.updated_at = next_update_time(case.updated_at)
-            call.observation_id = row.id
-            call.state = CallState.OBSERVED.value
-            session.flush()
-            for item in evidence:
-                if session.get(EvidenceRow, item.evidence_id) is None:
-                    session.add(EvidenceRow(evidence_id=item.evidence_id, case_id=case_id,
-                                            observation_id=row.id, payload=item.model_dump(mode="json")))
-                    session.flush()
-                session.add(EvidenceOriginRow(evidence_id=item.evidence_id, call_id=call_id))
-            return tuple(item.evidence_id for item in evidence)
+            return self._record_call(session, case_id, call_id, observation)
+
+    def _record_call(self, session, case_id, call_id, observation, *, recovery=False):
+        # Serialize claim insertion per case, portable to SQLite and PostgreSQL.
+        result = session.execute(update(CaseRow).where(
+            CaseRow.case_id == case_id, CaseRow.tenant_id == self.cases.tenant_id,
+        ).values(updated_at=CaseRow.updated_at))
+        if result.rowcount != 1:
+            raise CaseAccessError("case unavailable")
+        case_row = self.cases._row(session, case_id)
+        call = session.get(CaseCallRow, call_id)
+        if call is None or call.case_id != case_id or call.state not in ((CallState.DISPATCHED.value, CallState.ERROR.value, CallState.OBSERVED.value)
+                                           if recovery else (CallState.DISPATCHED.value,)):
+            raise ProvenanceError("missing pending case dispatch")
+        row = session.get(ObservationRow, observation.observation_id)
+        if row is None:
+            raise ProvenanceError("observation must be persisted before evidence")
+        raw = raw_observation(row)
+        if (row.simulation_id != case_row.simulation_id or row.grant_hash != case_row.grant_hash
+                or row.tool != call.tool or row.request != call.request
+                or raw.observation != observation):
+            raise ProvenanceError("observation does not match case, credential or dispatch")
+        assigned = session.scalar(select(CaseCallRow.call_id).where(CaseCallRow.observation_id == row.id))
+        if assigned is not None and not (recovery and assigned == call_id and call.state == CallState.OBSERVED.value):
+            raise ProvenanceError("observation already assigned to a case dispatch")
+        if (not call.dispatch_correlation_id or not row.dispatch_correlation_id
+                or call.dispatch_correlation_id != row.dispatch_correlation_id):
+            raise ProvenanceError("missing or mismatched dispatch correlation")
+        if assigned is not None:
+            if recovery and assigned == call_id and call.state == CallState.OBSERVED.value:
+                return tuple(session.scalars(select(EvidenceOriginRow.evidence_id).where(
+                    EvidenceOriginRow.call_id == call_id).order_by(EvidenceOriginRow.evidence_id)))
+            raise ProvenanceError("observation already assigned to a case dispatch")
+        case = hydrate(case_row)
+        evidence = self.extractor.extract(case, raw.observation, query=raw.request)
+        # Publication invalidates proposals made before this evidence commit,
+        # including a response from a call reserved before that proposal.
+        case_row.updated_at = next_update_time(case.updated_at)
+        call.observation_id = row.id
+        call.state = CallState.OBSERVED.value
+        session.flush()
+        for item in evidence:
+            if session.get(EvidenceRow, item.evidence_id) is None:
+                session.add(EvidenceRow(evidence_id=item.evidence_id, case_id=case_id,
+                                        observation_id=row.id, payload=item.model_dump(mode="json")))
+                session.flush()
+            session.add(EvidenceOriginRow(evidence_id=item.evidence_id, call_id=call_id))
+        return tuple(item.evidence_id for item in evidence)
 
     def list(self, case_id: str) -> tuple[Evidence, ...]:
         with Session(self.engine) as session:

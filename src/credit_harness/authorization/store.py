@@ -11,8 +11,9 @@ from . import models as versions
 from .models import (ApprovalRequest, ApprovalDecision, ApprovalStatus as P, ApprovalReason,
     ExecutionCapability, AuthorizationCode as C, AuthorizationError, SideEffectLedger,
     EffectStatus as S, FailureCode, AuditEvent, AuthorizationAuditRecord)
-from .tables import AuthorizedIntentRow, ApprovalRow, CapabilityRow, EffectRow, AuthorizationAuditRow
+from .tables import AuthorizedIntentRow, ApprovalRow, CapabilityRow, CapabilitySignatureRow, EffectRow, AuthorizationAuditRow
 from .commands import effect_key
+from credit_harness.recovery.tables import synchronize_effect
 
 
 class ApprovalStore(Protocol):
@@ -123,16 +124,24 @@ class SQLApprovalStore:
             code = {P.EXPIRED: C.APPROVAL_EXPIRED, P.REVOKED: C.APPROVAL_REVOKED}.get(approval.status, C.APPROVAL_NOT_APPROVED)
             raise AuthorizationError(code)
 
-    def issue(self, intent, capability, clock):
+    def issue(self, intent, capability, clock, *, signature=None):
         with Session(self.engine) as session, session.begin():
             case = self._lock_case(session, intent.case_id)
             now = clock()
             if case.updated_at != capability.expected_case_revision.isoformat() or now >= capability.expires_at:
                 raise AuthorizationError(C.STALE_AUTHORIZATION)
             self._check_approval(session, intent, capability.approval_id, now)
+            unresolved = session.scalar(select(EffectRow).where(
+                EffectRow.case_id == capability.case_id, EffectRow.idempotency_key == effect_key(capability),
+                EffectRow.status.in_([S.DISPATCHED.value, S.UNKNOWN.value, S.ACCEPTED.value])))
+            if unresolved is not None:
+                raise AuthorizationError(C.WRITE_FENCED_BY_UNRESOLVED_EFFECT)
             self._save_intent(session, intent)
             session.add(CapabilityRow(capability_id=capability.capability_id, intent_id=intent.intent_id,
                                      payload=capability.model_dump(mode="json"), used_effect_id=None))
+            session.flush()
+            if signature is not None:
+                session.add(CapabilitySignatureRow(capability_id=capability.capability_id, signature=signature))
             self._audit(session, AuditEvent.CAPABILITY_ISSUED, intent, now,
                         approval_id=capability.approval_id, capability_id=capability.capability_id)
 
@@ -201,12 +210,13 @@ class SQLApprovalStore:
             session.add(EffectRow(effect_id=key, idempotency_key=key, capability_id=cap.capability_id,
                 case_id=cap.case_id, status=ledger.status.value, payload=ledger.model_dump(mode="json")))
             cap_row.used_effect_id = key
+            synchronize_effect(session, ledger)
             self._audit(session, AuditEvent.EFFECT_PREPARED, intent, now, capability_id=cap.capability_id,
                 approval_id=cap.approval_id, effect_id=key, correlation_id=ledger.dispatch_correlation_id,
                 effect_status=ledger.status)
             return ledger, not noop
 
-    def dispatch_prepared(self, cap, clock):
+    def dispatch_prepared(self, cap, clock, *, recovery_claim=None):
         with Session(self.engine) as session, session.begin():
             case = self._lock_case(session, cap.case_id)
             now = clock()
@@ -215,6 +225,14 @@ class SQLApprovalStore:
             if row is None or row.capability_id != cap.capability_id:
                 raise AuthorizationError(C.CAPABILITY_ALREADY_USED)
             ledger = SideEffectLedger.model_validate(row.payload)
+            if recovery_claim is not None:
+                from credit_harness.recovery.tables import EffectRecoveryStateRow
+                lease = session.get(EffectRecoveryStateRow, ledger.effect_id)
+                if (recovery_claim.effect_id != ledger.effect_id or lease is None
+                        or lease.lease_token != recovery_claim.recovery_id
+                        or lease.lease_owner != recovery_claim.worker_id
+                        or lease.lease_until is None or lease.lease_until <= now.timestamp()):
+                    raise AuthorizationError(C.STALE_AUTHORIZATION)
             if case.updated_at != ledger.prepared_case_revision.isoformat():
                 raise AuthorizationError(C.STALE_AUTHORIZATION)
             changed = ledger.model_copy(update=dict(status=S.DISPATCHED, attempt_count=1, updated_at=now))
@@ -223,6 +241,7 @@ class SQLApprovalStore:
                 payload=changed.model_dump(mode="json")))
             if result.rowcount != 1:
                 raise AuthorizationError(C.INVALID_TRANSITION)
+            synchronize_effect(session, changed)
             self._audit(session, AuditEvent.EFFECT_TRANSITION, intent, now,
                 capability_id=cap.capability_id, approval_id=cap.approval_id, effect_id=ledger.effect_id,
                 correlation_id=ledger.dispatch_correlation_id, effect_status=S.DISPATCHED)
@@ -252,6 +271,9 @@ class SQLApprovalStore:
             ledger = SideEffectLedger.model_validate(row.payload)
             if receipt and receipt.correlation_id != ledger.dispatch_correlation_id:
                 raise AuthorizationError(C.INVALID_TRANSITION)
+            if (receipt and receipt.external_effect_ref and ledger.external_effect_ref
+                    and receipt.external_effect_ref != ledger.external_effect_ref):
+                raise AuthorizationError(C.INVALID_TRANSITION)
             changed = ledger.model_copy(update=dict(status=status, updated_at=now,
                 attempt_count=1 if status == S.DISPATCHED else ledger.attempt_count,
                 external_effect_ref=receipt.external_effect_ref if receipt else ledger.external_effect_ref,
@@ -260,6 +282,7 @@ class SQLApprovalStore:
                 EffectRow.status == expected.value).values(status=status.value, payload=changed.model_dump(mode="json")))
             if updated.rowcount != 1:
                 raise AuthorizationError(C.INVALID_TRANSITION)
+            synchronize_effect(session, changed)
             intent = self._intent(session, ledger.intent_id)
             self._audit(session, AuditEvent.EFFECT_TRANSITION, intent, now, capability_id=ledger.capability_id,
                 approval_id=ledger.approval_id, effect_id=effect_id, correlation_id=ledger.dispatch_correlation_id,
