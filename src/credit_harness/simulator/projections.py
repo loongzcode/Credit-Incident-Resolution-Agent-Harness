@@ -6,7 +6,7 @@ from credit_harness.tools.contracts import (
     AccountingData, AssetData, CallbackData, CallbackRawData, CallbackRawRecord,
     CallbackRecord, DeliveryData, FundData, FundRecord, GuaranteeData,
     LoanNoteData, LoanNoteRecord, MessageRecord, MessagesData, PaymentData,
-    PaymentRecord, ProtocolData, ToolQuery, TraceData,
+    PaymentRecord, PaymentTransactionRecord, ProtocolData, ToolQuery, TraceData,
 )
 
 
@@ -27,9 +27,16 @@ def project(world: WorldState, tool: ToolName, query: ToolQuery, observed_at):
                 amount=fund.amount, currency=fund.currency,
             )), fund.event_time
         if tool == ToolName.PAYMENT:
+            t = fund.disbursement_transaction
+            transaction = None if t is None else PaymentTransactionRecord(
+                event_time=t.event_time, transaction_id=t.transaction_id,
+                fund_request_id=t.fund_request_id, loan_no=t.loan_no,
+                amount=t.amount, currency=t.currency, payment_finality=t.payment_finality,
+                customer_ref=t.customer_ref, beneficiary_ref=t.beneficiary_ref, account_ref=t.account_ref,
+            )
             return PaymentData(record=PaymentRecord(
                 event_time=fund.event_time, fund_request_id=fund.fund_request_id,
-                payment_finality=fund.payment_finality, transaction=fund.disbursement_transaction,
+                payment_finality=fund.payment_finality, transaction=transaction,
             )), fund.event_time
         if fund.loan_no is None:
             return None, None
@@ -78,4 +85,3 @@ def project(world: WorldState, tool: ToolName, query: ToolQuery, observed_at):
         record = max(applicable, key=lambda p: p.effective_time)
         return ProtocolData(record=record), record.event_time
     raise ValueError("unsupported tool")
-

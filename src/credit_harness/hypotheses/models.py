@@ -4,6 +4,7 @@ from pydantic import AwareDatetime
 
 from credit_harness.domain.models import Model
 from credit_harness.evidence.models import ClaimType
+from credit_harness.identity.models import PaymentIdentityResult
 
 
 class HypothesisId(StrEnum):
@@ -119,3 +120,4 @@ class HypothesisGraphView(Model):
     confirmed: tuple[HypothesisId, ...]
     supported: tuple[HypothesisId, ...]
     eliminated: tuple[HypothesisId, ...]
+    payment_identity: PaymentIdentityResult

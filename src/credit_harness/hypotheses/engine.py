@@ -8,6 +8,8 @@ from .gaps import derive_gaps
 from .index import EvidenceIndex
 from .models import GapStatus, HypothesisGraphView, HypothesisState, HypothesisStatus as S, RelationKind as R
 from .rules import evaluate_rules
+from .invariants import HypothesisGraphInvariantValidator
+from credit_harness.identity.payment import verify_payment_identity
 
 
 class HypothesisEngine:
@@ -38,7 +40,7 @@ class HypothesisEngine:
             "case": payload, "evidence": [e.model_dump(mode="json") for e in index.evidence],
             "rule_version": HYPOTHESIS_RULESET_VERSION,
         }, sort_keys=True).encode()).hexdigest()
-        return HypothesisGraphView(
+        graph = HypothesisGraphView(
             case_id=case.case_id, rule_version=HYPOTHESIS_RULESET_VERSION, evaluated_at=index.evaluated_at,
             input_fingerprint=fingerprint, definitions=CATALOG, hypotheses=tuple(states),
             relations=tuple(r for result in results for r in result.relations), gaps=gaps,
@@ -46,4 +48,7 @@ class HypothesisEngine:
             confirmed=tuple(s.hypothesis_id for s in states if s.status == S.CONFIRMED),
             supported=tuple(s.hypothesis_id for s in states if s.status == S.SUPPORTED),
             eliminated=tuple(s.hypothesis_id for s in states if s.status == S.ELIMINATED),
+            payment_identity=verify_payment_identity(index),
         )
+        HypothesisGraphInvariantValidator().validate(graph)
+        return graph

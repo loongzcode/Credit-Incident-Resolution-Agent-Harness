@@ -56,7 +56,7 @@ class EvidenceExtractor:
                 raw_ref=f"observation://{o.observation_id}",
                 content_hash=json_hash(o.model_dump(mode="json")), created_at=o.observed_at,
                 metadata=EvidenceMetadata(
-                    extractor_version="2", source_path=path, scope=query,
+                    extractor_version="3", source_path=path, scope=query,
                     fund_request_id=(data.record.fund_request_id if isinstance(
                         data, (TraceData, FundData, PaymentData, GuaranteeData, LoanNoteData),
                     ) else None), callback_event_id=callback_event_id,
@@ -76,14 +76,22 @@ class EvidenceExtractor:
                 emit(C.LOAN_NOTE_REFERENCE, r.loan_no, "/data/record/loan_no", **subject)
         elif isinstance(data, PaymentData):
             r = data.record
-            emit(C.PAYMENT_FINALITY, r.payment_finality.value, "/data/record/payment_finality",
-                 kind=S.FUND_REQUEST, identifier=r.fund_request_id)
+            emit(C.PAYMENT_FINALITY, (r.transaction.payment_finality if r.transaction else r.payment_finality).value,
+                 "/data/record/transaction/payment_finality" if r.transaction else "/data/record/payment_finality",
+                 kind=S.TRANSACTION if r.transaction else S.FUND_REQUEST,
+                 identifier=r.transaction.transaction_id if r.transaction else r.fund_request_id,
+                 event_time=r.transaction.event_time if r.transaction else r.event_time)
             if r.transaction is not None:
                 t = r.transaction
                 for claim, field in ((C.PAYMENT_TRANSACTION_ID, "transaction_id"),
                                      (C.PAYMENT_AMOUNT, "amount"), (C.PAYMENT_CURRENCY, "currency"),
-                                     (C.TRANSACTION_FUND_REQUEST_ID, "fund_request_id")):
+                                     (C.TRANSACTION_FUND_REQUEST_ID, "fund_request_id"),
+                                     (C.PAYMENT_CUSTOMER_REF, "customer_ref"),
+                                     (C.PAYMENT_BENEFICIARY_REF, "beneficiary_ref"),
+                                     (C.PAYMENT_ACCOUNT_REF, "account_ref")):
                     value = getattr(t, field)
+                    if value is None:
+                        continue
                     emit(claim, value.value if hasattr(value, "value") else value,
                          f"/data/record/transaction/{field}", kind=S.TRANSACTION,
                          identifier=t.transaction_id, event_time=t.event_time)

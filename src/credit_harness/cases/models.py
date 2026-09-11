@@ -6,6 +6,7 @@ from pydantic import AwareDatetime, Field, StrictInt, model_validator
 from credit_harness.domain.enums import ToolName
 from credit_harness.domain.models import Model
 from credit_harness.tools.contracts import Observation
+from credit_harness.identity.models import FinancialSubject
 
 Identifier = Annotated[str, Field(min_length=1, max_length=80)]
 Text = Annotated[str, Field(min_length=1)]
@@ -60,6 +61,8 @@ class Case(Model):
     scope: CaseScope
     constraints: CaseConstraints
     budget: CaseBudget
+    # Missing on legacy cases means identity cannot be verified; never infer from goal.
+    financial_subject: FinancialSubject | None = None
 
     @model_validator(mode="after")
     def consistent(self):

@@ -1,14 +1,14 @@
 from credit_harness.evidence.models import ClaimType as C
 from .models import HypothesisDefinition, HypothesisId as H, HypothesisKind as K
 
-HYPOTHESIS_RULESET_VERSION = "1"
+HYPOTHESIS_RULESET_VERSION = "2"
 
 
 def definition(h, kind, statement, description, claims, *, parent=None, deferred=False):
     return HypothesisDefinition(
         hypothesis_id=h, kind=kind, statement=statement, description=description,
-        confirmation_rule_id=f"{h.value}.{'confirmation_deferred' if deferred else 'confirm'}.v1",
-        elimination_rule_id=f"{h.value}.eliminate.v1", relevant_claim_types=claims,
+        confirmation_rule_id=f"{h.value}.{'confirmation_deferred' if deferred else 'confirm'}.v2",
+        elimination_rule_id=f"{h.value}.eliminate.v2", relevant_claim_types=claims,
         parent_hypothesis_id=parent,
     )
 
@@ -30,11 +30,11 @@ CATALOG = (
                (C.CALLBACK_GATEWAY_RECEIVED, C.MESSAGE_CONSUME_STATUS)),
     definition(H.H6_SCHEMA_MISMATCH, K.CAUSAL, "CALLBACK_SCHEMA_MISMATCH_TRIGGERED_FAILURE",
                "Callback 消费失败由 loanNo schema/type mismatch 直接触发。",
-               (C.MESSAGE_CONSUME_STATUS, C.MESSAGE_ERROR_CODE, C.MESSAGE_ERROR_FIELD,
+               (C.CALLBACK_GATEWAY_RECEIVED, C.MESSAGE_CONSUME_STATUS, C.MESSAGE_ERROR_CODE, C.MESSAGE_ERROR_FIELD,
                 C.MESSAGE_EXPECTED_FIELD_TYPE, C.MESSAGE_ACTUAL_FIELD_TYPE), parent=H.H6),
     definition(H.H6_STALE_CONSUMER_SCHEMA, K.CAUSAL, "STALE_CONSUMER_SCHEMA",
                "运行中的 Consumer 使用过期 schema，未能解析当前协议 Callback。",
-               (C.MESSAGE_CONSUME_STATUS, C.MESSAGE_ERROR_CODE, C.MESSAGE_ERROR_FIELD,
+               (C.CALLBACK_GATEWAY_RECEIVED, C.MESSAGE_CONSUME_STATUS, C.MESSAGE_ERROR_CODE, C.MESSAGE_ERROR_FIELD,
                 C.MESSAGE_EXPECTED_FIELD_TYPE, C.MESSAGE_ACTUAL_FIELD_TYPE,
                 C.CALLBACK_PROTOCOL_VERSION, C.PROTOCOL_FIELD_TYPE), parent=H.H6, deferred=True),
     definition(H.H7, K.CAUSAL, "ASSET_NOTIFICATION_FAILED", "我方业务已成功应用，但资产方终态通知未收敛。",

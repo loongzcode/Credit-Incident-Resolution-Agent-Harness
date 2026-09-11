@@ -158,6 +158,7 @@ def build_scenario(scenario_id: ScenarioId) -> Scenario:
         event_time=T0 + timedelta(seconds=2), transaction_id="PAY-001",
         fund_request_id=FUND_REQUEST_ID, loan_no=LOAN_NO, amount=AMOUNT,
         currency=Currency.CNY, payment_finality=PaymentFinality.SETTLED,
+        customer_ref="CUS-JD-001", beneficiary_ref="BEN-JD-001", account_ref="ACC-JD-001",
     ) if settled else None
     fund = _copy(
         base.fund, event_time=T0 + timedelta(seconds=2), business_status=business,

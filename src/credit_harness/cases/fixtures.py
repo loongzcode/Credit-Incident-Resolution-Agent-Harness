@@ -1,6 +1,7 @@
 """Task fixture only: contains no simulator configuration or answer."""
 
 from credit_harness.domain.enums import ToolName
+from credit_harness.identity.models import FinancialSubject
 from .models import Case, CaseBudget, CaseConstraints, CaseScope, TaskContract
 from .repository import utc_now
 
@@ -26,4 +27,8 @@ def investigation_case(simulation_id: str, *, tenant_id: str = "demo",
                         allowed_tools=set(ToolName) if allowed_tools is None else allowed_tools),
         constraints=CaseConstraints(forbidden_actions=("新建放款意图", "扣款", "代偿", "生产修复")),
         budget=CaseBudget(max_tool_calls=max_tool_calls),
+        financial_subject=FinancialSubject(
+            expected_principal_minor=2_000_000, currency="CNY", customer_ref="CUS-JD-001",
+            expected_beneficiary_ref="BEN-JD-001", expected_account_ref="ACC-JD-001",
+        ),
     )

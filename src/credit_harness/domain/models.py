@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, StrictInt, model_validator
+from .identity import AccountRef, BeneficiaryRef, CustomerRef
 
 from .enums import (
     AccountingStatus, BusinessMeaning, CallbackStatus, ConsumeStatus, Currency,
@@ -45,6 +46,9 @@ class DisbursementTransaction(EventModel):
     amount: MinorAmount
     currency: Currency
     payment_finality: PaymentFinality
+    customer_ref: CustomerRef | None = None
+    beneficiary_ref: BeneficiaryRef | None = None
+    account_ref: AccountRef | None = None
 
 
 class FundSystem(EventModel):
@@ -161,4 +165,3 @@ class WorldState(EventModel):
     request_trace: RequestTrace
     asset_delivery: AssetDelivery
     disbursement_intent_count: Annotated[StrictInt, Field(ge=0)] = 1
-

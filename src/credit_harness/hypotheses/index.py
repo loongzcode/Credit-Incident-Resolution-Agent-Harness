@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from types import MappingProxyType
 
 from credit_harness.cases.models import Case
-from credit_harness.domain.enums import Completeness, Freshness, ToolName
+from credit_harness.domain.enums import Completeness, Freshness, ToolName, SourceKind
 from credit_harness.evidence.models import ClaimType as C, Evidence
 
 
@@ -26,10 +26,12 @@ class EvidenceIndex:
     def __init__(self, case: Case, evidence: tuple[Evidence, ...] | list[Evidence]):
         if type(case) is not Case or not isinstance(evidence, (tuple, list)):
             raise TypeError("expected Case and a list/tuple of Evidence")
+        Case.model_validate(case.model_dump())
         by_id = {}
         for e in evidence:
             if type(e) is not Evidence:
                 raise TypeError("only Evidence instances are accepted")
+            Evidence.model_validate(e.model_dump())  # reject validation-bypassing constructed identity values
             if (e.case_id != case.case_id or e.subject.internal_order_id != case.internal_order_id
                     or e.metadata.scope.internal_order_id != case.internal_order_id
                     or e.tool not in case.scope.allowed_tools):
@@ -89,10 +91,12 @@ class EvidenceIndex:
     @property
     def request_id(self) -> str | None:
         anchors = {e.metadata.fund_request_id for c in (C.REQUEST_SENT, C.HTTP_RESPONSE_STATUS, C.GUARANTEE_STATUS)
-                   for e in self.current(c) if e.metadata.fund_request_id}
+                   for e in self.current(c) if e.metadata.fund_request_id
+                   and e.source_kind == SourceKind.PRIMARY and e.tool in (ToolName.TRACE, ToolName.GUARANTEE)}
         if not anchors:
-            anchors = {e.subject.identifier for c in (C.FUND_BUSINESS_STATUS, C.PAYMENT_FINALITY)
-                       for e in self.current(c) if e.subject.kind.value == "FUND_REQUEST"}
+            anchors = {e.subject.identifier for e in self.current(C.FUND_BUSINESS_STATUS)
+                       if e.subject.kind.value == "FUND_REQUEST" and e.tool == ToolName.FUND
+                       and e.source_kind == SourceKind.PRIMARY}
         return next(iter(anchors)) if len(anchors) == 1 else None
 
     def for_request(self, items):

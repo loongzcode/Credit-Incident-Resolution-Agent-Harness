@@ -3,7 +3,8 @@ import json
 from enum import StrEnum
 from typing import Annotated
 
-from pydantic import AwareDatetime, Field, StrictBool, StrictInt, StrictStr
+from pydantic import AwareDatetime, Field, StrictBool, StrictInt, StrictStr, TypeAdapter, model_validator
+from credit_harness.domain.identity import AccountRef, BeneficiaryRef, CustomerRef
 
 from credit_harness.domain.enums import Completeness, Freshness, SourceKind, ToolName
 from credit_harness.domain.models import Model
@@ -20,6 +21,9 @@ class ClaimType(StrEnum):
     PAYMENT_TRANSACTION_ID = "PAYMENT_TRANSACTION_ID"
     PAYMENT_AMOUNT = "PAYMENT_AMOUNT"
     PAYMENT_CURRENCY = "PAYMENT_CURRENCY"
+    PAYMENT_CUSTOMER_REF = "PAYMENT_CUSTOMER_REF"
+    PAYMENT_BENEFICIARY_REF = "PAYMENT_BENEFICIARY_REF"
+    PAYMENT_ACCOUNT_REF = "PAYMENT_ACCOUNT_REF"
     TRANSACTION_FUND_REQUEST_ID = "TRANSACTION_FUND_REQUEST_ID"
     CALLBACK_GATEWAY_RECEIVED = "CALLBACK_GATEWAY_RECEIVED"
     CALLBACK_SIGNATURE_VERIFIED = "CALLBACK_SIGNATURE_VERIFIED"
@@ -96,6 +100,17 @@ class Evidence(Model):
     content_hash: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
     created_at: AwareDatetime
     metadata: EvidenceMetadata
+
+    @model_validator(mode="after")
+    def validate_identity_reference(self):
+        reference_type = {
+            ClaimType.PAYMENT_CUSTOMER_REF: CustomerRef,
+            ClaimType.PAYMENT_BENEFICIARY_REF: BeneficiaryRef,
+            ClaimType.PAYMENT_ACCOUNT_REF: AccountRef,
+        }.get(self.claim_type)
+        if reference_type is not None:
+            TypeAdapter(reference_type).validate_python(self.value)
+        return self
 
 
 class RawObservation(Model):

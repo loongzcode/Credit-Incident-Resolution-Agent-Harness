@@ -30,6 +30,8 @@ def main():
     try:
         graph, evidence = run_graph_demo(engine, ScenarioId(args.scenario))
         print(f"case={graph.case_id} rules={graph.rule_version}")
+        print(f"evidence_count={evidence.evidence_count}")
+        print("payment_identity=" + graph.payment_identity.model_dump_json())
         for h in graph.hypotheses:
             print(f"{h.hypothesis_id.value} {h.status.value}")
             print(f"  support={list(h.supporting_evidence_refs)}")

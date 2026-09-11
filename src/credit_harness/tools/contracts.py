@@ -8,9 +8,10 @@ from credit_harness.domain.enums import (
 )
 from credit_harness.domain.models import (
     AccountingEntry, AssetDelivery, AssetSystem, CallbackPayload,
-    DisbursementTransaction, EventModel, GuaranteeCore, MessageError, MinorAmount,
+    EventModel, GuaranteeCore, MessageError, MinorAmount,
     Model, ProtocolRegistry, RequestTrace,
 )
+from credit_harness.domain.identity import AccountRef, BeneficiaryRef, CustomerRef
 
 
 # Infrastructure header only; never part of ToolQuery or business Observation.
@@ -49,10 +50,23 @@ class FundData(Model):
     record: FundRecord
 
 
+class PaymentTransactionRecord(EventModel):
+    """Allowlisted payment DTO, deliberately separate from server transaction state."""
+    transaction_id: str
+    fund_request_id: str
+    loan_no: str
+    amount: MinorAmount
+    currency: Currency
+    payment_finality: PaymentFinality
+    customer_ref: CustomerRef | None = None
+    beneficiary_ref: BeneficiaryRef | None = None
+    account_ref: AccountRef | None = None
+
+
 class PaymentRecord(EventModel):
     fund_request_id: str
     payment_finality: PaymentFinality
-    transaction: DisbursementTransaction | None
+    transaction: PaymentTransactionRecord | None
 
 
 class PaymentData(Model):

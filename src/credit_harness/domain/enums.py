@@ -53,6 +53,7 @@ class TransportStatus(StrEnum):
 
 class Currency(StrEnum):
     CNY = "CNY"
+    USD = "USD"
 
 
 class FieldType(StrEnum):
@@ -139,4 +140,3 @@ class RootCause(StrEnum):
     CALLBACK_SCHEMA_MISMATCH = "CALLBACK_SCHEMA_MISMATCH"
     ASSET_NOTIFICATION_FAILED = "ASSET_NOTIFICATION_FAILED"
     PAYMENT_PENDING_UNOBSERVABLE = "PAYMENT_PENDING_UNOBSERVABLE"
-

@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from credit_harness.cases.models import CaseStatus
 from credit_harness.domain.enums import SourceKind, ToolName as T
 from credit_harness.evidence.models import ClaimType as C
+from credit_harness.identity.payment import verify_payment_identity
+from credit_harness.identity.models import IdentityMatch
 from .catalog import CATALOG
 from .index import EvidenceIndex
 from .models import EvidenceRelation, HypothesisId as H, HypothesisStatus as S, RelationKind as R
@@ -32,16 +34,9 @@ class RuleFacts:
         return self.request(self.facts(C.PAYMENT_FINALITY, value, {T.PAYMENT}))
 
     def settled_witness(self):
-        result = []
-        for payment in self.payment("SETTLED"):
-            links = self.facts(C.TRANSACTION_FUND_REQUEST_ID, self.index.request_id, {T.PAYMENT})
-            for link in links:
-                ids = self.facts(C.PAYMENT_TRANSACTION_ID, link.subject.identifier, {T.PAYMENT})
-                for transaction in ids:
-                    if (payment.observation_id == link.observation_id == transaction.observation_id
-                            and link.subject == transaction.subject):
-                        result.extend((payment, link, transaction))
-        return tuple(result)
+        result = verify_payment_identity(self.index)
+        return tuple(e for e in self.index.evidence if e.evidence_id in result.evidence_refs
+                     ) if result.result == IdentityMatch.MATCH else ()
 
     def gateway(self):
         return self.facts(C.CALLBACK_GATEWAY_RECEIVED, True, {T.CALLBACK, T.CALLBACK_RAW})
@@ -74,7 +69,10 @@ class RuleFacts:
                 values[claim] = tuple(e for e in self.index.current(claim)
                                       if e.tool == T.MESSAGES and e.subject == failed.subject
                                       and e.observation_id == failed.observation_id
-                                      and e.event_time == failed.event_time)
+                                      and e.event_time == failed.event_time
+                                      and e.metadata.callback_event_id == failed.metadata.callback_event_id
+                                      and e.content_hash == failed.content_hash
+                                      and e.source_kind == SourceKind.PRIMARY)
             if not all(values.values()):
                 continue
             if (set(e.value for e in values[C.MESSAGE_ERROR_CODE]) != {"CALLBACK_SCHEMA_MISMATCH"}
@@ -111,11 +109,11 @@ def evaluate_rules(index: EvidenceIndex) -> tuple[RuleResult, ...]:
                 relations[e.evidence_id] = EvidenceRelation(
                     case_id=index.case.case_id, hypothesis_id=h, evidence_id=e.evidence_id,
                     relation=R.CONTEXT_ONLY, reason="相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-                    rule_id=f"{h.value}.context.v1",
+                    rule_id=f"{h.value}.context.v2",
                 )
         for items, relation, rule in (
-            (support, R.SUPPORTS, f"{h.value}.support.v1"),
-            (contradict, R.CONTRADICTS, f"{h.value}.contradict.v1"),
+            (support, R.SUPPORTS, f"{h.value}.support.v2"),
+            (contradict, R.CONTRADICTS, f"{h.value}.contradict.v2"),
             (confirm, R.DECISIVE_SUPPORT, definition.confirmation_rule_id),
             (eliminate, R.DECISIVE_CONTRADICTION, definition.elimination_rule_id),
         ):
@@ -137,10 +135,10 @@ def evaluate_rules(index: EvidenceIndex) -> tuple[RuleResult, ...]:
     fund_records = tuple(e for value in ("PROCESSING", "SUCCESS", "FAILED")
                          for e in facts.request(facts.facts(C.FUND_BUSINESS_STATUS, value, {T.FUND})))
     decide(H.H2, eliminate=(*settled, *fund_records),
-           reason="同请求的可靠资金业务记录或已关联结算交易可排除未受理；NOT_FOUND 不能确认未受理。")
+           reason="同请求可靠资金业务记录或完整 Payment Identity MATCH 可排除未受理；NOT_FOUND 不能确认未受理。")
     failed_fund = facts.request(facts.facts(C.FUND_BUSINESS_STATUS, "FAILED", {T.FUND}))
     decide(H.H3, support=failed_fund, eliminate=settled,
-           reason="业务 FAILED 仅支持；对应结算交易否定未产生放款效果。本版缺少受理/拒绝的完整终态契约。")
+           reason="业务 FAILED 仅支持；完整 Payment Identity MATCH 否定未产生放款效果。本版缺少受理/拒绝的完整终态契约。")
 
     timeout = facts.request(facts.facts(C.HTTP_RESPONSE_STATUS, "TIMEOUT", {T.TRACE}))
     ok = facts.request(facts.facts(C.HTTP_RESPONSE_STATUS, "OK", {T.TRACE}))
@@ -148,7 +146,7 @@ def evaluate_rules(index: EvidenceIndex) -> tuple[RuleResult, ...]:
     timeout = tuple(e for e in timeout if e.metadata.fund_request_id == index.request_id)
     decide(H.H4, support=(*timeout, *facts.payment("SETTLED")),
            confirm=(*timeout, *settled) if timeout and settled else (), eliminate=ok,
-           reason="同一原请求的 HTTP TIMEOUT 与独立支付来源的关联 SETTLED 交易组合；不定位网络原因。")
+           reason="原请求 HTTP TIMEOUT + Payment Identity MATCH：交易、请求、金额、币种、客户、收款主体和账户完整绑定；不定位网络原因。")
 
     absent = tuple(e for e in index.all(C.SOURCE_LOOKUP_STATUS)
                    if e.tool in (T.CALLBACK, T.CALLBACK_RAW) and e.value == "NOT_FOUND")
@@ -162,9 +160,11 @@ def evaluate_rules(index: EvidenceIndex) -> tuple[RuleResult, ...]:
            reason="同一 Callback event 的 Gateway 接收与消费 FAILED 确认消费异常；消费完成可排除当前未成功。")
 
     mismatches = facts.mismatch_groups()
-    schema_witness = tuple(e for group in mismatches for e in group)
-    decide(H.H6_SCHEMA_MISMATCH, support=facts.messages("FAILED"), confirm=schema_witness,
-           reason="同一消息、同次观测中的失败状态、错误码、loanNo 字段和互异类型满足 schema mismatch 规则。")
+    schema_witness = tuple(e for group in mismatches for gateway, message in facts.callback_pairs("FAILED")
+                           if group[0].evidence_id == message.evidence_id for e in (gateway, *group))
+    decide(H.H6_SCHEMA_MISMATCH, support=tuple(e for group in mismatches for e in group) or facts.messages("FAILED"),
+           confirm=schema_witness,
+           reason="父级同一 Callback 的 Gateway/消费失败 witness，加上同消息、同观测、同事件的错误码、字段和互异类型。")
 
     stale_support = []
     fields = index.current(C.PROTOCOL_FIELD_TYPE)

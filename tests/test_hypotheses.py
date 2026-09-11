@@ -101,7 +101,7 @@ def test_not_found_does_not_confirm_fund_not_accepted(harness):
 
 
 def test_payment_settled_eliminates_no_disbursement_hypotheses(harness):
-    _, _, graph, _, _, _ = investigate(harness, tools=(T.PAYMENT,))
+    _, _, graph, _, _, _ = investigate(harness, tools=(T.TRACE, T.PAYMENT))
     assert status(graph, H.H2) == status(graph, H.H3) == S.ELIMINATED
 
 
@@ -141,7 +141,7 @@ def test_h6_callback_received_and_consume_failed_confirmed(harness):
 
 
 def test_h6_schema_mismatch_confirmed(harness):
-    _, _, graph, _, _, _ = investigate(harness, tools=(T.MESSAGES,))
+    _, _, graph, _, _, _ = investigate(harness, tools=(T.CALLBACK, T.MESSAGES))
     assert status(graph, H.H6_SCHEMA_MISMATCH) == S.CONFIRMED
 
 
@@ -214,9 +214,9 @@ def test_hypothesis_recompute_is_deterministic(harness):
 
 def test_ruleset_version_is_present(harness):
     _, _, graph, _, _, _ = investigate(harness)
-    assert graph.rule_version == HYPOTHESIS_RULESET_VERSION == "1"
-    assert all(s.rule_version == "1" for s in graph.hypotheses)
-    assert all(r.rule_id.endswith(".v1") for r in graph.relations)
+    assert graph.rule_version == HYPOTHESIS_RULESET_VERSION == "2"
+    assert all(s.rule_version == "2" for s in graph.hypotheses)
+    assert all(r.rule_id.endswith(".v2") for r in graph.relations)
 
 
 def test_hypothesis_graph_has_no_ground_truth(harness):

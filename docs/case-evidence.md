@@ -1,6 +1,6 @@
 # Case Runtime 与 Evidence Store v1 — Step 2.5 hardening
 
-后续 Step 3 已实现独立 [Hypothesis Engine](hypothesis-engine.md)。为保持跨系统关联在 Evidence 层内，提取器版本 2 补充可见的 fund_request_id / callback_event_id Metadata；S6 仍为 27 条原子 Evidence。旧记录保留版本 1，缺少链接时不猜测，Hypothesis 层不回读原始 Observation。本页后续“本阶段”描述的是 Step 2/2.5 的交付边界。
+后续 Step 3/3.1 已实现独立 [Hypothesis Engine](hypothesis-engine.md)。为保持跨系统关联在 Evidence 层内，提取器版本 2 补充可见的 fund_request_id / callback_event_id Metadata；版本 3 增加三类 Payment 身份引用，当前 S6 为 30 条原子 Evidence。Payment 交易终态现使用 transaction subject；旧 27 条示例为 Step 2.5 的历史记录。旧记录保留版本 1，缺少链接时不猜测，Hypothesis 层不回读原始 Observation。本页后续“本阶段”描述的是 Step 2/2.5 的交付边界。
 
 ## 范围与目录
 

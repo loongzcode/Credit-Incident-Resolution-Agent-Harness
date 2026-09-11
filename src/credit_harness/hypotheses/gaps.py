@@ -5,6 +5,7 @@ from .models import (
     PriorityClass as P, UncollectedClaimType as U,
 )
 from .rules import RuleFacts
+from credit_harness.identity.payment import IDENTITY_CLAIMS, verify_payment_identity
 
 
 def derive_gaps(index, results) -> tuple[EvidenceGap, ...]:
@@ -20,8 +21,14 @@ def derive_gaps(index, results) -> tuple[EvidenceGap, ...]:
             evidence_refs=index.refs(witness),
         ))
 
-    payment = (*facts.payment("SETTLED"), *facts.payment("NOT_EXECUTED"))
-    gap("PAYMENT_FINALITY", (H.H2, H.H3, H.H4), "原请求的资金效果是否实际发生？",
+    identity = verify_payment_identity(index)
+    gap("PAYMENT_IDENTITY", (H.H2, H.H3, H.H4),
+        "当前观察到的支付交易是否与本 Case 的资金请求、金额、币种、用户、收款主体和收款账户完整一致？",
+        tuple(IDENTITY_CLAIMS.values()), priority=P.SAFETY_CRITICAL,
+        witness=facts.settled_witness(), reason=f"确定性身份验证：{identity.result.value}；缺失不能视作匹配。")
+    payment = tuple(e for value in ("SETTLED", "NOT_EXECUTED")
+                    for e in facts.facts(C.PAYMENT_FINALITY, value, {ToolName.PAYMENT}))
+    gap("PAYMENT_FINALITY", (H.H2, H.H3, H.H4), "当前支付来源是否明确观察到支付终态？",
         (C.PAYMENT_FINALITY,), witness=payment, priority=P.SAFETY_CRITICAL,
         reason="只有当前明确的支付终态观测可满足；Fund SUCCESS、PENDING、Timeout 和重复缺失不能满足。")
     if index.all(C.HTTP_RESPONSE_STATUS) or index.all(C.PAYMENT_FINALITY):
@@ -32,7 +39,8 @@ def derive_gaps(index, results) -> tuple[EvidenceGap, ...]:
             reason="不能由支付结算倒推出 HTTP 传输结果；互斥的当前 Trace 值需要澄清。")
         links = tuple(e for e in index.current(C.HTTP_RESPONSE_STATUS)
                       if e.metadata.fund_request_id == index.request_id and index.request_id is not None)
-        payment_links = facts.settled_witness() or facts.payment("NOT_EXECUTED") or facts.payment("PENDING")
+        payment_links = facts.request(facts.facts(C.TRANSACTION_FUND_REQUEST_ID, index.request_id,
+                                                 {ToolName.PAYMENT})) or facts.payment("NOT_EXECUTED") or facts.payment("PENDING")
         gap("REQUEST_ASSOCIATION", (H.H2, H.H3, H.H4), "Trace 与支付证据是否属于唯一的同一原资金请求？",
             (U.REQUEST_ASSOCIATION, C.PAYMENT_FINALITY),
             witness=(*links, *payment_links) if links and payment_links else (),

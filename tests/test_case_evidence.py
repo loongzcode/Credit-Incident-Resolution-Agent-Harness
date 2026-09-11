@@ -214,7 +214,7 @@ def test_s6_evidence_chain(harness):
     }
     forbidden = {"ROOT_CAUSE", "RETRY_LOAN", "PAYMENT_FAILED", "CALLBACK_NEVER_SENT", "GROUND_TRUTH"}
     assert not forbidden.intersection(view.evidence_by_claim_type)
-    assert view.evidence_count == 27
+    assert view.evidence_count == 30
     assert view.case.budget.used_tool_calls == 7
     assert view.case.status == CaseStatus.INVESTIGATING
     assert len(view.latest_observations) == 7 and not view.conflicts

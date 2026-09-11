@@ -9,7 +9,7 @@ def test_s6_manual_investigation_through_harness_http(engine):
     view = run_demo(engine)
     assert view.case.case_id == "CASE-JD202609100001"
     assert view.case.status == CaseStatus.INVESTIGATING
-    assert view.case.budget.used_tool_calls == 7 and view.evidence_count == 27
+    assert view.case.budget.used_tool_calls == 7 and view.evidence_count == 30
     expected = {
         C.HTTP_RESPONSE_STATUS: "TIMEOUT", C.FUND_BUSINESS_STATUS: "SUCCESS",
         C.PAYMENT_FINALITY: "SETTLED", C.PAYMENT_AMOUNT: 2_000_000, C.PAYMENT_CURRENCY: "CNY",
