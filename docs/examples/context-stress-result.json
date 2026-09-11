@@ -2,7 +2,7 @@
   "total_evidence": 500,
   "selected_evidence": 24,
   "fact_capsules": 20,
-  "serialized_chars": 30076,
+  "serialized_chars": 30532,
   "identity": "MATCH",
   "repeat_counts": [
     300
@@ -20,12 +20,12 @@
       {
         "reason": "HISTORICAL_SUPERSEDED",
         "count": 98,
-        "evidence_ids_digest": "b7cb065a7205d6848e7f7e530f102dd88d14f47f71d216c6f87bf25673d950cb"
+        "evidence_ids_digest": "54773ef156ceb32185b6e90a7983f8f12e21c7500dd14d8998c2b82d0feabedb"
       },
       {
         "reason": "IRRELEVANT_TO_ACTIVE_HYPOTHESES",
         "count": 78,
-        "evidence_ids_digest": "a164b7410b2fa5d3736186980e246102efbe6de38b06fe1b2e4fe97bf7e5e56a"
+        "evidence_ids_digest": "8dc41f5f5f053072c692c8ff80b19b2a5c6338bb63f1091e4c6329901ac4fa0f"
       },
       {
         "reason": "RELATION_COMPACTED",
@@ -35,7 +35,7 @@
       {
         "reason": "REPEATED_LOOKUP",
         "count": 298,
-        "evidence_ids_digest": "01564eccdde2c715eaf2b7c06bbf847301b537bf8a1ee8ad154889bf8b9e593b"
+        "evidence_ids_digest": "ee7c537d459765f431c1995116bac9f05d0a813d6855c7ded13467b434f949bc"
       }
     ]
   }

@@ -1,4 +1,5 @@
 from collections import defaultdict
+from pydantic import ValidationError
 
 from credit_harness.cases.models import Case, CaseStatus
 from credit_harness.evidence.models import ClaimType as C, Evidence
@@ -28,6 +29,15 @@ class ReasoningContextAssembler:
     def build(self, case: Case, evidence: tuple[Evidence, ...] | list[Evidence]):
         # Neither prior context nor external graph is accepted. No persistence access.
         index = EvidenceIndex(case, evidence)
+        self.eligibility.validate_case(case)
+        try:
+            return self._assemble(index)
+        except ValidationError:
+            # Avoid echoing rejected external values through runtime error messages.
+            raise ContextEligibilityError("derived Context envelope has ineligible fields") from None
+
+    def _assemble(self, index):
+        case = index.case
         graph = HypothesisEngine().evaluate(case, index.evidence)
         by_id = {e.evidence_id: e for e in index.evidence}
         eligible = tuple(e for e in index.evidence if self.eligibility.allows(e))

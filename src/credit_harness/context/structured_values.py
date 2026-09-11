@@ -20,3 +20,19 @@ StructuredFieldPath = Annotated[str, Field(strict=True, min_length=1, max_length
     pattern=r"^[A-Za-z_][A-Za-z0-9_]*(\[[0-9]{1,6}\])*(\.[A-Za-z_][A-Za-z0-9_]*(\[[0-9]{1,6}\])*)*$")]
 StructuredTopic = Annotated[str, Field(strict=True, min_length=1, max_length=128,
     pattern=r"^[A-Za-z][A-Za-z0-9_-]*(\.[A-Za-z0-9_-]+)*$")]
+
+# Context-only contracts; domain records and partner adapters keep their own IDs.
+OpaqueSubjectRef = Annotated[str, Field(strict=True, min_length=1, max_length=128,
+    pattern=r"^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"), AfterValidator(not_bare_personal_number)]
+# Derived gap IDs append a bounded rule name to a case ID; refs are data too.
+ContextReference = Annotated[str, Field(strict=True, min_length=1, max_length=256,
+    pattern=r"^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"), AfterValidator(not_bare_personal_number)]
+
+
+def version_number(value: str) -> str:
+    # Existing integer revision counters are valid; bare long personal numbers are not.
+    return value if value.isdigit() and len(value) <= 6 else not_bare_personal_number(value)
+
+
+StructuredVersion = Annotated[str, Field(strict=True, min_length=1, max_length=64,
+    pattern=r"^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$"), AfterValidator(version_number)]

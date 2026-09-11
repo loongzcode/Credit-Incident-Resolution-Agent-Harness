@@ -1,13 +1,13 @@
 {
   "fixture_kind": "synthetic projection stress derived from saved S6 Evidence; not newly dispatched Tool observations",
-  "context_schema_version": "2",
+  "context_schema_version": "3",
   "cases": [
     {
       "candidate_count": 10,
       "synthetic_beneficiary_mismatch": false,
       "input_count": 82,
       "current_fact_count": 18,
-      "serialized_chars": 23360,
+      "serialized_chars": 23816,
       "identity": {
         "result": "UNKNOWN",
         "mismatch_dimensions": [],
@@ -56,14 +56,14 @@
           }
         ]
       },
-      "snapshot_id": "71ecaca7b803187f92a11b54daa8f8820cb1fc4ef51ad726334eeabd444fc4ac"
+      "snapshot_id": "6664ab8e6131c9f164781aa2caa68fe0da791ded60858a55ed6e9abf0ce02e58"
     },
     {
       "candidate_count": 100,
       "synthetic_beneficiary_mismatch": false,
       "input_count": 802,
       "current_fact_count": 18,
-      "serialized_chars": 23366,
+      "serialized_chars": 23822,
       "identity": {
         "result": "UNKNOWN",
         "mismatch_dimensions": [],
@@ -112,14 +112,14 @@
           }
         ]
       },
-      "snapshot_id": "5da9e3787d6a43d5f0a45453ed806e44aaf5a6d42ea3e90614a19f3376dc3334"
+      "snapshot_id": "bd8f9832d3e8b271971486c1e01f1043e559d64fe521df1fc3fec377fb39e494"
     },
     {
       "candidate_count": 100,
       "synthetic_beneficiary_mismatch": true,
       "input_count": 802,
       "current_fact_count": 22,
-      "serialized_chars": 25774,
+      "serialized_chars": 26230,
       "identity": {
         "result": "MISMATCH",
         "mismatch_dimensions": [
@@ -174,7 +174,7 @@
           }
         ]
       },
-      "snapshot_id": "a436715adb163716401f8e53e31bdfb206ec0a8392ce377276321e3f205fd521"
+      "snapshot_id": "072ef11b74bff7d3668311144f1f28adb636bfeea5955b83824607c6819fd0ac"
     }
   ]
 }

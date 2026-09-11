@@ -1,27 +1,12 @@
 """Positive structured-field allowlist, not a regex PII detector."""
-import re
 from typing import ClassVar
-from pydantic import TypeAdapter, ValidationError
+from pydantic import ValidationError
 
-from credit_harness.domain.enums import (
-    BusinessMeaning, ConsumeStatus, Currency, DeliveryStatus, FieldType,
-    FundBusinessStatus, LoanStatus, ObservationStatus, PaymentFinality, TransportStatus,
-)
 from credit_harness.evidence.models import ClaimType as C
 from credit_harness.domain.models import Model
-from credit_harness.evidence.models import SubjectKind
-from .models import InformationClass as I
-from .structured_values import OpaqueBusinessRef, StructuredErrorCode, StructuredFieldPath, StructuredTopic
-
-STRUCTURED_ADAPTERS = {
-    C.LOAN_NOTE_REFERENCE: TypeAdapter(OpaqueBusinessRef),
-    C.PAYMENT_TRANSACTION_ID: TypeAdapter(OpaqueBusinessRef),
-    C.TRANSACTION_FUND_REQUEST_ID: TypeAdapter(OpaqueBusinessRef),
-    C.MESSAGE_ERROR_CODE: TypeAdapter(StructuredErrorCode),
-    C.MESSAGE_ERROR_FIELD: TypeAdapter(StructuredFieldPath),
-    C.MESSAGE_DLQ: TypeAdapter(StructuredTopic),
-}
-_BUSINESS_REF = TypeAdapter(OpaqueBusinessRef)
+from .models import InformationClass as I, LookupScope, CaseContextIdentifiers
+from .compaction import fact
+from .value_contracts import validate_claim_value
 
 
 class ContextEligibilityError(ValueError):
@@ -41,34 +26,11 @@ BUSINESS_CLAIMS = frozenset({
 
 
 def structured_value_allowed(e) -> bool:
-    if e.claim_type in STRUCTURED_ADAPTERS:
-        try:
-            STRUCTURED_ADAPTERS[e.claim_type].validate_python(e.value)
-            return True
-        except ValidationError:
-            return False
-    enums = {
-        C.HTTP_RESPONSE_STATUS: TransportStatus, C.FUND_BUSINESS_STATUS: FundBusinessStatus,
-        C.PAYMENT_FINALITY: PaymentFinality, C.PAYMENT_CURRENCY: Currency,
-        C.MESSAGE_CONSUME_STATUS: ConsumeStatus, C.MESSAGE_EXPECTED_FIELD_TYPE: FieldType,
-        C.MESSAGE_ACTUAL_FIELD_TYPE: FieldType, C.ASSET_STATUS: LoanStatus, C.GUARANTEE_STATUS: LoanStatus,
-        C.ASSET_DELIVERY_STATUS: DeliveryStatus, C.PROTOCOL_FIELD_TYPE: FieldType,
-        C.PROTOCOL_BUSINESS_SEMANTICS: BusinessMeaning, C.SOURCE_LOOKUP_STATUS: ObservationStatus,
-    }
-    if e.claim_type in enums:
-        return type(e.value) is str and e.value in {v.value for v in enums[e.claim_type]}
-    if e.claim_type in {C.REQUEST_SENT, C.LOAN_NO_PRESENT, C.CALLBACK_GATEWAY_RECEIVED,
-                        C.CALLBACK_SIGNATURE_VERIFIED, C.ACCOUNTING_ENTRY_PRESENT}:
-        return type(e.value) is bool
-    if e.claim_type in {C.PAYMENT_AMOUNT, C.GUARANTEE_VERSION}:
-        return type(e.value) is int and e.value >= 0
-    patterns = {
-        C.PAYMENT_CUSTOMER_REF: r"CUS-[A-Za-z0-9-]+",
-        C.PAYMENT_BENEFICIARY_REF: r"BEN-[A-Za-z0-9-]+", C.PAYMENT_ACCOUNT_REF: r"ACC-[A-Za-z0-9-]+",
-        C.CALLBACK_PROTOCOL_VERSION: r"\d+\.\d+",
-    }
-    return (e.claim_type in patterns and type(e.value) is str and len(e.value) <= 96
-            and re.fullmatch(patterns[e.claim_type], e.value) is not None)
+    try:
+        validate_claim_value(e.claim_type, e.value)
+        return True
+    except ValueError:
+        return False
 
 
 class ContextEligibilityPolicy(Model):
@@ -82,15 +44,23 @@ class ContextEligibilityPolicy(Model):
     def classify(self, claim: C) -> I | None:
         return I.TOKENIZED_IDENTITY if claim in TOKEN_CLAIMS else I.BUSINESS if claim in BUSINESS_CLAIMS else None
 
+    def validate_case(self, case):
+        try:
+            CaseContextIdentifiers(case_id=case.case_id, internal_order_id=case.internal_order_id)
+        except ValidationError:
+            raise ContextEligibilityError("case identifiers are ineligible for Context") from None
+
     def allows(self, evidence) -> bool:
-        if evidence.subject.kind in (SubjectKind.TRANSACTION, SubjectKind.FUND_REQUEST):
-            try:
-                _BUSINESS_REF.validate_python(evidence.subject.identifier)
-            except ValidationError:
-                return False
         classification = self.classify(evidence.claim_type)
-        return (classification is not None and self.allows_class(classification)
-                and evidence.claim_type not in self.denied_claims and structured_value_allowed(evidence))
+        if classification is None or not self.allows_class(classification) or evidence.claim_type in self.denied_claims:
+            return False
+        try:
+            # Same typed capsule and lookup contracts used by final envelope validation.
+            fact(evidence)
+            LookupScope(**evidence.metadata.scope.model_dump())
+            return True
+        except ValueError:
+            return False
 
 
 class MandatoryContextFactPolicy:

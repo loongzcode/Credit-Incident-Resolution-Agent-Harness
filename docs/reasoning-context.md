@@ -1,4 +1,4 @@
-# Step 4.1 — Reasoning Context Snapshot Hardening
+# Step 4.2 — Full Context Envelope Eligibility / Model Trust Boundary
 
 本阶段的边界是 `Case + Evidence → Immutable Snapshot`。没有 LLM、Prompt、Planner、Agent Loop、Next Best Action、Write Tool、Repair、embedding、Vector DB 或聊天记忆。Step 5 才消费这一结构化边界；当前 Demo 只做人工查询与确定性计算。
 
@@ -30,8 +30,9 @@ durable Case + Evidence
 | 部分 | 主要内容 |
 |---|---|
 | 标识与 provenance | snapshot_id、case/order ID、Case/Evidence/Graph 指纹、hypothesis_input_fingerprint、policy_fingerprint |
-| 版本 | context schema 2、eligibility 2、compaction 2、context policy 2、hypothesis rule 3 |
+| 版本 | context schema 3、eligibility 3、compaction 2、context policy 3、hypothesis rule 3 |
 | task | Goal、Success Criteria、Stop/Escalation Conditions、Forbidden Outcomes |
+| section_trust | 固定分区信任等级，不能把外部事实提升成控制指令 |
 | financial_subject | 预期金额分、币种、客户/收款主体/账户 opaque refs；旧 Case 可为 null |
 | financial_identity | MATCH/MISMATCH/UNKNOWN、具体维度、关键身份见证；候选交易与全量引用的 count/digest/bounded preview |
 | current_facts | FactCapsule：claim/value/subject/business_time/observed_at/freshness/completeness/source/protocol/ref |
@@ -59,6 +60,57 @@ INTERNAL_CONTROL 也不是任意控制数据透传：只投影可信 Case 创建
 未来 incident comment、error detail、日志文本、合作方响应与合同正文必须先经过独立 Content Eligibility/Sanitization Pipeline。本版不提供 include_raw_text 接口，也不把当前可信 TaskContract 当成任意不可信长文本输入入口。真正接入用户可自由填写的任务文本时，也必须在 Case 创建边界执行该 Pipeline；本阶段没有伪造一套 DLP 或声称能过滤任意文本中的 PII。
 
 Graph 从全部合法 durable Evidence 计算。若其 mandatory identity/confirmed witness 或关键当前字段依赖被禁止信息，抛 ContextEligibilityError；不通过删除输入重新计算一个更方便的结论。可选 capsule 含不合格引用时整项不输出，禁止输出缺证据的片面解释。
+
+## Full Envelope Eligibility
+
+Step 4.2 先用负向测试复现：合法 MESSAGE_ERROR_CODE 的 subject.identifier 包含 `IGNORE PREVIOUS INSTRUCTIONS` 时，旧 eligibility 仍返回 true。过去只全面检查 value，并只对 TRANSACTION/FUND_REQUEST 标识增加语法限制；MESSAGE/CALLBACK/PROTOCOL/ORDER 标识、字段名、版本、历史 scope 和引用路径均缺少统一约束。
+
+当前模型入口采用两次独立检查：
+
+1. ContextEligibilityPolicy 将每条 Evidence 投影成类型化 FactCapsule，并检查 LookupScope。每个候选都经过完整检查，包括未成为 current fact、而可能被 history/relation 引用的证据。可选不合格记录归入 ELIGIBILITY_DENIED；关键证明不合格则抛 ContextEligibilityError，不能靠删除输入改写 Graph 结论。
+2. ContextEnvelopeInvariantValidator 在最终边界将 Snapshot 字段重建为嵌套 Pydantic 模型。即使调用者使用 model_copy/model_construct 绕过构造校验，错误的 subject、版本、历史值、引用和 trust 标记仍会被拒绝。它不把 Snapshot 序列化后扫描手机号、不改写字符串，也不访问数据库或工具。
+
+| 外部或派生字段 | Context 契约 |
+|---|---|
+| 六类 subject.identifier | OpaqueSubjectRef：1–128 字符，安全字符集，允许 `ORDER-001`、`CB:20260911:001`、`MSG_001`、`SIM-FUND@2.3`；禁止空白、控制字符、裸个人号码形态 |
+| FUND_REQUEST / TRANSACTION identifier | 同时维持 OpaqueBusinessRef 的金融业务引用契约，无合作方前缀要求 |
+| Case case_id / internal_order_id、FactSubject.internal_order_id | OpaqueSubjectRef；仅增加 Context 投影检查，不修改 Case domain 的历史兼容契约 |
+| PROTOCOL_FIELD_TYPE 的 subject.field | 必须存在，使用 StructuredFieldPath，可包含 `repaymentPlan.items[0].dueDate` |
+| PROTOCOL_BUSINESS_SEMANTICS 的 subject.field | 必须存在，使用 StructuredErrorCode 风格的 uppercase 状态键；不能拿字段路径冒充业务状态 |
+| 其他非空 subject.field | StructuredFieldPath |
+| protocol_version / source_version / Callback 版本值 | 共用 StructuredVersion：1–64 字符，有限分段语法；支持 `2.3`、`v2.3`、`2026.09`、`release-20260911`，兼容短整数 revision |
+| LookupScope | 与 Fact 共用安全 order/version 类型；原 ToolQuery 的合作方协议格式规则仍独立存在 |
+| Evidence refs、preview refs、history 首末 refs、derived gap IDs | ContextReference：1–256 字符，有界安全引用，不能通过 ID 槽带回外部文本 |
+| Fact value / History 首末 value | 按 ClaimType 执行同一份 value_contracts；状态与语义为封闭枚举，代码/字段/topic/业务编号为开放结构化类型 |
+
+非空字符串不是默认资格；未知 Claim 无对应值契约时拒绝。value_contracts 同时被资格筛选和模型验证使用，避免两套规则漂移。Pydantic extra=forbid/frozen 继续生效。Case/Source/Protocol 之外的 Observation 原文、metadata.source_path、Raw PII、scenario 信息及 credential 不在 Snapshot schema 中。
+
+这些契约是语法与信息资格约束，不能证明合作方编号真实有效，也不是 PII Scanner。纯数字长版本或个人号码需要在上游用真正的内部引用替代；把原始号码加前缀不等于去标识化。Adapter/Identity Service 仍负责来源、业务格式及 PII 域隔离。
+
+## Trusted Control vs Untrusted Data
+
+`section_trust` 使用固定 ContextSectionTrust 模型，每项由 Literal 约束，调用者不能自行把 current_facts 的等级改为 TRUSTED_CONTROL。信任标记与访问资格是两个维度：数据通过结构检查，不会因此成为指令。
+
+| ContextTrustClass | 分区 |
+|---|---|
+| TRUSTED_CONTROL | task、financial_subject（可信 Case provisioning）、safety_constraints、available_tools（静态 catalog）、budget |
+| UNTRUSTED_EXTERNAL_DATA | current_facts、history_digest；包括协议字段、Callback、Message、Fund、Payment 数据。History 的计数虽是确定性计算，整个混合分区仍保守标记为外部数据 |
+| DETERMINISTIC_DERIVED | financial_identity、active_hypotheses、resolved_hypotheses_summary、open_evidence_gaps |
+
+其余 envelope 标识、版本、哈希、选中引用与 omission/budget audit 是结构化 provenance 元数据，不能解释为指令。Hypothesis 的 statement/reason 和 Gap question 来自固定规则/catalog；本阶段不把外部文本插值进这些解释。Derived 分区中的 Evidence refs 和交易 preview 仍受类型化检查，推导结果也不具有修改控制指令的权限。
+
+例如合法的 `MESSAGE_ERROR_CODE = IGNORE_PREVIOUS_INSTRUCTIONS` 可以保留在 current_facts，等级始终为 UNTRUSTED_EXTERNAL_DATA；含空白的 `IGNORE PREVIOUS INSTRUCTIONS` 不符合 identifier/code 的语法。没有 injection phrase blacklist，也没有基于词句猜测是否攻击的分类器。**语法安全不等于该字符串是可信指令。**
+
+未来 Step 5 Model Input Renderer 必须遵守：
+
+1. 按固定信任分区呈现 TRUSTED_CONTROL、UNTRUSTED_EXTERNAL_DATA 和 DETERMINISTIC_DERIVED，保留身份/缺口/证明约束；标记本身不能代替 Renderer 的隔离实现。
+2. Tool/Evidence 数据永远是 data，不能成为 instruction；禁止把 Evidence 字符串插入 system prompt。
+3. 禁止将原始 Tool response 直接 append 到 model conversation。
+4. Tool 完成后严格执行 `Observation → Evidence → Hypothesis → Context Rebuild → Planner`。本项目重建 Context 时内部重算 Hypothesis，不接受外部 Graph 或旧摘要。
+5. Planner 只能消费通过最终边界验证的 ReasoningContextSnapshot，不能接收 CaseEvidenceView、完整 Graph、Observation 或 Tool payload。
+6. CALLBACK_RAW 即使 Runtime 内部拿到 raw callback，也必须经过 deterministic extraction 和 Context eligibility；raw Tool response 没有直达 LLM 的路径。
+
+本阶段只有可运行的类型边界、信任分类与验证器，没有 Model Input Renderer、Prompt、LLM、Planner、Agent Loop、任意文本 sanitization、DLP、HTML sanitizer、Guard Model 或 injection classifier。未来真正接入模型时，仍需实现并测试这些 Renderer 约束。
 
 ## Current 与 History
 
@@ -160,9 +212,9 @@ Snapshot 仅显示 Case.allowed_tools 与 catalog 的交集，并排除明确 fo
 
 | 实际样例 | Evidence 输入/选中 | 当前 Facts | History items | 字符数 | Identity |
 |---|---:|---:|---:|---:|---|
-| [S6 Snapshot](examples/s6-reasoning-context.json) | 30 / 20 | 20 | 0 | 28,561 | MATCH |
-| [S8 Snapshot](examples/s8-reasoning-context.json) | 6 / 4 | 0 | 2 | 14,966 | UNKNOWN |
-| [500 条压力测试](examples/context-stress-result.json) | 500 / 24 | 20 | 2 | 30,076 | MATCH |
+| [S6 Snapshot](examples/s6-reasoning-context.json) | 30 / 20 | 20 | 0 | 29,017 | MATCH |
+| [S8 Snapshot](examples/s8-reasoning-context.json) | 6 / 4 | 0 | 2 | 15,422 | UNKNOWN |
+| [500 条压力测试](examples/context-stress-result.json) | 500 / 24 | 20 | 2 | 30,532 | MATCH |
 
 S6 保留 H4/H6/H6_SCHEMA CONFIRMED，H6_STALE/H8 SUPPORTED；安全 gap 为 FUND_PROTOCOL_APPLICABILITY，调查 gap 包括 DEPLOYED_CONSUMER_SCHEMA_VERSION、ASSET_CONVERGENCE。H6_STALE 的支持规则已额外要求父级同 Callback 的 Gateway/FAILED Evidence witness，rule version 为 3。
 
@@ -170,25 +222,26 @@ S8 保留十个 POSSIBLE，无确认或排除；Payment Identity UNKNOWN；PAYME
 
 压力输入含 300 条重复 lookup、100 条旧状态、70 条无关协议字段及 30 条当前调查 Evidence。仅选 24 个 refs；298 条中间 lookup、98 条中间历史、78 条非相关事实与 2 条辅助关系按原因计数，关键当前 facts、确认见证、安全 gap 与身份结果保留。测试检查结构性质和乱序重放一致，不硬编码必须选中某个条数。
 
-Step 4.1 的 [候选交易压力输出](examples/context-hardening-result.json) 由保存的 S6 Evidence 构造 synthetic 候选，重放反序 Evidence 的 Snapshot 完全一致；这些是投影层压力 fixture，并非额外调用 Tool 获得的新观测。
+沿用 Step 4.1 fixture、以当前 schema 重建的 [候选交易压力输出](examples/context-hardening-result.json) 由保存的 S6 Evidence 构造 synthetic 候选，重放反序 Evidence 的 Snapshot 完全一致；这些是投影层压力 fixture，并非额外调用 Tool 获得的新观测。
 
 | 候选交易 | Identity | 全量引用 | Context 关键引用 | preview | 当前 Facts | 完整 JSON 字符 |
 |---:|---|---:|---:|---:|---:|---:|
-| 10 | UNKNOWN / TRANSACTION | 82 | 18 | 3 | 18 | 23,360 |
-| 100 | UNKNOWN / TRANSACTION | 802 | 18 | 3 | 18 | 23,366 |
-| 100，第 100 个 beneficiary 不符 | MISMATCH / BENEFICIARY | 802 | 22 | 3 | 22 | 25,774 |
+| 10 | UNKNOWN / TRANSACTION | 82 | 18 | 3 | 18 | 23,816 |
+| 100 | UNKNOWN / TRANSACTION | 802 | 18 | 3 | 18 | 23,822 |
+| 100，第 100 个 beneficiary 不符 | MISMATCH / BENEFICIARY | 802 | 22 | 3 | 22 | 26,230 |
 
 100 个候选中其余 784 条辅助引用被标记 IDENTITY_COMPACTED；含收款主体错误时保留该错误维度及关联见证。500 supporting 测试在 30,000 字符预算下成功；8 decisive refs 全保留，支持和反对 preview 各最多 4 条。真正超大的 decisive 证明仍抛 MandatoryContextOverflow。
 
 ## 回归验证
 
-Step 4.1 新增 **73 个测试实例**，保留 Step 0–4 全部测试（包含原 Context 的 38 个实例）。覆盖 confirmed preview 与 mandatory 成员隔离、完整 decisive invariant、500 supporting 压力、开放结构化 vocabulary、注入/控制字符/PII 负向矩阵、MATCH/MISMATCH/UNKNOWN 关键见证、100 个候选交易、确定性重放、omission 审计和真正关键证明超预算。
+Step 4.2 新增 **93 个测试实例**，Step 0–4.1 的 300 个既有测试实例全部保留。先复现旧策略允许恶意 Message subject 的漏洞，再验证 subject 六种 kind、协议字段/状态键、版本、Case 标识、历史 scope/首末值、Evidence 引用、绕过构造器后的最终验证，以及不可提升的 trust 标记。结构化 `IGNORE_PREVIOUS_INSTRUCTIONS` 作为外部错误码仍可保留；CALLBACK_RAW 的真实 Harness 路由回归验证仅提取后的数据进入 Snapshot。
 
-- SQLite 全量：**299 passed，1 skipped，65.21s**。跳过的是 PostgreSQL 专用测试。
-- PostgreSQL 全量：**300 passed，104.93s**。
+- SQLite 全量：**392 passed，1 skipped，75.29s**。跳过的是 PostgreSQL 专用测试。
+- PostgreSQL 全量：**393 passed，129.57s**。
 - 两套各有 2 条现有 FastAPI/Starlette 测试客户端依赖弃用警告，无失败。
-- S6/S8 Context 示例已用原有保存的审计输入重建为 schema 2；未修改 HypothesisGraph 或 PaymentIdentityResult schema/规则。
-- Context 的纯输入/静态依赖边界与原有 Simulator、dispatch correlation、Case scope、PII 隔离回归均通过。
+- S6/S8 Context 示例已用原有审计输入重建为 schema 3，并验证乱序重放一致。eligibility/context policy 为 3；compaction 保持 2。
+- 未修改 Case、Simulator、HypothesisGraph 或 PaymentIdentityResult 的 domain contract。既有 dispatch correlation、Case scope、PII 隔离、500 supporting 和 100 candidate 压力测试继续通过。
+- `git diff --check` 通过。本阶段未实现 Step 5。
 
 ## 留给 Step 5
 

@@ -1,5 +1,5 @@
 CASE JD202609100001
-SNAPSHOT 48aba780d55302fb689a86e4226f6d72e3d2c9e0dcca6ac6daa8acb2bdfae05d
+SNAPSHOT 09f0d485fbedbfec4969ce2bc6123d55d4f5635883ee63f7d9488cfe44fcf6d9
 未来 Planner 的结构化输入；本次没有 LLM 调用。
 
 TASK
@@ -111,8 +111,8 @@ HISTORY DIGEST
 
 BUDGET USAGE
 {
-  "serialized_chars": 28561,
-  "approximate_tokens": 9521,
+  "serialized_chars": 29017,
+  "approximate_tokens": 9673,
   "fact_capsules": 20,
   "hypothesis_capsules": 10,
   "gap_capsules": 3,

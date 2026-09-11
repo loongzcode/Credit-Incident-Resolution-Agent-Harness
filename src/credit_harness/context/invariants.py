@@ -4,6 +4,7 @@ from .compaction import fact
 from .eligibility import MandatoryContextFactPolicy
 from .models import ReasoningContextSnapshot, GapCapsule, SafetyInvariant
 from .identity_projection import IdentityContextProjector, identity_auxiliary_refs
+from .envelope import ContextEnvelopeInvariantValidator
 
 
 class ReasoningContextInvariantError(ValueError):
@@ -16,7 +17,7 @@ class ReasoningContextInvariantValidator:
             if not condition:
                 raise ReasoningContextInvariantError(message)
         require(type(snapshot) is ReasoningContextSnapshot, "invalid snapshot type")
-        ReasoningContextSnapshot.model_validate(snapshot.model_dump())
+        ContextEnvelopeInvariantValidator().validate(snapshot)
         ids = {e.evidence_id for e in index.evidence}
         selected = set(snapshot.selected_evidence_refs)
         require(selected <= ids, "foreign evidence reference")

@@ -1,22 +1,24 @@
 from enum import StrEnum
-from typing import Annotated
+from typing import Annotated, Literal
 
-from pydantic import AwareDatetime, Field, StrictBool, StrictInt, StrictStr
+from pydantic import AwareDatetime, Field, StrictBool, StrictInt, StrictStr, TypeAdapter, model_validator
 
 from credit_harness.domain.models import Model
 from credit_harness.domain.enums import Completeness, Freshness, SourceKind, ToolName, ObservationStatus
 from credit_harness.evidence.models import ClaimType, SubjectKind
 from credit_harness.hypotheses.models import HypothesisId, HypothesisKind, HypothesisStatus, GapStatus, PriorityClass, UncollectedClaimType
 from credit_harness.identity.models import FinancialSubject, IdentityDimension, IdentityMatch
-from .structured_values import OpaqueBusinessRef
+from .structured_values import OpaqueBusinessRef, OpaqueSubjectRef, ContextReference, StructuredVersion, StructuredFieldPath
+from .value_contracts import validate_claim_value, validate_subject_field
 
-CONTEXT_SCHEMA_VERSION = "2"
-ELIGIBILITY_POLICY_VERSION = "2"
+CONTEXT_SCHEMA_VERSION = "3"
+ELIGIBILITY_POLICY_VERSION = "3"
 COMPACTION_POLICY_VERSION = "2"
-CONTEXT_POLICY_VERSION = "2"
+CONTEXT_POLICY_VERSION = "3"
 Hash = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 Count = Annotated[StrictInt, Field(ge=0)]
 FactValue = StrictBool | StrictInt | StrictStr
+_BUSINESS_REFERENCE = TypeAdapter(OpaqueBusinessRef)
 
 
 class InformationClass(StrEnum):
@@ -46,8 +48,8 @@ class PaymentIdentityContext(Model):
     evidence_ref_count: Count
     evidence_refs_digest: Hash
     # Only critical proof refs, not all candidate auxiliary fields.
-    evidence_refs: tuple[str, ...]
-    verification_version: str
+    evidence_refs: tuple[ContextReference, ...]
+    verification_version: StructuredVersion
 
     @property
     def transaction_refs(self):
@@ -57,15 +59,23 @@ class PaymentIdentityContext(Model):
 
 class FactSubject(Model):
     kind: SubjectKind
-    identifier: str
-    field: str | None
-    internal_order_id: str
+    identifier: OpaqueSubjectRef
+    field: StructuredFieldPath | None
+    internal_order_id: OpaqueSubjectRef
+
+    @model_validator(mode="after")
+    def subject_contract(self):
+        # All six subject kinds are covered by identifier's OpaqueSubjectRef.
+        # Transaction/request additionally retain the financial reference grammar.
+        if self.kind in (SubjectKind.TRANSACTION, SubjectKind.FUND_REQUEST):
+            _BUSINESS_REFERENCE.validate_python(self.identifier)
+        return self
 
 
 class FactSource(Model):
     tool: ToolName
     source_kind: SourceKind
-    source_version: str | None
+    source_version: StructuredVersion | None
     source_as_of: AwareDatetime | None
 
 
@@ -78,8 +88,14 @@ class FactCapsule(Model):
     freshness: Freshness
     completeness: Completeness
     source: FactSource
-    protocol_version: str | None
-    evidence_refs: tuple[str, ...]
+    protocol_version: StructuredVersion | None
+    evidence_refs: tuple[ContextReference, ...]
+
+    @model_validator(mode="after")
+    def claim_contract(self):
+        validate_claim_value(self.claim_type, self.value)
+        validate_subject_field(self.claim_type, self.subject.field)
+        return self
 
 
 class HypothesisCapsule(Model):
@@ -87,14 +103,14 @@ class HypothesisCapsule(Model):
     kind: HypothesisKind
     statement: str
     status: HypothesisStatus
-    decisive_evidence_refs: tuple[str, ...]
-    supporting_ref_preview: tuple[str, ...] = ()
-    contradicting_ref_preview: tuple[str, ...] = ()
+    decisive_evidence_refs: tuple[ContextReference, ...]
+    supporting_ref_preview: tuple[ContextReference, ...] = ()
+    contradicting_ref_preview: tuple[ContextReference, ...] = ()
     supporting_ref_count: Count
     contradicting_ref_count: Count
     supporting_refs_digest: Hash
     contradicting_refs_digest: Hash
-    open_gap_ids: tuple[str, ...]
+    open_gap_ids: tuple[ContextReference, ...]
     reason: str
 
 
@@ -102,29 +118,29 @@ class ResolvedHypothesisSummary(Model):
     hypothesis_id: HypothesisId
     statement: str
     status: HypothesisStatus
-    decisive_evidence_refs: tuple[str, ...]
+    decisive_evidence_refs: tuple[ContextReference, ...]
 
 
 class GapCapsule(Model):
-    gap_id: str
+    gap_id: ContextReference
     question: str
     required_claim_types: tuple[ClaimType | UncollectedClaimType, ...]
     priority: PriorityClass
     status: GapStatus
     related_hypotheses: tuple[HypothesisId, ...]
-    evidence_refs: tuple[str, ...]
+    evidence_refs: tuple[ContextReference, ...]
 
 
 class ReferenceRange(Model):
     count: Count
-    first_ref: str
-    latest_ref: str
+    first_ref: ContextReference
+    latest_ref: ContextReference
     range_digest: Hash
 
 
 class LookupScope(Model):
-    internal_order_id: str
-    protocol_version: str | None
+    internal_order_id: OpaqueSubjectRef
+    protocol_version: StructuredVersion | None
     effective_at: AwareDatetime | None
 
 
@@ -142,13 +158,20 @@ class RepeatedLookupGroup(Model):
 class HistoricalStateGroup(Model):
     claim_type: ClaimType
     subject: FactSubject
-    protocol_version: str | None
+    protocol_version: StructuredVersion | None
     first_observed_value: FactValue
     last_observed_value: FactValue
     first_business_time: AwareDatetime
     last_business_time: AwareDatetime
     last_freshness: Freshness
     references: ReferenceRange
+
+    @model_validator(mode="after")
+    def historical_claim_contract(self):
+        validate_claim_value(self.claim_type, self.first_observed_value)
+        validate_claim_value(self.claim_type, self.last_observed_value)
+        validate_subject_field(self.claim_type, self.subject.field)
+        return self
 
 
 class HistoryDigest(Model):
@@ -249,15 +272,42 @@ class ContextBudgetUsage(Model):
     estimator: str = "unicode_chars_div_3_ceiling_v1"
 
 
+class ContextTrustClass(StrEnum):
+    TRUSTED_CONTROL = "TRUSTED_CONTROL"
+    UNTRUSTED_EXTERNAL_DATA = "UNTRUSTED_EXTERNAL_DATA"
+    DETERMINISTIC_DERIVED = "DETERMINISTIC_DERIVED"
+
+
+class ContextSectionTrust(Model):
+    # Literal fields prevent callers from promoting facts to instructions.
+    task: Literal[ContextTrustClass.TRUSTED_CONTROL] = ContextTrustClass.TRUSTED_CONTROL
+    financial_subject: Literal[ContextTrustClass.TRUSTED_CONTROL] = ContextTrustClass.TRUSTED_CONTROL
+    safety_constraints: Literal[ContextTrustClass.TRUSTED_CONTROL] = ContextTrustClass.TRUSTED_CONTROL
+    available_tools: Literal[ContextTrustClass.TRUSTED_CONTROL] = ContextTrustClass.TRUSTED_CONTROL
+    budget: Literal[ContextTrustClass.TRUSTED_CONTROL] = ContextTrustClass.TRUSTED_CONTROL
+    current_facts: Literal[ContextTrustClass.UNTRUSTED_EXTERNAL_DATA] = ContextTrustClass.UNTRUSTED_EXTERNAL_DATA
+    history_digest: Literal[ContextTrustClass.UNTRUSTED_EXTERNAL_DATA] = ContextTrustClass.UNTRUSTED_EXTERNAL_DATA
+    financial_identity: Literal[ContextTrustClass.DETERMINISTIC_DERIVED] = ContextTrustClass.DETERMINISTIC_DERIVED
+    active_hypotheses: Literal[ContextTrustClass.DETERMINISTIC_DERIVED] = ContextTrustClass.DETERMINISTIC_DERIVED
+    resolved_hypotheses_summary: Literal[ContextTrustClass.DETERMINISTIC_DERIVED] = ContextTrustClass.DETERMINISTIC_DERIVED
+    open_evidence_gaps: Literal[ContextTrustClass.DETERMINISTIC_DERIVED] = ContextTrustClass.DETERMINISTIC_DERIVED
+
+
+class CaseContextIdentifiers(Model):
+    case_id: OpaqueSubjectRef
+    internal_order_id: OpaqueSubjectRef
+
+
 class ReasoningContextSnapshot(Model):
     snapshot_id: Hash
-    case_id: str
-    internal_order_id: str
-    context_schema_version: str
-    eligibility_policy_version: str
-    compaction_policy_version: str
-    context_policy_version: str
-    hypothesis_rule_version: str
+    section_trust: ContextSectionTrust = ContextSectionTrust()
+    case_id: OpaqueSubjectRef
+    internal_order_id: OpaqueSubjectRef
+    context_schema_version: StructuredVersion
+    eligibility_policy_version: StructuredVersion
+    compaction_policy_version: StructuredVersion
+    context_policy_version: StructuredVersion
+    hypothesis_rule_version: StructuredVersion
     assembled_at: AwareDatetime
     case_fingerprint: Hash
     evidence_fingerprint: Hash
@@ -275,6 +325,6 @@ class ReasoningContextSnapshot(Model):
     budget: RuntimeBudgetContext
     available_tools: tuple[ToolCapability, ...]
     history_digest: HistoryDigest
-    selected_evidence_refs: tuple[str, ...]
+    selected_evidence_refs: tuple[ContextReference, ...]
     omitted_evidence_summary: OmittedEvidenceSummary
     context_budget_usage: ContextBudgetUsage
