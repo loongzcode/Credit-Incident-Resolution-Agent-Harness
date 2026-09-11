@@ -1,6 +1,6 @@
 # Step 4.2 — Full Context Envelope Eligibility / Model Trust Boundary
 
-本组件的边界是 `Case + Evidence → Immutable Snapshot`，只做确定性计算。Step 5 的 [Planner](planner.md) 已消费此结构化边界，但仍未执行建议或实现 Agent Loop、Write Tool、Repair。Context Demo 仍只做人工查询与确定性投影。
+本组件的边界是 `Case + Evidence → Immutable Snapshot`，只做确定性计算。Step 5 的 [Planner](planner.md) 消费此边界；独立 [Step 6 Runtime](agent-runtime.md) 在受控只读查询前后重新装配 Snapshot。Context 本身没有执行或持久化依赖，Context Demo 继续只做人工查询与确定性投影。下文分阶段记录保留历史基线；当前 Graph aggregate ruleset 为 4，见 Agent Runtime 的 Gap 入口补全说明。
 
 ## 为什么独立于 diagnostic view
 

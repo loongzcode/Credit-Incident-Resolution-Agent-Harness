@@ -214,8 +214,8 @@ def test_hypothesis_recompute_is_deterministic(harness):
 
 def test_ruleset_version_is_present(harness):
     _, _, graph, _, _, _ = investigate(harness)
-    assert graph.rule_version == HYPOTHESIS_RULESET_VERSION == "3"
-    assert all(s.rule_version == "3" for s in graph.hypotheses)
+    assert graph.rule_version == HYPOTHESIS_RULESET_VERSION == "4"
+    assert all(s.rule_version == "4" for s in graph.hypotheses)
     assert all(r.rule_id.endswith(".v3") for r in graph.relations)
 
 

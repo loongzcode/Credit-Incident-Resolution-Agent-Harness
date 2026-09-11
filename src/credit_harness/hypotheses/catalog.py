@@ -1,7 +1,8 @@
 from credit_harness.evidence.models import ClaimType as C
 from .models import HypothesisDefinition, HypothesisId as H, HypothesisKind as K
 
-HYPOTHESIS_RULESET_VERSION = "3"
+# Aggregate graph/gap ruleset v4; confirmation/elimination rules remain v3.
+HYPOTHESIS_RULESET_VERSION = "4"
 
 
 def definition(h, kind, statement, description, claims, *, parent=None, deferred=False):

@@ -2,7 +2,7 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from credit_harness.cases.models import CaseAccessError
-from credit_harness.cases.repository import CallState, CaseRepository, hydrate
+from credit_harness.cases.repository import CallState, CaseRepository, hydrate, next_update_time
 from credit_harness.cases.tables import CaseCallRow, CaseRow
 from credit_harness.persistence.store import ObservationRow
 from credit_harness.tools.contracts import Observation, ToolQuery
@@ -66,6 +66,9 @@ class EvidenceRepository:
                 raise ProvenanceError("missing or mismatched dispatch correlation")
             case = hydrate(case_row)
             evidence = self.extractor.extract(case, raw.observation, query=raw.request)
+            # Publication invalidates proposals made before this evidence commit,
+            # including a response from a call reserved before that proposal.
+            case_row.updated_at = next_update_time(case.updated_at)
             call.observation_id = row.id
             call.state = CallState.OBSERVED.value
             session.flush()

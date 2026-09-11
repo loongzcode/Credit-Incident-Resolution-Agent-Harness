@@ -56,7 +56,7 @@ CAUSAL 表示原因候选，STATE 表示现实状态模式，SEMANTIC_GUARD 表�
 
 每次从完整输入重算，不读取先前状态；证据撤回、后续失败、规则升级均可改变结果。没有 `previous_status + new_evidence` 作为唯一真相，也没有聊天记忆。确认 Hypothesis 不是最终资金验收、写权限或结案授权。
 
-`HYPOTHESIS_RULESET_VERSION = "3"`，State 保存该版本，Relation 保存 `.v3` rule_id。`input_fingerprint` 对规范化 Case、按 ID 排序去重的完整 Evidence 和版本计算 SHA-256。输入乱序或重复相同 Evidence，输出不变；同 ID 内容互异则拒绝。
+当前 `HYPOTHESIS_RULESET_VERSION = "4"`，State 保存该版本；confirmation/elimination 与 Relation 继续使用 `.v3` rule_id。Step 6 只补全首次 Callback 调查的 Gap 入口：完整本单 Payment Identity witness 成立后即可提出 Gateway 观测缺口，不能等查过 Gateway 才提出问题。确认规则和身份契约没有放宽，后文 v3 及旧示例保留历史记录。`input_fingerprint` 对规范化 Case、按 ID 排序去重的完整 Evidence 和版本计算 SHA-256。输入乱序或重复相同 Evidence，输出不变；同 ID 内容互异则拒绝。
 
 `evaluated_at` 是**逻辑水位**：最大 Evidence.observed_at，转 UTC；无证据时用 Case.created_at。它不是实际机器运行时间。这个设计使同一输入连时间字段也可完全重现；未来实际执行审计时间应由外层另记。
 

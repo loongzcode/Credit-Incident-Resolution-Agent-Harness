@@ -49,7 +49,9 @@ def derive_gaps(index, results) -> tuple[EvidenceGap, ...]:
         gap("TRACE_REQUEST_STATUS", (H.H1,), "原请求是否有完整可信的出站事实？", (C.REQUEST_SENT,),
             reason="Trace 缺失或质量不足时，出站状态未知。")
 
-    gateway_context = index.all(C.CALLBACK_GATEWAY_RECEIVED) or any(
+    # A proven order payment also raises the downstream question BEFORE the
+    # first gateway query. Otherwise a gap-driven planner cannot begin it.
+    gateway_context = facts.settled_witness() or index.all(C.CALLBACK_GATEWAY_RECEIVED) or any(
         e.tool.value in ("get_callback_gateway", "get_callback_raw") for e in index.all(C.SOURCE_LOOKUP_STATUS)
     )
     if gateway_context:

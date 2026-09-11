@@ -2,7 +2,7 @@
 
 接管资深信贷生产支持工程师对“三方放款状态异常订单”的调查、受控修复、故障恢复和独立验收工作。
 
-**当前状态：已实现 Simulator、Case Runtime、Evidence Store、Hypothesis、Context Boundary，以及 Step 5 LLM Next Best Action Planner。** 模型只提出候选，Harness 独立验证、硬过滤、确定性排序后返回 ValidatedActionProposal 并停止。默认 Fake 离线运行，可选 OpenAI 结构化输出适配器。Agent Loop、修复 Runtime、审批及在线 Evaluator 尚未实现；下文的整体项目契约仍是后续建设目标。
+**当前状态：已实现 Simulator、Case Runtime、Evidence Store、Hypothesis、Context Boundary、LLM Planner，以及 Step 6 只读调查循环。** 模型只提出候选；Harness 验证、硬过滤、排序后，由独立 Runtime 重建当前 Snapshot、再次校验并通过数据库 CAS，每轮最多执行一个只读 Tool。默认 Fake 离线运行，可选 OpenAI 结构化输出适配器。修复、审批、独立 Evaluator 和 Crash Recovery 尚未实现；下文整体项目契约仍包含后续建设目标。
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。
 
@@ -14,7 +14,9 @@ Step 4–4.2 的上下文边界见 [Reasoning Context 文档](docs/reasoning-con
 
 身份数据均为 synthetic test fixtures。Case 与 Evidence 使用 opaque refs；完整支付身份契约核对金额、币种、请求、客户、收款主体和账户。Raw PII fixture 位于独立内部边界，不进入 Tool DTO、Evidence 或 Graph。
 
-Step 5 见 [Planner 文档](docs/planner.md)。运行 `python scripts/demo_planner.py --provider fake --stage all` 查看六个实际调查阶段的模型候选、Harness 拒绝、排序与选择。模型只消费分区且已 alias 的 Snapshot 投影，没有 Tool 权限。可选 Provider 使用环境变量 PLANNER_MODEL / OPENAI_API_KEY；在线测试默认跳过。Step 6 尚未实现。
+Step 5 见 [Planner 文档](docs/planner.md)。运行 `python scripts/demo_planner.py --provider fake --stage all` 查看六个实际调查阶段的模型候选、Harness 拒绝、排序与选择。模型只消费分区且已 alias 的 Snapshot 投影，没有 Tool 权限。可选 Provider 使用环境变量 PLANNER_MODEL / OPENAI_API_KEY；在线测试默认跳过。
+
+Step 6 见 [Agent Runtime 文档](docs/agent-runtime.md)。运行 `python scripts/demo_agent_loop.py --scenario S6 --provider fake` 或 `--scenario S8`，查看从无 Evidence 开始的自主调查、执行前再校验、DB CAS、知识变化和有界停止。WAIT 只暂停并返回，ESCALATE 只更新 Case；Agent 永不 CLOSED，不直接向模型传入 Tool Response。Fake 根据当前 ModelInputBundle 生成建议，用于确定性 Runtime 验收，不宣称已验证真实模型推理质量。
 
 第一阶段全部使用 Simulator。目标是以可本地运行的系统证明生产关键约束：真实状态与工具返回分离、证据驱动调查、权限控制、幂等执行、崩溃恢复和独立验收。
 

@@ -1,5 +1,7 @@
 # Step 5 — Proposal-only Next Best Action Planner
 
+当前仓库已在独立 [Step 6 Agent Runtime](agent-runtime.md) 消费选中建议：执行前重新加载 Case/Evidence、重建 Snapshot、再次校验并通过 DB CAS。**PlannerService 自身仍在返回 Proposal 后 STOP**，包内没有执行器或 Agent 依赖。下文 Step 5 的未实现项和测试数字属于当时阶段记录。
+
 本阶段首次提供可选 LLM Provider。模型只建议下一步，Harness 验证并选择建议，随后停止。默认 Fake 模型离线运行，所有身份和金融数据均为 synthetic fixtures。
 
 ```text

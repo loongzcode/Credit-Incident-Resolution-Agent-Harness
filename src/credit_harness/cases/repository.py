@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import StrEnum
 from uuid import uuid4
 
@@ -10,6 +10,7 @@ from credit_harness.tools.contracts import ToolQuery
 from credit_harness.domain.enums import ToolName
 from .models import Case, CaseAccessError, CasePolicyError, CaseStatus
 from .tables import CaseCallRow, CaseRow
+from .preconditions import AgentExecutionPrecondition, AgentPreconditionFailed
 
 
 class CallState(StrEnum):
@@ -20,6 +21,23 @@ class CallState(StrEnum):
 
 def utc_now():
     return datetime.now(timezone.utc)
+
+
+def next_update_time(previous):
+    # A revision represented by an ISO timestamp, monotonic even with a frozen clock.
+    return max(utc_now(), previous + timedelta(microseconds=1)).isoformat()
+
+
+def execution_conditions(case_id, tenant_id, precondition):
+    if type(precondition) is not AgentExecutionPrecondition:
+        raise AgentPreconditionFailed("typed execution precondition required")
+    if precondition.case_id != case_id or precondition.tenant_id != tenant_id:
+        raise AgentPreconditionFailed("execution precondition scope mismatch")
+    return (
+        CaseRow.status == precondition.expected_case_status.value,
+        CaseRow.used_tool_calls == precondition.expected_used_tool_calls,
+        CaseRow.updated_at == precondition.expected_case_updated_at.isoformat(),
+    )
 
 
 def hydrate(row: CaseRow) -> Case:
@@ -68,7 +86,9 @@ class CaseRepository:
             ))
         return case
 
-    def reserve_call(self, case_id: str, tool: ToolName, query: ToolQuery) -> tuple[Case, str]:
+    def reserve_call(self, case_id: str, tool: ToolName, query: ToolQuery, *,
+                     precondition: AgentExecutionPrecondition | None = None) -> tuple[Case, str]:
+        conditions = () if precondition is None else execution_conditions(case_id, self.tenant_id, precondition)
         with Session(self.engine) as session, session.begin():
             case = hydrate(self._row(session, case_id))
             if query.internal_order_id not in case.scope.allowed_order_ids:
@@ -83,11 +103,14 @@ class CaseRepository:
                 CaseRow.case_id == case_id, CaseRow.tenant_id == self.tenant_id,
                 CaseRow.status.in_([CaseStatus.NEW.value, CaseStatus.INVESTIGATING.value]),
                 CaseRow.used_tool_calls < CaseRow.max_tool_calls,
+                *conditions,
             ).values(used_tool_calls=CaseRow.used_tool_calls + 1,
-                     status=CaseStatus.INVESTIGATING.value, updated_at=utc_now().isoformat())
+                     status=CaseStatus.INVESTIGATING.value, updated_at=next_update_time(case.updated_at))
                 .returning(CaseRow.used_tool_calls).execution_options(synchronize_session=False))
             sequence = result.scalar_one_or_none()
             if sequence is None:
+                if precondition is not None:
+                    raise AgentPreconditionFailed("execution precondition changed; no dispatch reserved")
                 raise CasePolicyError("case paused/closed or tool budget exhausted")
             call_id = str(uuid4())
             session.add(CaseCallRow(call_id=call_id, case_id=case_id, sequence=sequence,
@@ -108,11 +131,27 @@ class CaseRepository:
         if status not in (CaseStatus.WAITING, CaseStatus.ESCALATED):
             raise CasePolicyError("only WAITING or ESCALATED is supported; closure is unavailable")
         with Session(self.engine) as session, session.begin():
-            self._row(session, case_id)
+            row = self._row(session, case_id)
             result = session.execute(update(CaseRow).where(
                 CaseRow.case_id == case_id, CaseRow.tenant_id == self.tenant_id,
                 CaseRow.status != CaseStatus.CLOSED.value,
-            ).values(status=status.value, updated_at=utc_now().isoformat()))
+            ).values(status=status.value, updated_at=next_update_time(datetime.fromisoformat(row.updated_at))))
             if result.rowcount != 1:
                 raise CasePolicyError("closed case")
+        return self.get(case_id)
+
+    def pause_if_current(self, case_id: str, status: CaseStatus, *,
+                         precondition: AgentExecutionPrecondition) -> Case:
+        if status not in (CaseStatus.WAITING, CaseStatus.ESCALATED):
+            raise CasePolicyError("agent may only wait or escalate")
+        conditions = execution_conditions(case_id, self.tenant_id, precondition)
+        with Session(self.engine) as session, session.begin():
+            row = self._row(session, case_id)
+            result = session.execute(update(CaseRow).where(
+                CaseRow.case_id == case_id, CaseRow.tenant_id == self.tenant_id,
+                CaseRow.status.in_([CaseStatus.NEW.value, CaseStatus.INVESTIGATING.value]),
+                *conditions,
+            ).values(status=status.value, updated_at=next_update_time(datetime.fromisoformat(row.updated_at))))
+            if result.rowcount != 1:
+                raise AgentPreconditionFailed("case changed; pause not committed")
         return self.get(case_id)
