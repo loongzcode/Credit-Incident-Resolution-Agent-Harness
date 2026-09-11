@@ -297,7 +297,7 @@ def test_reason_summary_does_not_affect_policy(snapshot):
 
 
 def test_no_available_tool_can_escalate(inputs):
-    s = assemble(inputs)
+    s = reseal(assemble(inputs), available_tools=())
     c = escalation(s, "DEPLOYED_CONSUMER_SCHEMA_VERSION", reason_code=ReasonCode.NO_AVAILABLE_TOOL,
                    requested_capability=U.DEPLOYED_CONSUMER_SCHEMA_VERSION)
     assert isinstance(decide(s, c).selected_action.candidate, EscalateCandidate)

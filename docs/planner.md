@@ -90,7 +90,13 @@ Risk 不参与评分。新颖覆盖是可检查的启发式，不是精确的信
 
 Step 5.1 的 Safety-Critical Omission Gate 检查完整 Snapshot，而非模型候选集合：只要存在 OPEN + SAFETY_CRITICAL Gap，且 available_tools 中至少一个 capability 能 address，它就是 actionable safety gap。未实际覆盖至少一个这样的 Gap 的 CALL_TOOL 在排名前被拒绝，拒绝码为 ACTIONABLE_SAFETY_GAP_NOT_ADDRESSED。只添加 safety target ID，但 Tool 没有对应能力，也不能通过。
 
-Actionable 按 Snapshot 的能力描述判断，不因模型省略候选而消失；预算、连续失败等仍由各自独立硬约束拒绝。没有 capability 能 address 的 safety gap 不触发此 Gate。模型未提出合法 safety call 时，合法 WAIT/ESCALATE 可继续排名；否则 selected_action=null。Harness 不补造遗漏的 PAYMENT 或其他 Tool Candidate。
+Actionable 按 Snapshot 的能力描述判断，不因模型省略候选而消失；预算、连续失败等仍由各自独立硬约束拒绝。没有 capability 能 address 的 safety gap 不触发此 Gate。模型未提出合法 safety call 时，针对至少一个 actionable safety gap 的合法 WAIT/ESCALATE 可继续排名；否则 selected_action=null。Harness 不补造遗漏的 PAYMENT 或其他 Tool Candidate。
+
+Step 5.1 final patch 将相同的 actionable safety 集合用于三个动作类型：CALL_TOOL 必须通过自身 capability 实际 address 至少一个该 Gap；WAIT/ESCALATE 的 target_gap_ids 至少包含一个该 Gap，否则硬拒绝 ACTIONABLE_SAFETY_GAP_NOT_TARGETED。只处理其他低优先级缺口的等待或升级不能被选中。
+
+采用保守规则：即使预算耗尽、调查被禁止、重复失败或历史不完整阻止了所有安全查询，WAIT/ESCALATE 仍须指向安全缺口。不实现“所有 CALL 已被其他政策阻断”的豁免逻辑。无 actionable safety gap 时，此额外限制不生效；原有 target 存在性、capability binding 与 reason 一致性检查继续生效。
+
+例如完整 S6 中，单独针对 DEPLOYED_CONSUMER_SCHEMA_VERSION 的 NO_AVAILABLE_TOOL 升级虽然满足 capability binding，仍会因遗漏可调查的 FUND_PROTOCOL_APPLICABILITY safety gap 被拒绝。不能把“某一个非安全 Gap 缺工具”当成忽略安全缺口的理由。
 
 WAIT/ESCALATE 对已被合法 CALL 覆盖的同一 Gap 不抢先；对没有合法候选覆盖的更高优先级缺口，可胜过低优先级调查。CALL_TOOL 不是无条件高于 ESCALATE。排序只比较硬过滤后剩下的模型候选，不自行生成 Tool Call。
 
@@ -100,7 +106,7 @@ EscalateCandidate.requested_capability 非空时，必须是 UncollectedClaimTyp
 
 NO_AVAILABLE_TOOL 也由 Harness 检查：所有 target gap 都必须没有 available capability 能 address。只要其中一个可 address，就拒绝 ESCALATION_REASON_INCONSISTENT；混合可解决和不可解决的 target 应拆开表达。其他 reason_code 不因此获得额外权限，reason_summary 始终不参与判断。
 
-本补丁把 PLANNER_POLICY_VERSION 从 1 升为 2，Decision、ValidatedActionProposal、Audit 与 decision hash 随之绑定新策略。Ranking、输入 Snapshot、执行边界保持原设计。
+Step 5.1 初始补丁将 PLANNER_POLICY_VERSION 从 1 升为 2；Safety Fallback Target Integrity final patch 再升至 3。Decision、ValidatedActionProposal、Audit 与 decision hash 随之绑定新策略。Ranking、输入 Snapshot、执行边界保持原设计。
 
 ## Repeated Query Protection / WAIT / ESCALATE
 
@@ -166,7 +172,7 @@ Step 5 终点是 ValidatedActionProposal。Step 6 才能在重新校验实时 Ca
 - S6/S8 Context 使用原保存 inputs 重建为 schema 4，反序重放结果一致；六阶段 Planner Demo 通过真实 Simulator/Harness 路由重新生成。
 - `git diff --check` 通过。模型成功返回与 Timeout 路径均断言未执行 Tool、未修改 Case/Evidence；Planner 包的依赖测试禁止执行器/Simulator/Tool Client 引入。
 
-## Step 5.1 验收
+## Step 5.1 历史验收（policy 2）
 
 Provider 离线测试明确使用 `pytest.importorskip("httpx")` 与真实 `httpx.MockTransport`。本地已安装 openai 3.11.0、httpx 0.28.1；没有更换 SDK 或修改 Provider 实现。测试断言只发出一次被 MockTransport 截获的 HTTP 请求，启用 strict JSON Schema、未注册业务 Tool，并完成响应解析、Harness 选择与 usage 审计；在线 LLM 测试单独跳过。
 
@@ -179,4 +185,15 @@ Provider 离线测试明确使用 `pytest.importorskip("httpx")` 与真实 `http
 - PostgreSQL 全量：506 passed、1 skipped，189.19 秒；仅跳过在线 LLM。
 - `pytest -m llm`：1 skipped、506 deselected；本次未调用真实模型。
 
-以上为 policy 2 的当前验收结果；上面的 policy 1 数字及六阶段 JSON 保留为 Step 5 历史记录。本阶段没有新增 Tool 执行入口、Agent Loop 或 Step 6 功能。
+以上为 policy 2 的历史验收结果；上面的 policy 1 数字及六阶段 JSON 保留为 Step 5 历史记录。本阶段没有新增 Tool 执行入口、Agent Loop 或 Step 6 功能。
+
+## Step 5.1 final patch：Safety Fallback Target Integrity
+
+PLANNER_POLICY_VERSION 升至 3，Decision、ValidatedActionProposal 与 Audit 绑定新策略；Ranking、Provider 与执行边界不变。新增 11 个测试实例，覆盖 WAIT/ESCALATE 忽略安全目标时拒绝、正确指向安全目标时允许、预算阻断下仍保留目标约束、混合目标、无 actionable safety 的场景，以及 S6 部署版本升级不能挤占资金协议安全缺口。
+
+保留“模型没有提出合法 safety CALL，针对该 safety gap 的 WAIT/ESCALATE 可以被选择”的行为。所有候选均被拒绝时，selected_action=None，排名为空，不生成替代候选。原部署版本升级的允许测试使用无 actionable safety capability 的 Snapshot，独立验证升级 capability 绑定；另有完整 S6 的拒绝回归。
+
+- Planner selection / Planner / Provider 回归：105 passed、1 skipped，9.38 秒；只跳过在线 LLM。
+- SQLite full suite：516 passed、2 skipped，126.81 秒；跳过 PostgreSQL 专用测试与在线 LLM。
+- PostgreSQL full suite：517 passed、1 skipped，174.24 秒；仅跳过在线 LLM。
+- `git diff --check` 通过；两套全量各有一条既有 Starlette/AnyIO 弃用警告。本补丁未新增 Tool 执行或候选生成路径。

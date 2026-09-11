@@ -76,10 +76,20 @@ def test_escalation_capability_must_match_target_gap(snapshot):
 
 
 def test_deployed_schema_escalation_matches_deployed_schema_gap(inputs):
-    s = assemble(inputs)
+    s = reseal(assemble(inputs), available_tools=())
     candidate = escalation(s, "DEPLOYED_CONSUMER_SCHEMA_VERSION", requested_capability=U.DEPLOYED_CONSUMER_SCHEMA_VERSION,
                            reason_code=ReasonCode.NO_AVAILABLE_TOOL)
     assert decide(s, candidate).selected_action.candidate == candidate
+
+
+def test_deployed_schema_escalation_cannot_omit_open_fund_protocol_safety(inputs):
+    s = assemble(inputs)
+    candidate = escalation(s, "DEPLOYED_CONSUMER_SCHEMA_VERSION", requested_capability=U.DEPLOYED_CONSUMER_SCHEMA_VERSION,
+                           reason_code=ReasonCode.NO_AVAILABLE_TOOL)
+    assert CandidateValidator().validate(s, candidate) == ()
+    result = decide(s, candidate)
+    assert result.selected_action is None
+    assert result.rejected_candidates[0].reason_codes == (R.ACTIONABLE_SAFETY_GAP_NOT_TARGETED,)
 
 
 def test_deployed_schema_capability_cannot_be_requested_for_payment_gap(snapshot):
@@ -90,7 +100,7 @@ def test_deployed_schema_capability_cannot_be_requested_for_payment_gap(snapshot
 def test_escalation_capability_can_match_one_of_multiple_targets(inputs):
     s = assemble(inputs)
     candidate = escalation(s, "DEPLOYED_CONSUMER_SCHEMA_VERSION", requested_capability=U.DEPLOYED_CONSUMER_SCHEMA_VERSION,
-                           target_gap_ids=(gap(s, "ASSET_CONVERGENCE"), gap(s, "DEPLOYED_CONSUMER_SCHEMA_VERSION")))
+                           target_gap_ids=(gap(s, "FUND_PROTOCOL_APPLICABILITY"), gap(s, "DEPLOYED_CONSUMER_SCHEMA_VERSION")))
     assert decide(s, candidate).selected_action.candidate == candidate
 
 
@@ -119,3 +129,65 @@ def test_no_available_tool_reason_rejects_mixed_solvable_targets(inputs):
     candidate = escalation(s, "DEPLOYED_CONSUMER_SCHEMA_VERSION", reason_code=ReasonCode.NO_AVAILABLE_TOOL,
                            target_gap_ids=(gap(s, "ASSET_CONVERGENCE"), gap(s, "DEPLOYED_CONSUMER_SCHEMA_VERSION")))
     assert R.ESCALATION_REASON_INCONSISTENT in decide(s, candidate).rejected_candidates[0].reason_codes
+
+
+def wait_for(snapshot, target):
+    return WaitCandidate(candidate_id="wait", target_gap_ids=(gap(snapshot, target),),
+                         reason_code=ReasonCode.INSUFFICIENT_EVIDENCE, suggested_wait_seconds=60,
+                         reason_summary="Await evidence for the target gap.")
+
+
+def test_wait_cannot_starve_actionable_safety_gap(snapshot):
+    candidate = wait_for(snapshot, "ASSET_CONVERGENCE")
+    result = decide(snapshot, candidate)
+    assert result.selected_action is None
+    assert result.valid_candidates == () and result.ranking_details == ()
+    assert len(result.rejected_candidates) == 1
+    assert result.rejected_candidates[0].candidate == candidate
+    assert result.rejected_candidates[0].reason_codes == (R.ACTIONABLE_SAFETY_GAP_NOT_TARGETED,)
+
+
+def test_escalate_cannot_starve_actionable_safety_gap(snapshot):
+    candidate = escalation(snapshot, "ASSET_CONVERGENCE")
+    result = decide(snapshot, candidate)
+    assert result.selected_action is None
+    assert result.valid_candidates == () and result.ranking_details == ()
+    assert len(result.rejected_candidates) == 1
+    assert result.rejected_candidates[0].candidate == candidate
+    assert result.rejected_candidates[0].reason_codes == (R.ACTIONABLE_SAFETY_GAP_NOT_TARGETED,)
+
+
+def test_wait_targeting_actionable_safety_gap_is_allowed(snapshot):
+    candidate = wait_for(snapshot, "PAYMENT_FINALITY")
+    result = decide(snapshot, asset_call(snapshot), candidate)
+    assert result.selected_action.candidate == candidate
+    assert [p.candidate for p in result.valid_candidates] == [candidate]
+
+
+def test_escalate_targeting_actionable_safety_gap_is_allowed(snapshot):
+    candidate = escalation(snapshot, "PAYMENT_FINALITY")
+    result = decide(snapshot, asset_call(snapshot), candidate)
+    assert result.selected_action.candidate == candidate
+    assert [p.candidate for p in result.valid_candidates] == [candidate]
+
+
+@pytest.mark.parametrize("factory", [wait_for, escalation])
+def test_fallback_still_targets_safety_when_budget_blocks_calls(snapshot, factory):
+    s = reseal(snapshot, budget=snapshot.budget.model_copy(update={"remaining_tool_calls": 0, "investigation_allowed": False}))
+    wrong, safety = factory(s, "ASSET_CONVERGENCE"), factory(s, "PAYMENT_FINALITY")
+    assert decide(s, wrong).rejected_candidates[0].reason_codes == (R.ACTIONABLE_SAFETY_GAP_NOT_TARGETED,)
+    assert decide(s, safety).selected_action.candidate == safety
+
+
+@pytest.mark.parametrize("factory", [wait_for, escalation])
+def test_fallback_can_include_safety_and_other_targets(snapshot, factory):
+    candidate = factory(snapshot, "ASSET_CONVERGENCE").model_copy(update={
+        "target_gap_ids": (gap(snapshot, "ASSET_CONVERGENCE"), gap(snapshot, "PAYMENT_FINALITY"))})
+    assert decide(snapshot, candidate).selected_action.candidate == candidate
+
+
+@pytest.mark.parametrize("factory", [wait_for, escalation])
+def test_fallback_gate_does_not_apply_without_actionable_safety(snapshot, factory):
+    s = reseal(snapshot, available_tools=tuple(t for t in snapshot.available_tools if t.tool_name == T.ASSET))
+    candidate = factory(s, "ASSET_CONVERGENCE")
+    assert decide(s, candidate).selected_action.candidate == candidate
