@@ -1,8 +1,9 @@
 from credit_harness.evidence.models import ClaimType as C
 from .models import HypothesisDefinition, HypothesisId as H, HypothesisKind as K
 
-# Aggregate graph/gap ruleset v4; confirmation/elimination rules remain v3.
-HYPOTHESIS_RULESET_VERSION = "4"
+# Aggregate graph catalog v5 adds directly observed repair-support fields;
+# confirmation/elimination rules remain v3, including historical deployment gaps.
+HYPOTHESIS_RULESET_VERSION = "5"
 
 
 def definition(h, kind, statement, description, claims, *, parent=None, deferred=False):
@@ -28,7 +29,7 @@ CATALOG = (
     definition(H.H5, K.CAUSAL, "CALLBACK_NOT_OBSERVED_AT_GATEWAY", "当前尚未观察到 Callback 到达 Gateway。",
                (C.SOURCE_LOOKUP_STATUS, C.CALLBACK_GATEWAY_RECEIVED), deferred=True),
     definition(H.H6, K.CAUSAL, "CALLBACK_CONSUMPTION_FAILED", "Callback 已到 Gateway，但业务消费未成功。",
-               (C.CALLBACK_GATEWAY_RECEIVED, C.MESSAGE_CONSUME_STATUS)),
+               (C.CALLBACK_GATEWAY_RECEIVED, C.CALLBACK_SIGNATURE_VERIFIED, C.MESSAGE_CONSUME_STATUS)),
     definition(H.H6_SCHEMA_MISMATCH, K.CAUSAL, "CALLBACK_SCHEMA_MISMATCH_TRIGGERED_FAILURE",
                "Callback 消费失败由 loanNo schema/type mismatch 直接触发。",
                (C.CALLBACK_GATEWAY_RECEIVED, C.MESSAGE_CONSUME_STATUS, C.MESSAGE_ERROR_CODE, C.MESSAGE_ERROR_FIELD,
@@ -37,9 +38,10 @@ CATALOG = (
                "运行中的 Consumer 使用过期 schema，未能解析当前协议 Callback。",
                (C.CALLBACK_GATEWAY_RECEIVED, C.MESSAGE_CONSUME_STATUS, C.MESSAGE_ERROR_CODE, C.MESSAGE_ERROR_FIELD,
                 C.MESSAGE_EXPECTED_FIELD_TYPE, C.MESSAGE_ACTUAL_FIELD_TYPE,
-                C.CALLBACK_PROTOCOL_VERSION, C.PROTOCOL_FIELD_TYPE), parent=H.H6, deferred=True),
+                C.CALLBACK_PROTOCOL_VERSION, C.PROTOCOL_FIELD_TYPE, C.CONSUMER_DEPLOYED_SCHEMA_VERSION,
+                C.CONSUMER_ACCEPTED_PROTOCOL_VERSION, C.CONSUMER_LOAN_NO_FIELD_TYPE), parent=H.H6, deferred=True),
     definition(H.H7, K.CAUSAL, "ASSET_NOTIFICATION_FAILED", "我方业务已成功应用，但资产方终态通知未收敛。",
-               (C.GUARANTEE_STATUS, C.ASSET_DELIVERY_STATUS, C.ASSET_STATUS)),
+               (C.GUARANTEE_STATUS, C.ASSET_DELIVERY_STATUS, C.ASSET_DELIVERY_EVENT_REF, C.ASSET_STATUS)),
     definition(H.H8, K.SEMANTIC_GUARD, "FUND_SUCCESS_NOT_EQUAL_PAYMENT_FINALITY",
                "当前资金请求适用协议中的业务 SUCCESS 本身不足以证明支付终态。",
                (C.PROTOCOL_BUSINESS_SEMANTICS, C.GUARANTEE_STATUS)),

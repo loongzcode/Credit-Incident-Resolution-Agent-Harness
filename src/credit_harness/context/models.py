@@ -12,7 +12,7 @@ from .structured_values import OpaqueBusinessRef, OpaqueSubjectRef, ContextRefer
 from .value_contracts import validate_claim_value, validate_subject_field
 
 CONTEXT_SCHEMA_VERSION = "4"
-ELIGIBILITY_POLICY_VERSION = "3"
+ELIGIBILITY_POLICY_VERSION = "4"
 COMPACTION_POLICY_VERSION = "3"
 CONTEXT_POLICY_VERSION = "4"
 Hash = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]

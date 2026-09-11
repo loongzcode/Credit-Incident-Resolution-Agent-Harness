@@ -56,7 +56,7 @@ class EvidenceExtractor:
                 raw_ref=f"observation://{o.observation_id}",
                 content_hash=json_hash(o.model_dump(mode="json")), created_at=o.observed_at,
                 metadata=EvidenceMetadata(
-                    extractor_version="3", source_path=path, scope=query,
+                    extractor_version="4", source_path=path, scope=query,
                     fund_request_id=(data.record.fund_request_id if isinstance(
                         data, (TraceData, FundData, PaymentData, GuaranteeData, LoanNoteData),
                     ) else None), callback_event_id=callback_event_id,
@@ -119,6 +119,17 @@ class EvidenceExtractor:
                          f"/data/records/{index}/error/expected_type", **subject)
                     emit(C.MESSAGE_ACTUAL_FIELD_TYPE, r.error.actual_type.value,
                          f"/data/records/{index}/error/actual_type", **subject)
+                if r.consumer_deployment is not None:
+                    deployment = r.consumer_deployment
+                    if deployment.event_time > o.observed_at:
+                        raise ValueError("future deployment observation")
+                    for claim, field in ((C.CONSUMER_DEPLOYED_SCHEMA_VERSION, "schema_version"),
+                                         (C.CONSUMER_ACCEPTED_PROTOCOL_VERSION, "accepted_protocol_version"),
+                                         (C.CONSUMER_LOAN_NO_FIELD_TYPE, "loan_no_type")):
+                        value = getattr(deployment, field)
+                        emit(claim, value.value if hasattr(value, "value") else value,
+                             f"/data/records/{index}/consumer_deployment/{field}",
+                             **{**subject, "event_time": deployment.event_time})
         elif isinstance(data, ProtocolData):
             r = data.record
             subject = dict(kind=S.PROTOCOL, identifier=f"{r.partner}@{r.protocol_version}",
@@ -143,6 +154,8 @@ class EvidenceExtractor:
             emit(C.ACCOUNTING_ENTRY_PRESENT, data.actual_entry is not None, "/data/actual_entry")
         elif isinstance(data, DeliveryData):
             emit(C.ASSET_DELIVERY_STATUS, data.record.delivery_status.value, "/data/record/delivery_status")
+            if data.record.event_id is not None:
+                emit(C.ASSET_DELIVERY_EVENT_REF, data.record.event_id, "/data/record/event_id")
         elif isinstance(data, LoanNoteData):
             emit(C.LOAN_NO_PRESENT, True, "/data/record/loan_no", kind=S.FUND_REQUEST,
                  identifier=data.record.fund_request_id)

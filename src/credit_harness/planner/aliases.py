@@ -5,7 +5,8 @@ from copy import deepcopy
 
 from credit_harness.evidence.models import ClaimType as C, SubjectKind
 
-REFERENCE_CLAIMS = {C.PAYMENT_TRANSACTION_ID, C.TRANSACTION_FUND_REQUEST_ID, C.LOAN_NOTE_REFERENCE}
+REFERENCE_CLAIMS = {C.PAYMENT_TRANSACTION_ID, C.TRANSACTION_FUND_REQUEST_ID, C.LOAN_NOTE_REFERENCE,
+                    C.ASSET_DELIVERY_EVENT_REF}
 
 
 @dataclass(frozen=True)

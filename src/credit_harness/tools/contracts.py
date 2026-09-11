@@ -4,7 +4,7 @@ from pydantic import AwareDatetime, Field, model_validator
 
 from credit_harness.domain.enums import (
     Completeness, ConsumeStatus, Currency, Freshness, FundBusinessStatus, KnowledgeStatus,
-    ObservationStatus, PaymentFinality, SourceKind, ToolName,
+    ObservationStatus, PaymentFinality, SourceKind, ToolName, FieldType,
 )
 from credit_harness.domain.models import (
     AccountingEntry, AssetDelivery, AssetSystem, CallbackPayload,
@@ -107,6 +107,16 @@ class CallbackRawData(Model):
     record: CallbackRawRecord
 
 
+class ConsumerDeploymentObservation(EventModel):
+    """Optional directly observed current runtime configuration, not an inference
+    from a historical parser error. Normal simulator projections don't provide it.
+    A trusted test observation adapter supplies synthetic readiness attestations.
+    """
+    schema_version: Annotated[str, Field(pattern=r"^\d+\.\d+$")]
+    accepted_protocol_version: Annotated[str, Field(pattern=r"^\d+\.\d+$")]
+    loan_no_type: FieldType
+
+
 class MessageRecord(EventModel):
     message_id: str
     event_id: str
@@ -114,6 +124,7 @@ class MessageRecord(EventModel):
     consume_status: ConsumeStatus
     dlq: str | None
     error: MessageError | None
+    consumer_deployment: ConsumerDeploymentObservation | None = None
 
 
 class MessagesData(Model):

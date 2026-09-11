@@ -1,0 +1,294 @@
+{
+  "decision_id": "b79dda2db94dee70ce3b96f01c29bda04f2d8d77631fe6a4e3e9da2cb2708da5",
+  "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+  "draft_hash": "f8c302896689527db9184ef6a700dc6e2d472ec1fb001e7cda5254745dfec1f1",
+  "eligibility": {
+    "status": "IDENTITY_UNSAFE",
+    "can_plan": true,
+    "allowed_actions": [
+      "NO_REMEDIATION",
+      "REQUEST_OPERATOR_REVIEW",
+      "CREATE_RECONCILIATION_TASK"
+    ]
+  },
+  "valid_candidates": [
+    {
+      "candidate": {
+        "candidate_id": "none",
+        "action_type": "NO_REMEDIATION",
+        "target_order_id": "JD202609100001",
+        "target_problem_ids": [
+          "CASE-JD202609100001:PAYMENT_FINALITY",
+          "CASE-JD202609100001:PAYMENT_IDENTITY",
+          "CASE-JD202609100001:ASSET_CONVERGENCE",
+          "CASE-JD202609100001:TRACE_REQUEST_STATUS"
+        ],
+        "evidence_refs": [],
+        "reason_summary": "建议仅基于当前可见事实；兼容性和副作用前置条件交由 Harness 校验。"
+      },
+      "target": {
+        "case_id": "CASE-JD202609100001",
+        "tenant_id": "demo",
+        "internal_order_id": "JD202609100001",
+        "callback_event_ref": null,
+        "message_ref": null,
+        "delivery_ref": null
+      },
+      "risk_level": "L0_READ_ONLY",
+      "supporting_evidence_refs": [],
+      "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+      "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "policy_version": "1",
+      "catalog_version": "1"
+    },
+    {
+      "candidate": {
+        "candidate_id": "review",
+        "action_type": "REQUEST_OPERATOR_REVIEW",
+        "target_order_id": "JD202609100001",
+        "target_problem_ids": [
+          "CASE-JD202609100001:PAYMENT_FINALITY",
+          "CASE-JD202609100001:PAYMENT_IDENTITY",
+          "CASE-JD202609100001:ASSET_CONVERGENCE",
+          "CASE-JD202609100001:TRACE_REQUEST_STATUS"
+        ],
+        "evidence_refs": [],
+        "reason_summary": "建议仅基于当前可见事实；兼容性和副作用前置条件交由 Harness 校验。"
+      },
+      "target": {
+        "case_id": "CASE-JD202609100001",
+        "tenant_id": "demo",
+        "internal_order_id": "JD202609100001",
+        "callback_event_ref": null,
+        "message_ref": null,
+        "delivery_ref": null
+      },
+      "risk_level": "L1_ADMINISTRATIVE",
+      "supporting_evidence_refs": [],
+      "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+      "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "policy_version": "1",
+      "catalog_version": "1"
+    }
+  ],
+  "rejected_candidates": [],
+  "selected_candidate": {
+    "candidate": {
+      "candidate_id": "none",
+      "action_type": "NO_REMEDIATION",
+      "target_order_id": "JD202609100001",
+      "target_problem_ids": [
+        "CASE-JD202609100001:PAYMENT_FINALITY",
+        "CASE-JD202609100001:PAYMENT_IDENTITY",
+        "CASE-JD202609100001:ASSET_CONVERGENCE",
+        "CASE-JD202609100001:TRACE_REQUEST_STATUS"
+      ],
+      "evidence_refs": [],
+      "reason_summary": "建议仅基于当前可见事实；兼容性和副作用前置条件交由 Harness 校验。"
+    },
+    "target": {
+      "case_id": "CASE-JD202609100001",
+      "tenant_id": "demo",
+      "internal_order_id": "JD202609100001",
+      "callback_event_ref": null,
+      "message_ref": null,
+      "delivery_ref": null
+    },
+    "risk_level": "L0_READ_ONLY",
+    "supporting_evidence_refs": [],
+    "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+    "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "policy_version": "1",
+    "catalog_version": "1"
+  },
+  "preflight_results": [
+    {
+      "candidate_id": "none",
+      "status": "READY_FOR_FUTURE_AUTHORIZATION",
+      "reason_codes": [],
+      "proposal_snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+      "fresh_snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+      "preflight_fingerprint": "13bf3d8ccb11ae21d62beed4f340228de6e5449a200a0bc289008dcd8776f6c1",
+      "intent": {
+        "intent_id": "9d00a5d34569e7fd76373cae9f0d5bdc33b9186de3327f6ca8276a0221d49e05",
+        "case_id": "CASE-JD202609100001",
+        "tenant_id": "demo",
+        "internal_order_id": "JD202609100001",
+        "action_type": "NO_REMEDIATION",
+        "risk_level": "L0_READ_ONLY",
+        "target": {
+          "case_id": "CASE-JD202609100001",
+          "tenant_id": "demo",
+          "internal_order_id": "JD202609100001",
+          "callback_event_ref": null,
+          "message_ref": null,
+          "delivery_ref": null
+        },
+        "supporting_evidence_refs": [],
+        "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+        "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "catalog_version": "1",
+        "policy_version": "1",
+        "preflight_fingerprint": "13bf3d8ccb11ae21d62beed4f340228de6e5449a200a0bc289008dcd8776f6c1",
+        "requires_approval": false,
+        "requires_capability": false,
+        "status": "PROPOSED"
+      }
+    },
+    {
+      "candidate_id": "review",
+      "status": "READY_FOR_FUTURE_AUTHORIZATION",
+      "reason_codes": [],
+      "proposal_snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+      "fresh_snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+      "preflight_fingerprint": "bd0d1bef9701ffdf9257fa40d7a63aa02bc57ac0a7193308123c8aebd46d864a",
+      "intent": {
+        "intent_id": "fdc408bdb69f34165fd8537c57e4ec145c2636df86924bc48b7caafeaee31229",
+        "case_id": "CASE-JD202609100001",
+        "tenant_id": "demo",
+        "internal_order_id": "JD202609100001",
+        "action_type": "REQUEST_OPERATOR_REVIEW",
+        "risk_level": "L1_ADMINISTRATIVE",
+        "target": {
+          "case_id": "CASE-JD202609100001",
+          "tenant_id": "demo",
+          "internal_order_id": "JD202609100001",
+          "callback_event_ref": null,
+          "message_ref": null,
+          "delivery_ref": null
+        },
+        "supporting_evidence_refs": [],
+        "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+        "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "catalog_version": "1",
+        "policy_version": "1",
+        "preflight_fingerprint": "bd0d1bef9701ffdf9257fa40d7a63aa02bc57ac0a7193308123c8aebd46d864a",
+        "requires_approval": false,
+        "requires_capability": true,
+        "status": "PROPOSED"
+      }
+    }
+  ],
+  "preflight_result": {
+    "candidate_id": "none",
+    "status": "READY_FOR_FUTURE_AUTHORIZATION",
+    "reason_codes": [],
+    "proposal_snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+    "fresh_snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+    "preflight_fingerprint": "13bf3d8ccb11ae21d62beed4f340228de6e5449a200a0bc289008dcd8776f6c1",
+    "intent": {
+      "intent_id": "9d00a5d34569e7fd76373cae9f0d5bdc33b9186de3327f6ca8276a0221d49e05",
+      "case_id": "CASE-JD202609100001",
+      "tenant_id": "demo",
+      "internal_order_id": "JD202609100001",
+      "action_type": "NO_REMEDIATION",
+      "risk_level": "L0_READ_ONLY",
+      "target": {
+        "case_id": "CASE-JD202609100001",
+        "tenant_id": "demo",
+        "internal_order_id": "JD202609100001",
+        "callback_event_ref": null,
+        "message_ref": null,
+        "delivery_ref": null
+      },
+      "supporting_evidence_refs": [],
+      "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+      "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "catalog_version": "1",
+      "policy_version": "1",
+      "preflight_fingerprint": "13bf3d8ccb11ae21d62beed4f340228de6e5449a200a0bc289008dcd8776f6c1",
+      "requires_approval": false,
+      "requires_capability": false,
+      "status": "PROPOSED"
+    }
+  },
+  "previews": [
+    {
+      "candidate": {
+        "candidate_id": "none",
+        "action_type": "NO_REMEDIATION",
+        "target_order_id": "JD202609100001",
+        "target_problem_ids": [
+          "CASE-JD202609100001:PAYMENT_FINALITY",
+          "CASE-JD202609100001:PAYMENT_IDENTITY",
+          "CASE-JD202609100001:ASSET_CONVERGENCE",
+          "CASE-JD202609100001:TRACE_REQUEST_STATUS"
+        ],
+        "evidence_refs": [],
+        "reason_summary": "建议仅基于当前可见事实；兼容性和副作用前置条件交由 Harness 校验。"
+      },
+      "risk_level": "L0_READ_ONLY",
+      "status": "READY_FOR_FUTURE_AUTHORIZATION",
+      "blocking_reasons": [],
+      "target": {
+        "case_id": "CASE-JD202609100001",
+        "tenant_id": "demo",
+        "internal_order_id": "JD202609100001",
+        "callback_event_ref": null,
+        "message_ref": null,
+        "delivery_ref": null
+      },
+      "execution": "NOT_AUTHORIZED_NOT_EXECUTED"
+    },
+    {
+      "candidate": {
+        "candidate_id": "review",
+        "action_type": "REQUEST_OPERATOR_REVIEW",
+        "target_order_id": "JD202609100001",
+        "target_problem_ids": [
+          "CASE-JD202609100001:PAYMENT_FINALITY",
+          "CASE-JD202609100001:PAYMENT_IDENTITY",
+          "CASE-JD202609100001:ASSET_CONVERGENCE",
+          "CASE-JD202609100001:TRACE_REQUEST_STATUS"
+        ],
+        "evidence_refs": [],
+        "reason_summary": "建议仅基于当前可见事实；兼容性和副作用前置条件交由 Harness 校验。"
+      },
+      "risk_level": "L1_ADMINISTRATIVE",
+      "status": "READY_FOR_FUTURE_AUTHORIZATION",
+      "blocking_reasons": [],
+      "target": {
+        "case_id": "CASE-JD202609100001",
+        "tenant_id": "demo",
+        "internal_order_id": "JD202609100001",
+        "callback_event_ref": null,
+        "message_ref": null,
+        "delivery_ref": null
+      },
+      "execution": "NOT_AUTHORIZED_NOT_EXECUTED"
+    }
+  ],
+  "final_intent": {
+    "intent_id": "9d00a5d34569e7fd76373cae9f0d5bdc33b9186de3327f6ca8276a0221d49e05",
+    "case_id": "CASE-JD202609100001",
+    "tenant_id": "demo",
+    "internal_order_id": "JD202609100001",
+    "action_type": "NO_REMEDIATION",
+    "risk_level": "L0_READ_ONLY",
+    "target": {
+      "case_id": "CASE-JD202609100001",
+      "tenant_id": "demo",
+      "internal_order_id": "JD202609100001",
+      "callback_event_ref": null,
+      "message_ref": null,
+      "delivery_ref": null
+    },
+    "supporting_evidence_refs": [],
+    "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+    "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "catalog_version": "1",
+    "policy_version": "1",
+    "preflight_fingerprint": "13bf3d8ccb11ae21d62beed4f340228de6e5449a200a0bc289008dcd8776f6c1",
+    "requires_approval": false,
+    "requires_capability": false,
+    "status": "PROPOSED"
+  },
+  "model_metadata": {
+    "model_provider": "fake",
+    "model_name": "fake-remediation-v1",
+    "input_tokens": null,
+    "output_tokens": null
+  },
+  "policy_version": "1",
+  "catalog_version": "1"
+}

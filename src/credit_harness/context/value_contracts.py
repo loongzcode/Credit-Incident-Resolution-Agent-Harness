@@ -23,12 +23,16 @@ _TYPES = {
     C.PAYMENT_BENEFICIARY_REF: BeneficiaryRef,
     C.PAYMENT_ACCOUNT_REF: AccountRef,
     C.CALLBACK_PROTOCOL_VERSION: StructuredVersion,
+    C.CONSUMER_DEPLOYED_SCHEMA_VERSION: StructuredVersion,
+    C.CONSUMER_ACCEPTED_PROTOCOL_VERSION: StructuredVersion,
+    C.ASSET_DELIVERY_EVENT_REF: OpaqueBusinessRef,
 }
 for claim, enum in {
     C.HTTP_RESPONSE_STATUS: TransportStatus, C.FUND_BUSINESS_STATUS: FundBusinessStatus,
     C.PAYMENT_FINALITY: PaymentFinality, C.PAYMENT_CURRENCY: Currency,
     C.MESSAGE_CONSUME_STATUS: ConsumeStatus, C.MESSAGE_EXPECTED_FIELD_TYPE: FieldType,
     C.MESSAGE_ACTUAL_FIELD_TYPE: FieldType, C.ASSET_STATUS: LoanStatus, C.GUARANTEE_STATUS: LoanStatus,
+    C.CONSUMER_LOAN_NO_FIELD_TYPE: FieldType,
     C.ASSET_DELIVERY_STATUS: DeliveryStatus, C.PROTOCOL_FIELD_TYPE: FieldType,
     C.PROTOCOL_BUSINESS_SEMANTICS: BusinessMeaning, C.SOURCE_LOOKUP_STATUS: ObservationStatus,
 }.items():

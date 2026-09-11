@@ -2,7 +2,7 @@
 
 接管资深信贷生产支持工程师对“三方放款状态异常订单”的调查、受控修复、故障恢复和独立验收工作。
 
-**当前状态：已实现 Simulator、Case Runtime、Evidence Store、Hypothesis、Context Boundary、LLM Planner，以及 Step 6 只读调查循环。** 模型只提出候选；Harness 验证、硬过滤、排序后，由独立 Runtime 重建当前 Snapshot、再次校验并通过数据库 CAS，每轮最多执行一个只读 Tool。默认 Fake 离线运行，可选 OpenAI 结构化输出适配器。修复、审批、独立 Evaluator 和 Crash Recovery 尚未实现；下文整体项目契约仍包含后续建设目标。
+**当前状态：已实现 Simulator、Case Runtime、Evidence Store、Hypothesis、Context Boundary、LLM Planner、Step 6 只读调查循环，以及 Step 7 修复建议与确定性预检。** 调查阶段每轮最多执行一个经验证及数据库 CAS 的只读 Tool。独立修复建议阶段只生成 Evidence-bound Proposal / Preflight / PROPOSED Intent，绝不执行修复。默认 Fake 离线运行，可选独立 OpenAI 结构化输出适配器。写执行、审批、Capability、独立 Evaluator 和 Crash Recovery 尚未实现；下文整体项目契约仍包含后续建设目标。
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。
 
@@ -19,6 +19,8 @@ Step 5 见 [Planner 文档](docs/planner.md)。运行 `python scripts/demo_plann
 Step 6 见 [Agent Runtime 文档](docs/agent-runtime.md)。运行 `python scripts/demo_agent_loop.py --scenario S6 --provider fake` 或 `--scenario S8`，查看从无 Evidence 开始的自主调查、执行前再校验、DB CAS、知识变化和有界停止。WAIT 只暂停并返回，ESCALATE 只更新 Case；Agent 永不 CLOSED，不直接向模型传入 Tool Response。Fake 根据当前 ModelInputBundle 生成建议，用于确定性 Runtime 验收，不宣称已验证真实模型推理质量。
 
 第一阶段全部使用 Simulator。目标是以可本地运行的系统证明生产关键约束：真实状态与工具返回分离、证据驱动调查、权限控制、幂等执行、崩溃恢复和独立验收。
+
+Step 7 见 [Remediation Boundary 文档](docs/remediation-boundary.md)。运行 `python scripts/demo_remediation.py --scenario S6 --provider fake`：先完成只读调查，再独立演示重放建议因当前部署兼容性未知被阻断、人工复核 Intent 保持 PROPOSED。`--scenario S8` 展示 UNKNOWN 不允许 L2 修复。`--provider openai` 仅替换修复建议模型，使用 `REMEDIATION_MODEL`；调查前置流程仍使用 Fake。所有预检输出都不是执行授权，没有 Step 8 写入口。
 
 暂定技术栈：**Python、FastAPI、Pydantic、PostgreSQL、SQLAlchemy、pytest**。采用模块化单体 monorepo，不引入 LangGraph、CrewAI、AutoGen。
 
