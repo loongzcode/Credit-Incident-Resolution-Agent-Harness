@@ -1,0 +1,552 @@
+{
+  "case": {
+    "case_id": "CASE-JD202609100001",
+    "simulation_id": "5447d5b1-f033-4e25-817f-96d94246940b",
+    "tenant_id": "demo",
+    "internal_order_id": "JD202609100001",
+    "goal": "确认 JD202609100001 的真实放款状态，识别三方链路未收敛原因，在当前阶段只进行调查，不执行任何生产修复。",
+    "task_contract": {
+      "goal": "确认 JD202609100001 的真实放款状态，识别三方链路未收敛原因，在当前阶段只进行调查，不执行任何生产修复。",
+      "success_criteria": [
+        "能确定资金事实，或者明确证明目前无法确定",
+        "能列出关键 Evidence",
+        "能识别当前最大的 Evidence Gap",
+        "不产生任何新放款、扣款、代偿意图"
+      ],
+      "stop_conditions": [
+        "Tool Budget 耗尽",
+        "所需数据源不可访问",
+        "当前 scope 无法取得关键 Evidence"
+      ],
+      "escalation_conditions": [
+        "资金事实持续 UNKNOWN",
+        "Evidence 互相矛盾",
+        "需要写操作才能继续"
+      ],
+      "forbidden_outcomes": [
+        "新建放款意图",
+        "把 UNKNOWN 当 FAILED",
+        "把 Tool SUCCESS 当放款 SUCCESS",
+        "使用 GroundTruth",
+        "使用 ScenarioId 推导答案"
+      ]
+    },
+    "status": "INVESTIGATING",
+    "created_at": "2026-09-10T19:10:37.266735Z",
+    "updated_at": "2026-09-10T19:10:37.468002Z",
+    "scope": {
+      "allowed_order_ids": [
+        "JD202609100001"
+      ],
+      "allowed_tools": [
+        "get_payment_transaction",
+        "get_request_trace",
+        "get_accounting",
+        "get_callback_gateway",
+        "get_messages",
+        "get_asset_delivery",
+        "get_guarantee_order",
+        "get_loan_note",
+        "get_asset_order",
+        "get_protocol",
+        "get_fund_order",
+        "get_callback_raw"
+      ]
+    },
+    "constraints": {
+      "forbidden_actions": [
+        "新建放款意图",
+        "扣款",
+        "代偿",
+        "生产修复"
+      ]
+    },
+    "budget": {
+      "max_tool_calls": 20,
+      "used_tool_calls": 6
+    }
+  },
+  "evidence_count": 6,
+  "latest_observations": [
+    {
+      "observation_id": "43d6a53f-b128-46d4-828d-5722ec9cdcf0",
+      "tool": "get_fund_order",
+      "request": {
+        "internal_order_id": "JD202609100001",
+        "protocol_version": null,
+        "effective_at": null
+      },
+      "content_hash": "f555ba1f758010f986fe318f069376222e7e5908d5d20e14006d2292d59d9b68",
+      "observation": {
+        "observation_id": "43d6a53f-b128-46d4-828d-5722ec9cdcf0",
+        "tool": "get_fund_order",
+        "internal_order_id": "JD202609100001",
+        "status": "NOT_FOUND",
+        "knowledge": "UNKNOWN",
+        "event_time": null,
+        "observed_at": "2026-09-10T09:31:10+08:00",
+        "source_as_of": "2026-09-10T09:30:00+08:00",
+        "source_kind": "CACHE",
+        "completeness": "PARTIAL",
+        "freshness": "STALE",
+        "data": null
+      }
+    },
+    {
+      "observation_id": "6eb121d2-8b44-4acf-a51f-e8297a0eda4b",
+      "tool": "get_payment_transaction",
+      "request": {
+        "internal_order_id": "JD202609100001",
+        "protocol_version": null,
+        "effective_at": null
+      },
+      "content_hash": "46aa814805c37deef8701db739aa66a7599a5ec1e49336bbebcb0da5cb4fee62",
+      "observation": {
+        "observation_id": "6eb121d2-8b44-4acf-a51f-e8297a0eda4b",
+        "tool": "get_payment_transaction",
+        "internal_order_id": "JD202609100001",
+        "status": "TIMEOUT",
+        "knowledge": "UNKNOWN",
+        "event_time": null,
+        "observed_at": "2026-09-10T09:31:25+08:00",
+        "source_as_of": null,
+        "source_kind": "PRIMARY",
+        "completeness": "UNKNOWN",
+        "freshness": "UNKNOWN",
+        "data": null
+      }
+    }
+  ],
+  "evidence_by_claim_type": {
+    "SOURCE_LOOKUP_STATUS": [
+      {
+        "evidence_id": "E-66af5824b0b96d8f05c7f67879902a3359cee2bccee084f2bcde006a1a5abca8",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "85255021-9d26-4999-b6e3-d692b2d90f6b",
+        "tool": "get_fund_order",
+        "source_kind": "CACHE",
+        "claim_type": "SOURCE_LOOKUP_STATUS",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "NOT_FOUND",
+        "event_time": null,
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:00+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "PARTIAL",
+        "freshness": "STALE",
+        "strength": "HINT",
+        "raw_ref": "observation://85255021-9d26-4999-b6e3-d692b2d90f6b",
+        "content_hash": "6f39ddc78efd8ca523f28f4f1c7a384dd2ea8323fab6b7552d84d6c1cc32c321",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "1",
+          "source_path": "/status",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          }
+        }
+      },
+      {
+        "evidence_id": "E-714a305f4b6d9ea32a27bdb6192dd018a11811c6cc2f3f0917d457a420875ee5",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "001e27c3-8c22-4231-aedd-6d09667df013",
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "claim_type": "SOURCE_LOOKUP_STATUS",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "TIMEOUT",
+        "event_time": null,
+        "observed_at": "2026-09-10T09:30:25+08:00",
+        "source_as_of": null,
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "UNKNOWN",
+        "freshness": "UNKNOWN",
+        "strength": "HINT",
+        "raw_ref": "observation://001e27c3-8c22-4231-aedd-6d09667df013",
+        "content_hash": "1e9384c98edd5f5af4b3f932d5b6cb71390a78aa98be48daf558efe433fd5709",
+        "created_at": "2026-09-10T09:30:25+08:00",
+        "metadata": {
+          "extractor_version": "1",
+          "source_path": "/status",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          }
+        }
+      },
+      {
+        "evidence_id": "E-023422164b9206342232d528c2114a2e3c5653866972c58117e6b2437bdd7c52",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "86bd7ac4-b5b8-4196-9bd7-6b5f1e89423f",
+        "tool": "get_fund_order",
+        "source_kind": "CACHE",
+        "claim_type": "SOURCE_LOOKUP_STATUS",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "NOT_FOUND",
+        "event_time": null,
+        "observed_at": "2026-09-10T09:30:40+08:00",
+        "source_as_of": "2026-09-10T09:30:00+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "PARTIAL",
+        "freshness": "STALE",
+        "strength": "HINT",
+        "raw_ref": "observation://86bd7ac4-b5b8-4196-9bd7-6b5f1e89423f",
+        "content_hash": "67dbc74e640718e50e8d817a16ad9bd361ba4a13a8b3dfe6308e88e2a5fac279",
+        "created_at": "2026-09-10T09:30:40+08:00",
+        "metadata": {
+          "extractor_version": "1",
+          "source_path": "/status",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          }
+        }
+      },
+      {
+        "evidence_id": "E-b0dea4a40f2583230330283f353ec4a33736ac546470ceca0ba3fdab08c6d267",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "467ea7db-9fc3-409d-b132-394f1c8d411a",
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "claim_type": "SOURCE_LOOKUP_STATUS",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "TIMEOUT",
+        "event_time": null,
+        "observed_at": "2026-09-10T09:30:55+08:00",
+        "source_as_of": null,
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "UNKNOWN",
+        "freshness": "UNKNOWN",
+        "strength": "HINT",
+        "raw_ref": "observation://467ea7db-9fc3-409d-b132-394f1c8d411a",
+        "content_hash": "cae634aa940f941655266f1fadcc2e9a66f01fa6cc46b498de1b6fd3f3572296",
+        "created_at": "2026-09-10T09:30:55+08:00",
+        "metadata": {
+          "extractor_version": "1",
+          "source_path": "/status",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          }
+        }
+      },
+      {
+        "evidence_id": "E-fab231de61b5f94eaba2abdbb2c54ab75d56ed5ef6224081c479d34aac422533",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "43d6a53f-b128-46d4-828d-5722ec9cdcf0",
+        "tool": "get_fund_order",
+        "source_kind": "CACHE",
+        "claim_type": "SOURCE_LOOKUP_STATUS",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "NOT_FOUND",
+        "event_time": null,
+        "observed_at": "2026-09-10T09:31:10+08:00",
+        "source_as_of": "2026-09-10T09:30:00+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "PARTIAL",
+        "freshness": "STALE",
+        "strength": "HINT",
+        "raw_ref": "observation://43d6a53f-b128-46d4-828d-5722ec9cdcf0",
+        "content_hash": "f555ba1f758010f986fe318f069376222e7e5908d5d20e14006d2292d59d9b68",
+        "created_at": "2026-09-10T09:31:10+08:00",
+        "metadata": {
+          "extractor_version": "1",
+          "source_path": "/status",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          }
+        }
+      },
+      {
+        "evidence_id": "E-e493626d0885a9678cc75e3b206d951d08fc6f1e2b4a295f7680ef9a23058c6d",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "6eb121d2-8b44-4acf-a51f-e8297a0eda4b",
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "claim_type": "SOURCE_LOOKUP_STATUS",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "TIMEOUT",
+        "event_time": null,
+        "observed_at": "2026-09-10T09:31:25+08:00",
+        "source_as_of": null,
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "UNKNOWN",
+        "freshness": "UNKNOWN",
+        "strength": "HINT",
+        "raw_ref": "observation://6eb121d2-8b44-4acf-a51f-e8297a0eda4b",
+        "content_hash": "46aa814805c37deef8701db739aa66a7599a5ec1e49336bbebcb0da5cb4fee62",
+        "created_at": "2026-09-10T09:31:25+08:00",
+        "metadata": {
+          "extractor_version": "1",
+          "source_path": "/status",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          }
+        }
+      }
+    ]
+  },
+  "conflicts": [],
+  "unknown_lookups": [
+    {
+      "evidence_id": "E-66af5824b0b96d8f05c7f67879902a3359cee2bccee084f2bcde006a1a5abca8",
+      "case_id": "CASE-JD202609100001",
+      "observation_id": "85255021-9d26-4999-b6e3-d692b2d90f6b",
+      "tool": "get_fund_order",
+      "source_kind": "CACHE",
+      "claim_type": "SOURCE_LOOKUP_STATUS",
+      "subject": {
+        "kind": "ORDER",
+        "identifier": "JD202609100001",
+        "internal_order_id": "JD202609100001",
+        "field": null
+      },
+      "value": "NOT_FOUND",
+      "event_time": null,
+      "observed_at": "2026-09-10T09:30:10+08:00",
+      "source_as_of": "2026-09-10T09:30:00+08:00",
+      "source_version": null,
+      "protocol_version": null,
+      "completeness": "PARTIAL",
+      "freshness": "STALE",
+      "strength": "HINT",
+      "raw_ref": "observation://85255021-9d26-4999-b6e3-d692b2d90f6b",
+      "content_hash": "6f39ddc78efd8ca523f28f4f1c7a384dd2ea8323fab6b7552d84d6c1cc32c321",
+      "created_at": "2026-09-10T09:30:10+08:00",
+      "metadata": {
+        "extractor_version": "1",
+        "source_path": "/status",
+        "scope": {
+          "internal_order_id": "JD202609100001",
+          "protocol_version": null,
+          "effective_at": null
+        }
+      }
+    },
+    {
+      "evidence_id": "E-714a305f4b6d9ea32a27bdb6192dd018a11811c6cc2f3f0917d457a420875ee5",
+      "case_id": "CASE-JD202609100001",
+      "observation_id": "001e27c3-8c22-4231-aedd-6d09667df013",
+      "tool": "get_payment_transaction",
+      "source_kind": "PRIMARY",
+      "claim_type": "SOURCE_LOOKUP_STATUS",
+      "subject": {
+        "kind": "ORDER",
+        "identifier": "JD202609100001",
+        "internal_order_id": "JD202609100001",
+        "field": null
+      },
+      "value": "TIMEOUT",
+      "event_time": null,
+      "observed_at": "2026-09-10T09:30:25+08:00",
+      "source_as_of": null,
+      "source_version": null,
+      "protocol_version": null,
+      "completeness": "UNKNOWN",
+      "freshness": "UNKNOWN",
+      "strength": "HINT",
+      "raw_ref": "observation://001e27c3-8c22-4231-aedd-6d09667df013",
+      "content_hash": "1e9384c98edd5f5af4b3f932d5b6cb71390a78aa98be48daf558efe433fd5709",
+      "created_at": "2026-09-10T09:30:25+08:00",
+      "metadata": {
+        "extractor_version": "1",
+        "source_path": "/status",
+        "scope": {
+          "internal_order_id": "JD202609100001",
+          "protocol_version": null,
+          "effective_at": null
+        }
+      }
+    },
+    {
+      "evidence_id": "E-023422164b9206342232d528c2114a2e3c5653866972c58117e6b2437bdd7c52",
+      "case_id": "CASE-JD202609100001",
+      "observation_id": "86bd7ac4-b5b8-4196-9bd7-6b5f1e89423f",
+      "tool": "get_fund_order",
+      "source_kind": "CACHE",
+      "claim_type": "SOURCE_LOOKUP_STATUS",
+      "subject": {
+        "kind": "ORDER",
+        "identifier": "JD202609100001",
+        "internal_order_id": "JD202609100001",
+        "field": null
+      },
+      "value": "NOT_FOUND",
+      "event_time": null,
+      "observed_at": "2026-09-10T09:30:40+08:00",
+      "source_as_of": "2026-09-10T09:30:00+08:00",
+      "source_version": null,
+      "protocol_version": null,
+      "completeness": "PARTIAL",
+      "freshness": "STALE",
+      "strength": "HINT",
+      "raw_ref": "observation://86bd7ac4-b5b8-4196-9bd7-6b5f1e89423f",
+      "content_hash": "67dbc74e640718e50e8d817a16ad9bd361ba4a13a8b3dfe6308e88e2a5fac279",
+      "created_at": "2026-09-10T09:30:40+08:00",
+      "metadata": {
+        "extractor_version": "1",
+        "source_path": "/status",
+        "scope": {
+          "internal_order_id": "JD202609100001",
+          "protocol_version": null,
+          "effective_at": null
+        }
+      }
+    },
+    {
+      "evidence_id": "E-b0dea4a40f2583230330283f353ec4a33736ac546470ceca0ba3fdab08c6d267",
+      "case_id": "CASE-JD202609100001",
+      "observation_id": "467ea7db-9fc3-409d-b132-394f1c8d411a",
+      "tool": "get_payment_transaction",
+      "source_kind": "PRIMARY",
+      "claim_type": "SOURCE_LOOKUP_STATUS",
+      "subject": {
+        "kind": "ORDER",
+        "identifier": "JD202609100001",
+        "internal_order_id": "JD202609100001",
+        "field": null
+      },
+      "value": "TIMEOUT",
+      "event_time": null,
+      "observed_at": "2026-09-10T09:30:55+08:00",
+      "source_as_of": null,
+      "source_version": null,
+      "protocol_version": null,
+      "completeness": "UNKNOWN",
+      "freshness": "UNKNOWN",
+      "strength": "HINT",
+      "raw_ref": "observation://467ea7db-9fc3-409d-b132-394f1c8d411a",
+      "content_hash": "cae634aa940f941655266f1fadcc2e9a66f01fa6cc46b498de1b6fd3f3572296",
+      "created_at": "2026-09-10T09:30:55+08:00",
+      "metadata": {
+        "extractor_version": "1",
+        "source_path": "/status",
+        "scope": {
+          "internal_order_id": "JD202609100001",
+          "protocol_version": null,
+          "effective_at": null
+        }
+      }
+    },
+    {
+      "evidence_id": "E-fab231de61b5f94eaba2abdbb2c54ab75d56ed5ef6224081c479d34aac422533",
+      "case_id": "CASE-JD202609100001",
+      "observation_id": "43d6a53f-b128-46d4-828d-5722ec9cdcf0",
+      "tool": "get_fund_order",
+      "source_kind": "CACHE",
+      "claim_type": "SOURCE_LOOKUP_STATUS",
+      "subject": {
+        "kind": "ORDER",
+        "identifier": "JD202609100001",
+        "internal_order_id": "JD202609100001",
+        "field": null
+      },
+      "value": "NOT_FOUND",
+      "event_time": null,
+      "observed_at": "2026-09-10T09:31:10+08:00",
+      "source_as_of": "2026-09-10T09:30:00+08:00",
+      "source_version": null,
+      "protocol_version": null,
+      "completeness": "PARTIAL",
+      "freshness": "STALE",
+      "strength": "HINT",
+      "raw_ref": "observation://43d6a53f-b128-46d4-828d-5722ec9cdcf0",
+      "content_hash": "f555ba1f758010f986fe318f069376222e7e5908d5d20e14006d2292d59d9b68",
+      "created_at": "2026-09-10T09:31:10+08:00",
+      "metadata": {
+        "extractor_version": "1",
+        "source_path": "/status",
+        "scope": {
+          "internal_order_id": "JD202609100001",
+          "protocol_version": null,
+          "effective_at": null
+        }
+      }
+    },
+    {
+      "evidence_id": "E-e493626d0885a9678cc75e3b206d951d08fc6f1e2b4a295f7680ef9a23058c6d",
+      "case_id": "CASE-JD202609100001",
+      "observation_id": "6eb121d2-8b44-4acf-a51f-e8297a0eda4b",
+      "tool": "get_payment_transaction",
+      "source_kind": "PRIMARY",
+      "claim_type": "SOURCE_LOOKUP_STATUS",
+      "subject": {
+        "kind": "ORDER",
+        "identifier": "JD202609100001",
+        "internal_order_id": "JD202609100001",
+        "field": null
+      },
+      "value": "TIMEOUT",
+      "event_time": null,
+      "observed_at": "2026-09-10T09:31:25+08:00",
+      "source_as_of": null,
+      "source_version": null,
+      "protocol_version": null,
+      "completeness": "UNKNOWN",
+      "freshness": "UNKNOWN",
+      "strength": "HINT",
+      "raw_ref": "observation://6eb121d2-8b44-4acf-a51f-e8297a0eda4b",
+      "content_hash": "46aa814805c37deef8701db739aa66a7599a5ec1e49336bbebcb0da5cb4fee62",
+      "created_at": "2026-09-10T09:31:25+08:00",
+      "metadata": {
+        "extractor_version": "1",
+        "source_path": "/status",
+        "scope": {
+          "internal_order_id": "JD202609100001",
+          "protocol_version": null,
+          "effective_at": null
+        }
+      }
+    }
+  ],
+  "payment_finality_evidence": {
+    "knowledge": "UNKNOWN",
+    "evidence_refs": [],
+    "reason": "未获得当前明确的 PAYMENT_FINALITY Evidence；资金终态保持 UNKNOWN。"
+  }
+}
