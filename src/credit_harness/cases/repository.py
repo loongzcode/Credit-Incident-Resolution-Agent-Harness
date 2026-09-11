@@ -91,6 +91,7 @@ class CaseRepository:
                 raise CasePolicyError("case paused/closed or tool budget exhausted")
             call_id = str(uuid4())
             session.add(CaseCallRow(call_id=call_id, case_id=case_id, sequence=sequence,
+                                    dispatch_correlation_id=call_id,
                                     tool=tool.value, request=query.model_dump(mode="json"),
                                     state=CallState.DISPATCHED.value))
         return self.get(case_id), call_id

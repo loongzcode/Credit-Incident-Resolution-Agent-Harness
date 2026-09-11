@@ -9,20 +9,21 @@ def test_s6_manual_investigation_through_harness_http(engine):
     view = run_demo(engine)
     assert view.case.case_id == "CASE-JD202609100001"
     assert view.case.status == CaseStatus.INVESTIGATING
-    assert view.case.budget.used_tool_calls == 7 and view.evidence_count == 25
+    assert view.case.budget.used_tool_calls == 7 and view.evidence_count == 27
     expected = {
         C.HTTP_RESPONSE_STATUS: "TIMEOUT", C.FUND_BUSINESS_STATUS: "SUCCESS",
         C.PAYMENT_FINALITY: "SETTLED", C.PAYMENT_AMOUNT: 2_000_000, C.PAYMENT_CURRENCY: "CNY",
         C.CALLBACK_GATEWAY_RECEIVED: True, C.CALLBACK_SIGNATURE_VERIFIED: True,
         C.MESSAGE_CONSUME_STATUS: "FAILED", C.MESSAGE_DLQ: "loan.callback.dlq",
         C.MESSAGE_ERROR_CODE: "CALLBACK_SCHEMA_MISMATCH", C.MESSAGE_ERROR_FIELD: "loanNo",
+        C.MESSAGE_EXPECTED_FIELD_TYPE: "integer", C.MESSAGE_ACTUAL_FIELD_TYPE: "string",
     }
     for claim, value in expected.items():
         assert [item.value for item in view.evidence_by_claim_type[claim]] == [value]
     assert {(e.protocol_version, e.value) for e in view.evidence_by_claim_type[C.PROTOCOL_FIELD_TYPE]} == {
         ("2.3", "string"), ("2.2", "integer"),
     }
-    assert not {"ROOT_CAUSE", "RETRY_LOAN", "PAYMENT_FAILED", "CALLBACK_NEVER_SENT", "GROUND_TRUTH"}.intersection(
+    assert not {"ROOT_CAUSE", "CONSUMER_USES_V2_2", "H6", "RETRY_LOAN", "PAYMENT_FAILED", "CALLBACK_NEVER_SENT", "GROUND_TRUTH"}.intersection(
         view.evidence_by_claim_type,
     )
 

@@ -13,6 +13,13 @@ from credit_harness.domain.models import (
 )
 
 
+# Infrastructure header only; never part of ToolQuery or business Observation.
+DISPATCH_CORRELATION_HEADER = "X-Dispatch-Correlation-Id"
+DispatchCorrelationId = Annotated[str, Field(
+    strict=True, pattern=r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+)]
+
+
 class ToolQuery(Model):
     internal_order_id: Annotated[str, Field(min_length=1, max_length=80)]
     protocol_version: Annotated[str, Field(pattern=r"^\d+\.\d+$")] | None = None

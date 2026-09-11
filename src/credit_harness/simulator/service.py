@@ -3,6 +3,7 @@ import json
 from datetime import datetime, timedelta
 from uuid import uuid4
 
+from pydantic import TypeAdapter
 from sqlalchemy import select
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
@@ -14,7 +15,7 @@ from credit_harness.domain.enums import (
 from credit_harness.persistence.store import (
     FaultRow, GrantRow, ObservationRow, SimulationRow, snapshots, token_hash,
 )
-from credit_harness.tools.contracts import Observation, ToolQuery
+from credit_harness.tools.contracts import DispatchCorrelationId, Observation, ToolQuery
 from .faults import ObservationFault
 from .projections import project
 
@@ -37,7 +38,10 @@ class ObservationService:
     def __init__(self, engine: Engine):
         self._engine = engine
 
-    def observe(self, token: str, tool: ToolName, query: ToolQuery) -> Observation:
+    def observe(self, token: str, tool: ToolName, query: ToolQuery, *,
+                dispatch_correlation_id: DispatchCorrelationId | None = None) -> Observation:
+        if dispatch_correlation_id is not None:
+            dispatch_correlation_id = TypeAdapter(DispatchCorrelationId).validate_python(dispatch_correlation_id)
         with Session(self._engine) as session, session.begin():
             digest = token_hash(token)
             grant = session.get(GrantRow, digest)
@@ -119,5 +123,6 @@ class ObservationService:
                 id=observation.observation_id, simulation_id=simulation.id, grant_hash=digest,
                 tool=tool.value, request=query.model_dump(mode="json"),
                 observation=payload, content_hash=content_hash,
+                dispatch_correlation_id=dispatch_correlation_id,
             ))
         return observation

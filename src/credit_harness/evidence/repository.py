@@ -61,6 +61,9 @@ class EvidenceRepository:
                 CaseCallRow.observation_id == row.id,
             )) is not None:
                 raise ProvenanceError("observation already assigned to a case dispatch")
+            if (not call.dispatch_correlation_id or not row.dispatch_correlation_id
+                    or call.dispatch_correlation_id != row.dispatch_correlation_id):
+                raise ProvenanceError("missing or mismatched dispatch correlation")
             case = hydrate(case_row)
             evidence = self.extractor.extract(case, raw.observation, query=raw.request)
             call.observation_id = row.id

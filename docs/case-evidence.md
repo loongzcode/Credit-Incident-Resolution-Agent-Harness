@@ -1,4 +1,4 @@
-# Case Runtime 与 Evidence Store v1
+# Case Runtime 与 Evidence Store v1 — Step 2.5 hardening
 
 ## 范围与目录
 
@@ -22,6 +22,7 @@ src/credit_harness/
     repository.py      # 已持久化观测校验、去重、原始观测回溯
     services.py        # Freshness / 三条保守 Conflict 规则
   api/harness.py       # 独立 Harness HTTP 应用，无 Admin 路由
+  persistence/migrations.py  # Step 2.5 两个 provenance 列的追加升级
 scripts/demo_case_evidence.py
 tests/test_case_evidence.py
 tests/test_harness_integration.py
@@ -44,10 +45,11 @@ NEW 的首个合法调用进入 INVESTIGATING；只有这两个状态允许调�
 ```text
 CaseToolExecutor.execute(case_id, tool, query)
   → tenant / case / status / order / tool 检查
-  → 条件 UPDATE 原子占用一次 used_tool_calls，写 DISPATCHED receipt
-  → 现有 HTTP Tool Client，仍使用原有 simulation/order/tool credential
-  → Simulator 在返回前提交 ObservationRow
-  → 校验 observation_id、原始哈希、tool、request、grant、simulation 与 receipt
+  → 条件 UPDATE 原子占用一次 used_tool_calls，生成 UUID4 call_id，写 DISPATCHED receipt
+  → CaseCall.dispatch_correlation_id = call_id
+  → Tool Client 将 correlation 注入 X-Dispatch-Correlation-Id；仍使用原有 Tool credential
+  → Simulator 在返回前提交 ObservationRow，单独保存 dispatch_correlation_id
+  → 校验 observation_id、原始哈希、tool、request、grant、simulation、correlation 与 receipt
   → deterministic extraction
   → 同一事务绑定 CaseCall、写 Evidence、写全部 origins
   → 返回 Observation + evidence_refs
@@ -59,13 +61,27 @@ Simulator 返回的 TIMEOUT 是已持久化 Observation，可提取查询证据�
 
 每个 Observation 最多绑定一次 CaseCall（数据库唯一约束），防止将旧响应重放到另一调查。证据写入使用 Case 级数据库串行化，避免并发重复插入。没有跨网络长事务。
 
+### Dispatch Correlation
+
+`reserve_call()` 内的 `uuid4()` 生成不可预测的 call_id，并在同一事务保存为 CaseCallRow.dispatch_correlation_id。Executor 只使用这个已生成的 ID，通过 ToolClient 的 keyword-only 参数传递；Client 将其放入单次 HTTP 请求头，不修改共享 Client 的默认 header，避免并发串号。
+
+Tool API 接受可选的 `X-Dispatch-Correlation-Id`，校验为规范小写 UUID4。服务端直接调用也做类型校验。Simulator 只接收这个 opaque ID，不接收 case_id、tenant_id、goal 或 hypothesis。correlation 只写入 ObservationRow 独立列，不进入 ToolQuery、Observation DTO、projection、Scenario 判断、Evidence claim 或 fingerprint，不影响 World State。原有 Observation content_hash 的内容和计算方式不变；correlation 列的真实性依赖可信服务和数据库边界，不是数字签名。
+
+`record_call()` 保留已有所有检查、已绑定 Observation 的防重放检查，并在 extraction 前要求 CaseCall 与 ObservationRow 的 correlation **双方存在且相等**，否则抛出 ProvenanceError。因此即便一个预先生成、尚未绑定的 Observation 的 simulation / grant / tool / request 都正确，也不能附着到新的 dispatch。
+
+correlation 是调用关联 metadata，**不是 Capability，也不授予业务权限**。知道它不能替代 Tool credential、Case scope 或预算。Harness 请求体仍禁止额外字段；Agent 发来的同名 header 不会被转发，Executor 始终自己生成。Agent 只访问 Harness API、不持上游 credential 的隔离边界继续适用。
+
+独立 Simulator 查询可以不带 correlation，以兼容已有只读用例；这类 Observation 不能进入新 Case 的 Evidence 绑定路径。已有数据库在 `create_schema()` / `create_harness_schema()` 时执行幂等追加列升级，需在服务写入停止时运行。只向两张表新增 nullable VARCHAR(36)，旧行保持 NULL，**不回填伪造的历史关联**。既有历史记录仍可用于诊断读取，但不会因此获得新的 dispatch 证明；新绑定缺失 correlation 一律拒绝。这是固定范围的升级函数，没有引入 migration framework。
+
 ## Observation 与 Evidence
 
 Observation 记录“某工具在某时返回了什么”；Evidence 提取“该观测直接支持的可追溯事实”。例如 FUND.SUCCESS 只生成 FUND_BUSINESS_STATUS、LOAN_NO_PRESENT 和可选借据引用；绝不生成支付终态。支付金额来自 Payment.transaction，以整数分保存。协议中 `SUCCESS = LOAN_CREATED_PAYMENT_SEPARATE` 作为协议语义证据保存，当前不执行资金判定。
 
 Callback 成功查询支持网关收到及验签事实；NOT_FOUND 只产生 SOURCE_LOOKUP_STATUS。Timeout 同样只产生查询状态，不产生 FAILED / NOT_EXECUTED。查询证据携带原 tool、query scope、observed_at、completeness、freshness；NOT_FOUND 的含义限于当前查询范围未观察到记录。
 
-MQ 的 `CALLBACK_SCHEMA_MISMATCH` 是 MESSAGE_ERROR_CODE，`loanNo` 是 MESSAGE_ERROR_FIELD。它们不是 ROOT_CAUSE。不同协议版本用 `partner@version` subject，并同时保留 protocol_version / source_version 和原查询参数。无法从可见 DTO 获取的版本保持 null，不读取隐藏快照版本。
+MQ 的 `CALLBACK_SCHEMA_MISMATCH` 是 MESSAGE_ERROR_CODE，`loanNo` 是 MESSAGE_ERROR_FIELD。Step 2.5 还从同一 MessageError 的 expected_type / actual_type 分别提取 MESSAGE_EXPECTED_FIELD_TYPE = integer、MESSAGE_ACTUAL_FIELD_TYPE = string，保留相同 message subject、event_time、observation_id 和精确 source_path。不同协议版本用 `partner@version` subject，并同时保留 protocol_version / source_version 和原查询参数。无法从可见 DTO 获取的版本保持 null，不读取隐藏快照版本。
+
+S6 的七次人工调查现在产生 **27 条 Evidence**。Gateway 收到回调、消费失败、loanNo 错误字段、运行时期待 integer / 实际 string，加上 v2.3 定义 string、v2.2 定义 integer，已具备支持下一阶段推理的直接观测材料。本阶段不保存 H6、ROOT_CAUSE = OLD_PARSER 或 CONSUMER_USES_V2_2；字段类型相同不能直接证明 Consumer 使用了哪个协议版本。
 
 Evidence、Subject、Metadata、Case 等使用 `extra=forbid`、`frozen=True`；集合尽量使用 tuple/frozenset。View 的分组字典和既有 Observation 内部 DTO 是普通 Pydantic 容器，并非内存安全沙箱；进程边界才是权限边界。
 
@@ -87,7 +103,11 @@ Evidence ID 使用 SHA-256 deterministic fingerprint：case、tool/source_kind�
 
 冲突规则仅比较同一 Case、同一 transaction subject、同一业务时间点的 PAYMENT_AMOUNT、PAYMENT_CURRENCY、TRANSACTION_FUND_REQUEST_ID。需要不同 observation_id 且不同可见来源身份 `(tool, source_kind)`，双方 CURRENT / COMPLETE，value 互斥。不同时间的状态变化不是冲突；本版不猜测时间区间重叠，不把重复查询一个来源当成独立来源。现有 Simulator 没有两个 CURRENT 支付来源，所以真实冲突规则用显式合成来源做单元测试，不伪造实际 S6 Evidence。
 
+**TODO（Reconciliation / Evaluator 阶段）：** 证据独立性需要使用 source lineage 判断，不能仅凭 `(tool, source_kind)`。Step 2.5 保持当前 Conflict Detector 实现不变。
+
 CaseEvidenceView 包含 case、evidence_count、latest_observations、evidence_by_claim_type、conflicts、unknown_lookups。latest 按 tool + 完整 query 分组，两个协议版本不会覆盖彼此。
+
+**CaseEvidenceView 是 diagnostic / inspection view，不是 Planner Context。** 未来 LLM Planner 不应直接获得整个 View；Context Assembly 阶段会另外构造 Reasoning Context Snapshot。本阶段不实现 Context Assembly、Snapshot 或 Planner。
 
 额外的 `payment_finality_evidence` 只表示最近支付观测是否提供当前明确字段及其引用，**不是资金终态验收结论**。S8 显示 UNKNOWN、空 evidence_refs，且没有 PAYMENT_FINALITY claim。后续超时不会删除过去的 SETTLED 历史事实，也不会继续将旧查询当成最近支付观测。跨多个服务查询的 View 是读取时汇总，不承诺并发下所有表的事务一致快照。
 
@@ -120,7 +140,7 @@ CaseEvidenceView 包含 case、evidence_count、latest_observations、evidence_b
 
 不实现 Hypothesis、RootCause 结论、Planner、LLM、Prompt、Agent Loop、Repair、Approval、Capability Token、Write Tool、Evaluator、自动结案、自动契约判定、业务 TTL、通用冲突推理、Event Sourcing、Kafka、Vector DB、RAG 或 UI。现阶段也不引入 LangGraph、CrewAI、AutoGen。数据库 bootstrap 为追加建表，正式结构演进的 migration framework 不在本次范围。
 
-## 本次实测结果
+## Step 2 历史回归基线
 
 2026-09-11，在项目虚拟环境运行完整测试集：
 
@@ -131,4 +151,15 @@ CaseEvidenceView 包含 case、evidence_count、latest_observations、evidence_b
 
 SQLite 跳过的是原有 PostgreSQL 专用 reopen 测试；PostgreSQL 执行全部测试。两次运行各有 2 条现有 Starlette/AnyIO 依赖弃用提示，没有失败。相对已有 60 项测试，本次增加 41 项测试实例，覆盖全部要求及两条 Harness HTTP 集成路径。PostgreSQL 每个 fixture 使用随机独立 schema，本次启动的本地测试实例已在测试后停止。
 
-已实际调用生成 [S6 完整 View](examples/s6-case-evidence.json) 和 [S8 完整 View](examples/s8-case-evidence.json)，不是手写预期 JSON。S6：7 calls、25 Evidence、0 conflicts、INVESTIGATING；S8：6 calls、6 lookup Evidence、payment_finality_evidence.knowledge 为 UNKNOWN。示例中版本字段类型保持原 DTO 的 `string` / `integer` 序列化值。
+示例文件在 Step 2.5 重新实际运行生成：[S6 完整 View](examples/s6-case-evidence.json) 为 7 calls、27 Evidence、0 conflicts、INVESTIGATING；[S8 完整 View](examples/s8-case-evidence.json) 为 6 calls、6 lookup Evidence、payment_finality_evidence.knowledge 为 UNKNOWN。均不是手写预期 JSON。版本字段类型保持原 DTO 的 `string` / `integer` 序列化值。
+
+## Step 2.5 实测结果
+
+在保留原有 101 项测试语义的基础上增加 17 项测试实例；S6 计数按新增两个原子事实更新为 27。
+
+| 后端 | 全量命令 | 结果 |
+|---|---|---|
+| SQLite | `python -m pytest -q -x --tb=short -p no:cacheprovider --basetemp=.local/pytest-hardening-01` | **117 passed, 1 skipped**，15.46s |
+| PostgreSQL | 配置专用 `TEST_POSTGRES_URL` 后运行 `python -m pytest -q -x --tb=short --postgres -p no:cacheprovider --basetemp=.local/pytest-hardening-pg-01` | **118 passed**，30.29s |
+
+SQLite 仍只跳过 PostgreSQL 专用测试；两次各有 2 条既有依赖弃用提示，没有失败。新增覆盖 correlation 成功绑定、预生成未绑定 Observation 拒绝、错误/缺失 correlation、Agent header 不转发、ToolClient 单次请求 header、授权不可替代、S6/S8 projection 与 World State 不受影响、消息类型字段 provenance，以及 SQLite/PostgreSQL 旧表追加升级。原有已绑定 Observation 防重放测试继续通过。

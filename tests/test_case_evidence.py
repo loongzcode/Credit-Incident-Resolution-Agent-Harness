@@ -29,7 +29,7 @@ from credit_harness.evidence.services import EvidenceConflictDetector, EvidenceF
 from credit_harness.persistence.store import ObservationRow, token_hash
 from credit_harness.simulator.faults import ObservationFault
 from credit_harness.simulator.scenarios import ORDER_ID, T0
-from credit_harness.tools.contracts import Observation, ToolQuery
+from credit_harness.tools.contracts import DISPATCH_CORRELATION_HEADER, Observation, ToolQuery
 
 Q = ToolQuery(internal_order_id=ORDER_ID)
 FORBIDDEN_KEYS = (
@@ -44,9 +44,10 @@ class HTTPTestToolClient:
     def __init__(self, client, token):
         self.client, self.token = client, token
 
-    def observe(self, tool, query):
+    def observe(self, tool, query, *, dispatch_correlation_id):
         response = self.client.post(f"/tools/{tool.value}",
-                                    headers={"Authorization": f"Bearer {self.token}"},
+                                    headers={"Authorization": f"Bearer {self.token}",
+                                             DISPATCH_CORRELATION_HEADER: dispatch_correlation_id},
                                     json=query.model_dump(mode="json"))
         response.raise_for_status()
         return Observation.model_validate(response.json())
@@ -204,6 +205,7 @@ def test_s6_evidence_chain(harness):
         C.CALLBACK_GATEWAY_RECEIVED: True, C.CALLBACK_SIGNATURE_VERIFIED: True,
         C.MESSAGE_CONSUME_STATUS: "FAILED", C.MESSAGE_DLQ: "loan.callback.dlq",
         C.MESSAGE_ERROR_CODE: "CALLBACK_SCHEMA_MISMATCH", C.MESSAGE_ERROR_FIELD: "loanNo",
+        C.MESSAGE_EXPECTED_FIELD_TYPE: "integer", C.MESSAGE_ACTUAL_FIELD_TYPE: "string",
     }
     for claim, value in expected.items():
         assert [e.value for e in view.evidence_by_claim_type[claim]] == [value]
@@ -212,7 +214,7 @@ def test_s6_evidence_chain(harness):
     }
     forbidden = {"ROOT_CAUSE", "RETRY_LOAN", "PAYMENT_FAILED", "CALLBACK_NEVER_SENT", "GROUND_TRUTH"}
     assert not forbidden.intersection(view.evidence_by_claim_type)
-    assert view.evidence_count == 25
+    assert view.evidence_count == 27
     assert view.case.budget.used_tool_calls == 7
     assert view.case.status == CaseStatus.INVESTIGATING
     assert len(view.latest_observations) == 7 and not view.conflicts
@@ -369,7 +371,7 @@ def test_tampered_observation_rejected(harness, engine):
 def test_transport_exception_counts_attempt_without_fabricating_evidence(harness, engine):
     cases, repository, _, _, _ = harness(budget=1)
     class Broken:
-        def observe(self, tool, query):
+        def observe(self, tool, query, *, dispatch_correlation_id):
             raise httpx.ReadTimeout("local HTTP failure")
     executor = CaseToolExecutor(cases, repository, lambda _: Broken())
     with pytest.raises(httpx.ReadTimeout):
@@ -445,3 +447,189 @@ def test_harness_repositories_reopen_persisted_case(harness, engine):
     assert reopened_cases.get(result.case_id).budget.used_tool_calls == 1
     assert reopened_evidence.list(result.case_id) == repository.list(result.case_id)
     assert reopened_evidence.get_raw_observation(result.evidence_refs[0], case_id=result.case_id).observation == result.observation
+
+
+def test_observation_is_bound_to_dispatch_correlation(harness, engine):
+    _, repository, executor, _, _ = harness()
+    result = execute(executor, ToolName.FUND)
+    with Session(engine) as session:
+        call = session.get(CaseCallRow, result.call_id)
+        row = session.get(ObservationRow, result.observation.observation_id)
+        assert call.dispatch_correlation_id == result.call_id == row.dispatch_correlation_id
+        assert call.observation_id == row.id and call.state == CallState.OBSERVED.value
+    assert result.evidence_refs and repository.list(result.case_id)
+
+
+def test_precreated_unassigned_observation_cannot_be_attached(harness, query, engine):
+    cases, repository, _, _, token = harness()
+    # O1 is valid, committed and unassigned, but it predates the new dispatch C2.
+    old = query(token, ToolName.FUND)
+    case, call_id = cases.reserve_call("CASE-JD202609100001", ToolName.FUND, Q)
+    with Session(engine) as session:
+        call = session.get(CaseCallRow, call_id)
+        row = session.get(ObservationRow, old.observation_id)
+        assert row.simulation_id == case.simulation_id
+        assert row.grant_hash == token_hash(token)
+        assert row.tool == call.tool and row.request == call.request
+        assert session.scalar(select(CaseCallRow.call_id).where(CaseCallRow.observation_id == row.id)) is None
+    with pytest.raises(ProvenanceError, match="dispatch correlation"):
+        repository.record_call(case.case_id, call_id, old)
+    assert not repository.list(case.case_id)
+    with Session(engine) as session:
+        assert session.get(CaseCallRow, call_id).observation_id is None
+
+
+def test_wrong_dispatch_correlation_rejected(harness, client, engine):
+    cases, repository, _, _, token = harness()
+    case, call_id = cases.reserve_call("CASE-JD202609100001", ToolName.FUND, Q)
+    other = str(uuid4())
+    observation = HTTPTestToolClient(client, token).observe(ToolName.FUND, Q, dispatch_correlation_id=other)
+    with Session(engine) as session:
+        assert session.get(CaseCallRow, call_id).dispatch_correlation_id != other
+        assert session.get(ObservationRow, observation.observation_id).dispatch_correlation_id == other
+    with pytest.raises(ProvenanceError, match="dispatch correlation"):
+        repository.record_call(case.case_id, call_id, observation)
+    assert not repository.list(case.case_id)
+
+
+@pytest.mark.parametrize("missing", ["call", "observation", "both"])
+def test_missing_dispatch_correlation_rejected(harness, client, engine, missing):
+    cases, repository, _, _, token = harness()
+    case, call_id = cases.reserve_call("CASE-JD202609100001", ToolName.FUND, Q)
+    observation = HTTPTestToolClient(client, token).observe(ToolName.FUND, Q, dispatch_correlation_id=call_id)
+    with Session(engine) as session, session.begin():
+        if missing in ("call", "both"):
+            session.get(CaseCallRow, call_id).dispatch_correlation_id = None
+        if missing in ("observation", "both"):
+            session.get(ObservationRow, observation.observation_id).dispatch_correlation_id = None
+    with pytest.raises(ProvenanceError, match="dispatch correlation"):
+        repository.record_call(case.case_id, call_id, observation)
+
+
+@pytest.mark.parametrize("scenario", [ScenarioId.S6, ScenarioId.S8])
+def test_correlation_does_not_leak_ground_truth(harness, client, query, engine, scenario):
+    from tests.support.inspector import world_state
+
+    _, repository, executor, sid, token = harness(scenario)
+    before = world_state(engine, sid)
+    for tool in ToolName:
+        uncorrelated = query(token, tool)
+        correlated = execute(executor, tool).observation
+        assert uncorrelated.model_dump(exclude={"observation_id"}) == correlated.model_dump(exclude={"observation_id"})
+        assert "dispatch_correlation_id" not in correlated.model_dump()
+    assert world_state(engine, sid) == before
+    view = CaseEvidenceService(repository).get_case_evidence("CASE-JD202609100001")
+    serialized = view.model_dump_json()
+    for forbidden in FORBIDDEN_KEYS:
+        assert forbidden not in serialized
+    schema = json.dumps(client.get("/openapi.json").json())
+    assert "GroundTruth" not in schema and "WorldState" not in schema
+
+
+def test_s6_schema_type_evidence(harness):
+    _, repository, executor, _, _ = harness()
+    result = execute(executor, ToolName.MESSAGES)
+    expected = {
+        C.MESSAGE_ERROR_CODE: ("CALLBACK_SCHEMA_MISMATCH", "code"),
+        C.MESSAGE_ERROR_FIELD: ("loanNo", "field"),
+        C.MESSAGE_EXPECTED_FIELD_TYPE: ("integer", "expected_type"),
+        C.MESSAGE_ACTUAL_FIELD_TYPE: ("string", "actual_type"),
+    }
+    evidence = repository.list(result.case_id)
+    assert len(evidence) == 6
+    for claim, (value, source_field) in expected.items():
+        e = next(e for e in evidence if e.claim_type == claim)
+        assert e.value == value and e.subject.identifier == "MSG-001"
+        assert e.observation_id == result.observation.observation_id
+        assert e.metadata.source_path == f"/data/records/0/error/{source_field}"
+        raw = repository.get_raw_observation(e.evidence_id, case_id=result.case_id)
+        assert getattr(raw.observation.data.records[0].error, source_field) == value
+    assert not {"ROOT_CAUSE", "CONSUMER_USES_V2_2", "H6"}.intersection(C)
+    assert "OLD_PARSER" not in " ".join(e.model_dump_json() for e in evidence)
+
+
+def test_agent_cannot_choose_dispatch_correlation(harness, engine):
+    _, repository, executor, _, _ = harness()
+    binding = HarnessBinding(executor, CaseEvidenceService(repository))
+    chosen = str(uuid4())
+    headers = {"Authorization": "Bearer harness-only", DISPATCH_CORRELATION_HEADER: chosen}
+    with TestClient(create_harness_app({token_hash("harness-only"): binding})) as client:
+        response = client.post("/cases/CASE-JD202609100001/tools/get_fund_order",
+                               headers=headers, json=Q.model_dump(mode="json"))
+        assert response.status_code == 200
+        result = CaseToolResult.model_validate(response.json())
+        assert result.call_id != chosen
+        with Session(engine) as session:
+            row = session.get(ObservationRow, result.observation.observation_id)
+            assert row.dispatch_correlation_id == result.call_id
+        response = client.post("/cases/CASE-JD202609100001/tools/get_fund_order", headers=headers,
+                               json={**Q.model_dump(mode="json"), "dispatch_correlation_id": chosen})
+        assert response.status_code == 422
+
+
+@pytest.mark.parametrize("bad", ["", "arbitrary", "00000000-0000-0000-0000-000000000000", "x" * 500])
+def test_tool_api_validates_correlation_header(client, seeded, bad):
+    _, token = seeded()
+    response = client.post(f"/tools/{ToolName.FUND.value}", json=Q.model_dump(mode="json"),
+                           headers={"Authorization": f"Bearer {token}", DISPATCH_CORRELATION_HEADER: bad})
+    assert response.status_code == 422
+
+
+def test_correlation_does_not_replace_tool_authorization(client, seeded):
+    _, token = seeded(tools={ToolName.FUND})
+    headers = {DISPATCH_CORRELATION_HEADER: str(uuid4())}
+    assert client.post(f"/tools/{ToolName.FUND.value}", json=Q.model_dump(mode="json"), headers=headers).status_code == 401
+    headers["Authorization"] = f"Bearer {token}"
+    assert client.post(f"/tools/{ToolName.PAYMENT.value}", json=Q.model_dump(mode="json"), headers=headers).status_code == 403
+
+
+def test_tool_client_injects_per_request_correlation(seeded, query, monkeypatch):
+    from credit_harness.tools.client import ToolClient
+
+    _, token = seeded()
+    observation = query(token, ToolName.FUND)
+    sent = []
+    def post(url, **kwargs):
+        sent.append(kwargs)
+        return httpx.Response(200, json=observation.model_dump(mode="json"),
+                              request=httpx.Request("POST", "http://simulator" + url))
+    with ToolClient("http://simulator", token) as client:
+        monkeypatch.setattr(client._http, "post", post)
+        for correlation in (str(uuid4()), str(uuid4()), None):
+            assert client.observe(ToolName.FUND, Q, dispatch_correlation_id=correlation) == observation
+            assert sent[-1]["headers"] == ({DISPATCH_CORRELATION_HEADER: correlation} if correlation else {})
+            assert sent[-1]["json"] == Q.model_dump(mode="json")
+        assert DISPATCH_CORRELATION_HEADER not in client._http.headers
+        with pytest.raises(ValidationError):
+            client.observe(ToolName.FUND, Q, dispatch_correlation_id="invalid")
+        assert len(sent) == 3
+
+
+def test_additive_correlation_upgrade_preserves_legacy_rows(harness, query, engine):
+    from credit_harness.persistence.store import create_schema
+
+    cases, repository, _, _, token = harness()
+    old = query(token, ToolName.FUND)
+    case, legacy_call_id = cases.reserve_call("CASE-JD202609100001", ToolName.FUND, Q)
+    # This fixture database is isolated per test. Remove only the newly introduced
+    # columns to reproduce an existing Step 2 DB; keep all original tables/data.
+    with engine.begin() as connection:
+        schema = connection.get_execution_options().get("schema_translate_map", {}).get(None)
+        quote = connection.dialect.identifier_preparer.quote
+        for table in ("tool_observations", "case_tool_calls"):
+            qualified = f"{quote(schema)}.{quote(table)}" if schema else quote(table)
+            connection.exec_driver_sql(f"ALTER TABLE {qualified} DROP COLUMN dispatch_correlation_id")
+    create_schema(engine)
+    create_harness_schema(engine)
+    create_schema(engine)  # idempotent upgrade
+    with Session(engine) as session:
+        row = session.get(ObservationRow, old.observation_id)
+        assert row.observation == old.model_dump(mode="json")
+        assert row.content_hash == json_hash(row.observation)
+        assert row.dispatch_correlation_id is None
+        assert session.get(CaseCallRow, legacy_call_id).dispatch_correlation_id is None
+    with pytest.raises(ProvenanceError, match="dispatch correlation"):
+        repository.record_call(case.case_id, legacy_call_id, old)
+    _, new_call = cases.reserve_call(case.case_id, ToolName.FUND, Q)
+    with Session(engine) as session:
+        assert session.get(CaseCallRow, new_call).dispatch_correlation_id == new_call

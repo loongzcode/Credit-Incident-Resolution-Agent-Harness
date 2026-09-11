@@ -1,4 +1,5 @@
 from credit_harness.persistence.store import Base
+from credit_harness.persistence.migrations import add_dispatch_correlation_columns
 from . import tables as case_tables  # noqa: F401 - metadata registration
 from credit_harness.evidence import tables as evidence_tables  # noqa: F401
 
@@ -9,3 +10,4 @@ def create_harness_schema(engine):
         case_tables.CaseRow.__table__, case_tables.CaseCallRow.__table__,
         evidence_tables.EvidenceRow.__table__, evidence_tables.EvidenceOriginRow.__table__,
     ])
+    add_dispatch_correlation_columns(engine)

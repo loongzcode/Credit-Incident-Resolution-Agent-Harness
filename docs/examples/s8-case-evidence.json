@@ -1,7 +1,7 @@
 {
   "case": {
     "case_id": "CASE-JD202609100001",
-    "simulation_id": "5447d5b1-f033-4e25-817f-96d94246940b",
+    "simulation_id": "9601eeb0-f689-4173-a144-8e8b81f1bcb5",
     "tenant_id": "demo",
     "internal_order_id": "JD202609100001",
     "goal": "确认 JD202609100001 的真实放款状态，识别三方链路未收敛原因，在当前阶段只进行调查，不执行任何生产修复。",
@@ -32,25 +32,25 @@
       ]
     },
     "status": "INVESTIGATING",
-    "created_at": "2026-09-10T19:10:37.266735Z",
-    "updated_at": "2026-09-10T19:10:37.468002Z",
+    "created_at": "2026-09-11T02:43:48.230758Z",
+    "updated_at": "2026-09-11T02:43:48.434657Z",
     "scope": {
       "allowed_order_ids": [
         "JD202609100001"
       ],
       "allowed_tools": [
-        "get_payment_transaction",
-        "get_request_trace",
-        "get_accounting",
-        "get_callback_gateway",
         "get_messages",
+        "get_accounting",
+        "get_request_trace",
+        "get_loan_note",
+        "get_fund_order",
+        "get_callback_raw",
+        "get_callback_gateway",
+        "get_asset_order",
         "get_asset_delivery",
         "get_guarantee_order",
-        "get_loan_note",
-        "get_asset_order",
         "get_protocol",
-        "get_fund_order",
-        "get_callback_raw"
+        "get_payment_transaction"
       ]
     },
     "constraints": {
@@ -69,16 +69,16 @@
   "evidence_count": 6,
   "latest_observations": [
     {
-      "observation_id": "43d6a53f-b128-46d4-828d-5722ec9cdcf0",
+      "observation_id": "a623b051-5bf1-4449-81e2-06899379272b",
       "tool": "get_fund_order",
       "request": {
         "internal_order_id": "JD202609100001",
         "protocol_version": null,
         "effective_at": null
       },
-      "content_hash": "f555ba1f758010f986fe318f069376222e7e5908d5d20e14006d2292d59d9b68",
+      "content_hash": "91bb9999ac41dca6a4f60e01cc7a00b5d5e6d460bca99be694874f2b435b1d26",
       "observation": {
-        "observation_id": "43d6a53f-b128-46d4-828d-5722ec9cdcf0",
+        "observation_id": "a623b051-5bf1-4449-81e2-06899379272b",
         "tool": "get_fund_order",
         "internal_order_id": "JD202609100001",
         "status": "NOT_FOUND",
@@ -93,16 +93,16 @@
       }
     },
     {
-      "observation_id": "6eb121d2-8b44-4acf-a51f-e8297a0eda4b",
+      "observation_id": "282760e7-53ee-40d9-a37e-fe17f3eee490",
       "tool": "get_payment_transaction",
       "request": {
         "internal_order_id": "JD202609100001",
         "protocol_version": null,
         "effective_at": null
       },
-      "content_hash": "46aa814805c37deef8701db739aa66a7599a5ec1e49336bbebcb0da5cb4fee62",
+      "content_hash": "6828656d7fd089930b8c18069b9795b44554e05c98ba3273879e4cad29fb6487",
       "observation": {
-        "observation_id": "6eb121d2-8b44-4acf-a51f-e8297a0eda4b",
+        "observation_id": "282760e7-53ee-40d9-a37e-fe17f3eee490",
         "tool": "get_payment_transaction",
         "internal_order_id": "JD202609100001",
         "status": "TIMEOUT",
@@ -122,7 +122,7 @@
       {
         "evidence_id": "E-66af5824b0b96d8f05c7f67879902a3359cee2bccee084f2bcde006a1a5abca8",
         "case_id": "CASE-JD202609100001",
-        "observation_id": "85255021-9d26-4999-b6e3-d692b2d90f6b",
+        "observation_id": "5501f0c0-f2f1-4c50-8a74-8f73c44150c7",
         "tool": "get_fund_order",
         "source_kind": "CACHE",
         "claim_type": "SOURCE_LOOKUP_STATUS",
@@ -141,8 +141,8 @@
         "completeness": "PARTIAL",
         "freshness": "STALE",
         "strength": "HINT",
-        "raw_ref": "observation://85255021-9d26-4999-b6e3-d692b2d90f6b",
-        "content_hash": "6f39ddc78efd8ca523f28f4f1c7a384dd2ea8323fab6b7552d84d6c1cc32c321",
+        "raw_ref": "observation://5501f0c0-f2f1-4c50-8a74-8f73c44150c7",
+        "content_hash": "de655a50c0ccff7099e98de4945eb199304e335c014cea3adb1b54ff340c58fb",
         "created_at": "2026-09-10T09:30:10+08:00",
         "metadata": {
           "extractor_version": "1",
@@ -157,7 +157,7 @@
       {
         "evidence_id": "E-714a305f4b6d9ea32a27bdb6192dd018a11811c6cc2f3f0917d457a420875ee5",
         "case_id": "CASE-JD202609100001",
-        "observation_id": "001e27c3-8c22-4231-aedd-6d09667df013",
+        "observation_id": "c2563865-5ef9-4792-ac5e-63d2ba1d401e",
         "tool": "get_payment_transaction",
         "source_kind": "PRIMARY",
         "claim_type": "SOURCE_LOOKUP_STATUS",
@@ -176,8 +176,8 @@
         "completeness": "UNKNOWN",
         "freshness": "UNKNOWN",
         "strength": "HINT",
-        "raw_ref": "observation://001e27c3-8c22-4231-aedd-6d09667df013",
-        "content_hash": "1e9384c98edd5f5af4b3f932d5b6cb71390a78aa98be48daf558efe433fd5709",
+        "raw_ref": "observation://c2563865-5ef9-4792-ac5e-63d2ba1d401e",
+        "content_hash": "165c259c00e84a57f727b0fe96ddca05a778c63dcb3fef0344e219caa4aeb5a5",
         "created_at": "2026-09-10T09:30:25+08:00",
         "metadata": {
           "extractor_version": "1",
@@ -192,7 +192,7 @@
       {
         "evidence_id": "E-023422164b9206342232d528c2114a2e3c5653866972c58117e6b2437bdd7c52",
         "case_id": "CASE-JD202609100001",
-        "observation_id": "86bd7ac4-b5b8-4196-9bd7-6b5f1e89423f",
+        "observation_id": "a02eea92-8afc-44c0-b3f0-4cbea87aea8c",
         "tool": "get_fund_order",
         "source_kind": "CACHE",
         "claim_type": "SOURCE_LOOKUP_STATUS",
@@ -211,8 +211,8 @@
         "completeness": "PARTIAL",
         "freshness": "STALE",
         "strength": "HINT",
-        "raw_ref": "observation://86bd7ac4-b5b8-4196-9bd7-6b5f1e89423f",
-        "content_hash": "67dbc74e640718e50e8d817a16ad9bd361ba4a13a8b3dfe6308e88e2a5fac279",
+        "raw_ref": "observation://a02eea92-8afc-44c0-b3f0-4cbea87aea8c",
+        "content_hash": "43b9fd49e29de54916f1dfcc3e55c44d91a9ed425e999e02a8301673330c1044",
         "created_at": "2026-09-10T09:30:40+08:00",
         "metadata": {
           "extractor_version": "1",
@@ -227,7 +227,7 @@
       {
         "evidence_id": "E-b0dea4a40f2583230330283f353ec4a33736ac546470ceca0ba3fdab08c6d267",
         "case_id": "CASE-JD202609100001",
-        "observation_id": "467ea7db-9fc3-409d-b132-394f1c8d411a",
+        "observation_id": "216248ea-f6d5-4e47-8718-dfa15c98d4c9",
         "tool": "get_payment_transaction",
         "source_kind": "PRIMARY",
         "claim_type": "SOURCE_LOOKUP_STATUS",
@@ -246,8 +246,8 @@
         "completeness": "UNKNOWN",
         "freshness": "UNKNOWN",
         "strength": "HINT",
-        "raw_ref": "observation://467ea7db-9fc3-409d-b132-394f1c8d411a",
-        "content_hash": "cae634aa940f941655266f1fadcc2e9a66f01fa6cc46b498de1b6fd3f3572296",
+        "raw_ref": "observation://216248ea-f6d5-4e47-8718-dfa15c98d4c9",
+        "content_hash": "82146457baf8457ee227381086ddf78f2d2e017644c24b0f4bf32e1b6bcfec7c",
         "created_at": "2026-09-10T09:30:55+08:00",
         "metadata": {
           "extractor_version": "1",
@@ -262,7 +262,7 @@
       {
         "evidence_id": "E-fab231de61b5f94eaba2abdbb2c54ab75d56ed5ef6224081c479d34aac422533",
         "case_id": "CASE-JD202609100001",
-        "observation_id": "43d6a53f-b128-46d4-828d-5722ec9cdcf0",
+        "observation_id": "a623b051-5bf1-4449-81e2-06899379272b",
         "tool": "get_fund_order",
         "source_kind": "CACHE",
         "claim_type": "SOURCE_LOOKUP_STATUS",
@@ -281,8 +281,8 @@
         "completeness": "PARTIAL",
         "freshness": "STALE",
         "strength": "HINT",
-        "raw_ref": "observation://43d6a53f-b128-46d4-828d-5722ec9cdcf0",
-        "content_hash": "f555ba1f758010f986fe318f069376222e7e5908d5d20e14006d2292d59d9b68",
+        "raw_ref": "observation://a623b051-5bf1-4449-81e2-06899379272b",
+        "content_hash": "91bb9999ac41dca6a4f60e01cc7a00b5d5e6d460bca99be694874f2b435b1d26",
         "created_at": "2026-09-10T09:31:10+08:00",
         "metadata": {
           "extractor_version": "1",
@@ -297,7 +297,7 @@
       {
         "evidence_id": "E-e493626d0885a9678cc75e3b206d951d08fc6f1e2b4a295f7680ef9a23058c6d",
         "case_id": "CASE-JD202609100001",
-        "observation_id": "6eb121d2-8b44-4acf-a51f-e8297a0eda4b",
+        "observation_id": "282760e7-53ee-40d9-a37e-fe17f3eee490",
         "tool": "get_payment_transaction",
         "source_kind": "PRIMARY",
         "claim_type": "SOURCE_LOOKUP_STATUS",
@@ -316,8 +316,8 @@
         "completeness": "UNKNOWN",
         "freshness": "UNKNOWN",
         "strength": "HINT",
-        "raw_ref": "observation://6eb121d2-8b44-4acf-a51f-e8297a0eda4b",
-        "content_hash": "46aa814805c37deef8701db739aa66a7599a5ec1e49336bbebcb0da5cb4fee62",
+        "raw_ref": "observation://282760e7-53ee-40d9-a37e-fe17f3eee490",
+        "content_hash": "6828656d7fd089930b8c18069b9795b44554e05c98ba3273879e4cad29fb6487",
         "created_at": "2026-09-10T09:31:25+08:00",
         "metadata": {
           "extractor_version": "1",
@@ -336,7 +336,7 @@
     {
       "evidence_id": "E-66af5824b0b96d8f05c7f67879902a3359cee2bccee084f2bcde006a1a5abca8",
       "case_id": "CASE-JD202609100001",
-      "observation_id": "85255021-9d26-4999-b6e3-d692b2d90f6b",
+      "observation_id": "5501f0c0-f2f1-4c50-8a74-8f73c44150c7",
       "tool": "get_fund_order",
       "source_kind": "CACHE",
       "claim_type": "SOURCE_LOOKUP_STATUS",
@@ -355,8 +355,8 @@
       "completeness": "PARTIAL",
       "freshness": "STALE",
       "strength": "HINT",
-      "raw_ref": "observation://85255021-9d26-4999-b6e3-d692b2d90f6b",
-      "content_hash": "6f39ddc78efd8ca523f28f4f1c7a384dd2ea8323fab6b7552d84d6c1cc32c321",
+      "raw_ref": "observation://5501f0c0-f2f1-4c50-8a74-8f73c44150c7",
+      "content_hash": "de655a50c0ccff7099e98de4945eb199304e335c014cea3adb1b54ff340c58fb",
       "created_at": "2026-09-10T09:30:10+08:00",
       "metadata": {
         "extractor_version": "1",
@@ -371,7 +371,7 @@
     {
       "evidence_id": "E-714a305f4b6d9ea32a27bdb6192dd018a11811c6cc2f3f0917d457a420875ee5",
       "case_id": "CASE-JD202609100001",
-      "observation_id": "001e27c3-8c22-4231-aedd-6d09667df013",
+      "observation_id": "c2563865-5ef9-4792-ac5e-63d2ba1d401e",
       "tool": "get_payment_transaction",
       "source_kind": "PRIMARY",
       "claim_type": "SOURCE_LOOKUP_STATUS",
@@ -390,8 +390,8 @@
       "completeness": "UNKNOWN",
       "freshness": "UNKNOWN",
       "strength": "HINT",
-      "raw_ref": "observation://001e27c3-8c22-4231-aedd-6d09667df013",
-      "content_hash": "1e9384c98edd5f5af4b3f932d5b6cb71390a78aa98be48daf558efe433fd5709",
+      "raw_ref": "observation://c2563865-5ef9-4792-ac5e-63d2ba1d401e",
+      "content_hash": "165c259c00e84a57f727b0fe96ddca05a778c63dcb3fef0344e219caa4aeb5a5",
       "created_at": "2026-09-10T09:30:25+08:00",
       "metadata": {
         "extractor_version": "1",
@@ -406,7 +406,7 @@
     {
       "evidence_id": "E-023422164b9206342232d528c2114a2e3c5653866972c58117e6b2437bdd7c52",
       "case_id": "CASE-JD202609100001",
-      "observation_id": "86bd7ac4-b5b8-4196-9bd7-6b5f1e89423f",
+      "observation_id": "a02eea92-8afc-44c0-b3f0-4cbea87aea8c",
       "tool": "get_fund_order",
       "source_kind": "CACHE",
       "claim_type": "SOURCE_LOOKUP_STATUS",
@@ -425,8 +425,8 @@
       "completeness": "PARTIAL",
       "freshness": "STALE",
       "strength": "HINT",
-      "raw_ref": "observation://86bd7ac4-b5b8-4196-9bd7-6b5f1e89423f",
-      "content_hash": "67dbc74e640718e50e8d817a16ad9bd361ba4a13a8b3dfe6308e88e2a5fac279",
+      "raw_ref": "observation://a02eea92-8afc-44c0-b3f0-4cbea87aea8c",
+      "content_hash": "43b9fd49e29de54916f1dfcc3e55c44d91a9ed425e999e02a8301673330c1044",
       "created_at": "2026-09-10T09:30:40+08:00",
       "metadata": {
         "extractor_version": "1",
@@ -441,7 +441,7 @@
     {
       "evidence_id": "E-b0dea4a40f2583230330283f353ec4a33736ac546470ceca0ba3fdab08c6d267",
       "case_id": "CASE-JD202609100001",
-      "observation_id": "467ea7db-9fc3-409d-b132-394f1c8d411a",
+      "observation_id": "216248ea-f6d5-4e47-8718-dfa15c98d4c9",
       "tool": "get_payment_transaction",
       "source_kind": "PRIMARY",
       "claim_type": "SOURCE_LOOKUP_STATUS",
@@ -460,8 +460,8 @@
       "completeness": "UNKNOWN",
       "freshness": "UNKNOWN",
       "strength": "HINT",
-      "raw_ref": "observation://467ea7db-9fc3-409d-b132-394f1c8d411a",
-      "content_hash": "cae634aa940f941655266f1fadcc2e9a66f01fa6cc46b498de1b6fd3f3572296",
+      "raw_ref": "observation://216248ea-f6d5-4e47-8718-dfa15c98d4c9",
+      "content_hash": "82146457baf8457ee227381086ddf78f2d2e017644c24b0f4bf32e1b6bcfec7c",
       "created_at": "2026-09-10T09:30:55+08:00",
       "metadata": {
         "extractor_version": "1",
@@ -476,7 +476,7 @@
     {
       "evidence_id": "E-fab231de61b5f94eaba2abdbb2c54ab75d56ed5ef6224081c479d34aac422533",
       "case_id": "CASE-JD202609100001",
-      "observation_id": "43d6a53f-b128-46d4-828d-5722ec9cdcf0",
+      "observation_id": "a623b051-5bf1-4449-81e2-06899379272b",
       "tool": "get_fund_order",
       "source_kind": "CACHE",
       "claim_type": "SOURCE_LOOKUP_STATUS",
@@ -495,8 +495,8 @@
       "completeness": "PARTIAL",
       "freshness": "STALE",
       "strength": "HINT",
-      "raw_ref": "observation://43d6a53f-b128-46d4-828d-5722ec9cdcf0",
-      "content_hash": "f555ba1f758010f986fe318f069376222e7e5908d5d20e14006d2292d59d9b68",
+      "raw_ref": "observation://a623b051-5bf1-4449-81e2-06899379272b",
+      "content_hash": "91bb9999ac41dca6a4f60e01cc7a00b5d5e6d460bca99be694874f2b435b1d26",
       "created_at": "2026-09-10T09:31:10+08:00",
       "metadata": {
         "extractor_version": "1",
@@ -511,7 +511,7 @@
     {
       "evidence_id": "E-e493626d0885a9678cc75e3b206d951d08fc6f1e2b4a295f7680ef9a23058c6d",
       "case_id": "CASE-JD202609100001",
-      "observation_id": "6eb121d2-8b44-4acf-a51f-e8297a0eda4b",
+      "observation_id": "282760e7-53ee-40d9-a37e-fe17f3eee490",
       "tool": "get_payment_transaction",
       "source_kind": "PRIMARY",
       "claim_type": "SOURCE_LOOKUP_STATUS",
@@ -530,8 +530,8 @@
       "completeness": "UNKNOWN",
       "freshness": "UNKNOWN",
       "strength": "HINT",
-      "raw_ref": "observation://6eb121d2-8b44-4acf-a51f-e8297a0eda4b",
-      "content_hash": "46aa814805c37deef8701db739aa66a7599a5ec1e49336bbebcb0da5cb4fee62",
+      "raw_ref": "observation://282760e7-53ee-40d9-a37e-fe17f3eee490",
+      "content_hash": "6828656d7fd089930b8c18069b9795b44554e05c98ba3273879e4cad29fb6487",
       "created_at": "2026-09-10T09:31:25+08:00",
       "metadata": {
         "extractor_version": "1",

@@ -3,13 +3,14 @@ from typing import Protocol
 
 from credit_harness.domain.enums import ToolName
 from credit_harness.evidence.repository import EvidenceRepository
-from credit_harness.tools.contracts import Observation, ToolQuery
+from credit_harness.tools.contracts import DispatchCorrelationId, Observation, ToolQuery
 from .models import CaseToolResult
 from .repository import CaseRepository
 
 
 class ReadOnlyToolClient(Protocol):
-    def observe(self, tool: ToolName, query: ToolQuery) -> Observation: ...
+    def observe(self, tool: ToolName, query: ToolQuery, *,
+                dispatch_correlation_id: DispatchCorrelationId) -> Observation: ...
 
 
 class CaseToolExecutor:
@@ -26,7 +27,9 @@ class CaseToolExecutor:
         try:
             # The configured client uses the existing tool credential and HTTP API.
             # Its result is verified against durable ObservationRow before extraction.
-            observation = self._client_for_case(case_id).observe(tool, query)
+            observation = self._client_for_case(case_id).observe(
+                tool, query, dispatch_correlation_id=call_id,
+            )
             refs = self.evidence.record_call(case_id, call_id, observation)
         except Exception:
             # A dispatched attempt consumes budget even on transport failure/crash.

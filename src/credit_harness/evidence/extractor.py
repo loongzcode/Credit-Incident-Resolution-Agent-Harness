@@ -101,6 +101,10 @@ class EvidenceExtractor:
                 if r.error is not None:
                     emit(C.MESSAGE_ERROR_CODE, r.error.code, f"/data/records/{index}/error/code", **subject)
                     emit(C.MESSAGE_ERROR_FIELD, r.error.field, f"/data/records/{index}/error/field", **subject)
+                    emit(C.MESSAGE_EXPECTED_FIELD_TYPE, r.error.expected_type.value,
+                         f"/data/records/{index}/error/expected_type", **subject)
+                    emit(C.MESSAGE_ACTUAL_FIELD_TYPE, r.error.actual_type.value,
+                         f"/data/records/{index}/error/actual_type", **subject)
         elif isinstance(data, ProtocolData):
             r = data.record
             subject = dict(kind=S.PROTOCOL, identifier=f"{r.partner}@{r.protocol_version}",

@@ -22,16 +22,17 @@ from credit_harness.domain.enums import ScenarioId, ToolName
 from credit_harness.evidence.repository import EvidenceRepository
 from credit_harness.persistence.store import SimulatorAdmin, create_schema, open_engine, token_hash
 from credit_harness.simulator.scenarios import build_scenario
-from credit_harness.tools.contracts import Observation, ToolQuery
+from credit_harness.tools.contracts import DISPATCH_CORRELATION_HEADER, Observation, ToolQuery
 
 
 class LocalHTTPClient:
     def __init__(self, http, token):
         self._http, self._token = http, token
 
-    def observe(self, tool, query):
+    def observe(self, tool, query, *, dispatch_correlation_id):
         response = self._http.post(f"/tools/{tool.value}", json=query.model_dump(mode="json"),
-                                    headers={"Authorization": f"Bearer {self._token}"})
+                                    headers={"Authorization": f"Bearer {self._token}",
+                                             DISPATCH_CORRELATION_HEADER: dispatch_correlation_id})
         response.raise_for_status()
         return Observation.model_validate(response.json())
 

@@ -63,6 +63,8 @@ class ObservationRow(Base):
     request: Mapped[dict] = mapped_column(JSON)
     observation: Mapped[dict] = mapped_column(JSON)
     content_hash: Mapped[str] = mapped_column(String(64))
+    # NULL is allowed for standalone simulator calls and legacy observations.
+    dispatch_correlation_id: Mapped[str | None] = mapped_column(String(36))
 
 
 def token_hash(token: str) -> str:
@@ -75,8 +77,11 @@ def open_engine(url: str) -> Engine:
 
 
 def create_schema(engine: Engine) -> None:
-    """Bootstrap this simulator schema only; no destructive reset/migration."""
+    """Additive bootstrap, including Step 2.5 provenance columns on existing DBs."""
+    from .migrations import add_dispatch_correlation_columns
+
     Base.metadata.create_all(engine)
+    add_dispatch_correlation_columns(engine)
 
 
 def snapshots(session: Session, simulation_id: str) -> list[tuple[int, WorldState]]:
@@ -164,4 +169,3 @@ class SimulatorAdmin:
             row = session.get(GrantRow, token_hash(token))
             if row is not None:
                 session.delete(row)
-

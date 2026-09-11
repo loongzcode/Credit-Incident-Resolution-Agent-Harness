@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.engine import Engine
 
@@ -10,7 +10,9 @@ from credit_harness.settings import database_url
 from credit_harness.simulator.service import (
     AuthenticationError, ObservationService, QueryError, ScopeError,
 )
-from credit_harness.tools.contracts import Observation, ToolQuery
+from credit_harness.tools.contracts import (
+    DISPATCH_CORRELATION_HEADER, DispatchCorrelationId, Observation, ToolQuery,
+)
 
 
 def create_app(engine: Engine | None = None) -> FastAPI:
@@ -23,11 +25,15 @@ def create_app(engine: Engine | None = None) -> FastAPI:
         tool: ToolName,
         query: ToolQuery,
         credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
+        dispatch_correlation_id: Annotated[
+            DispatchCorrelationId | None, Header(alias=DISPATCH_CORRELATION_HEADER),
+        ] = None,
     ):
         if credentials is None:
             raise HTTPException(status_code=401, detail="tool credential required")
         try:
-            return service.observe(credentials.credentials, tool, query)
+            return service.observe(credentials.credentials, tool, query,
+                                   dispatch_correlation_id=dispatch_correlation_id)
         except AuthenticationError as error:
             raise HTTPException(status_code=401, detail=str(error)) from error
         except ScopeError as error:
@@ -36,4 +42,3 @@ def create_app(engine: Engine | None = None) -> FastAPI:
             raise HTTPException(status_code=422, detail=str(error)) from error
 
     return app
-

@@ -22,6 +22,8 @@ class CaseCallRow(Base):
     __tablename__ = "case_tool_calls"
     __table_args__ = (UniqueConstraint("case_id", "sequence"),)
     call_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    # New dispatches always use call_id. NULL preserves uncorrelated legacy rows.
+    dispatch_correlation_id: Mapped[str | None] = mapped_column(String(36))
     case_id: Mapped[str] = mapped_column(ForeignKey("investigation_cases.case_id"), index=True)
     sequence: Mapped[int] = mapped_column(Integer)
     tool: Mapped[str] = mapped_column(String(50))
