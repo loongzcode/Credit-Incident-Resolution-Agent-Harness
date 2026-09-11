@@ -69,6 +69,9 @@ class EvidenceMetadata(Model):
     source_path: str
     # Query is small, immutable and scoped. Raw response stays in ObservationRow.
     scope: ToolQuery
+    # Visible DTO identity links; absence in legacy Evidence means no known link.
+    fund_request_id: str | None = None
+    callback_event_id: str | None = None
 
 
 class Evidence(Model):

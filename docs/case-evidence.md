@@ -1,5 +1,7 @@
 # Case Runtime 与 Evidence Store v1 — Step 2.5 hardening
 
+后续 Step 3 已实现独立 [Hypothesis Engine](hypothesis-engine.md)。为保持跨系统关联在 Evidence 层内，提取器版本 2 补充可见的 fund_request_id / callback_event_id Metadata；S6 仍为 27 条原子 Evidence。旧记录保留版本 1，缺少链接时不猜测，Hypothesis 层不回读原始 Observation。本页后续“本阶段”描述的是 Step 2/2.5 的交付边界。
+
 ## 范围与目录
 
 在既有 Simulator 上新增模块，不修改业务世界、Fault Projection 或只读 Tool Grant。`cases/` 管理调查任务、执行入口与预算；`evidence/` 管理观测到的原子事实和来源。没有将任务契约塞进 Simulator，也没有引入通用工作流框架。

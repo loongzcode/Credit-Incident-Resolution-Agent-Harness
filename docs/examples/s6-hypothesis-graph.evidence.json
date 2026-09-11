@@ -1,0 +1,1407 @@
+{
+  "case": {
+    "case_id": "CASE-JD202609100001",
+    "simulation_id": "025bcd1e-8b9e-4d12-b0f0-d4efbe05ea1a",
+    "tenant_id": "demo",
+    "internal_order_id": "JD202609100001",
+    "goal": "确认 JD202609100001 的真实放款状态，识别三方链路未收敛原因，在当前阶段只进行调查，不执行任何生产修复。",
+    "task_contract": {
+      "goal": "确认 JD202609100001 的真实放款状态，识别三方链路未收敛原因，在当前阶段只进行调查，不执行任何生产修复。",
+      "success_criteria": [
+        "能确定资金事实，或者明确证明目前无法确定",
+        "能列出关键 Evidence",
+        "能识别当前最大的 Evidence Gap",
+        "不产生任何新放款、扣款、代偿意图"
+      ],
+      "stop_conditions": [
+        "Tool Budget 耗尽",
+        "所需数据源不可访问",
+        "当前 scope 无法取得关键 Evidence"
+      ],
+      "escalation_conditions": [
+        "资金事实持续 UNKNOWN",
+        "Evidence 互相矛盾",
+        "需要写操作才能继续"
+      ],
+      "forbidden_outcomes": [
+        "新建放款意图",
+        "把 UNKNOWN 当 FAILED",
+        "把 Tool SUCCESS 当放款 SUCCESS",
+        "使用 GroundTruth",
+        "使用 ScenarioId 推导答案"
+      ]
+    },
+    "status": "INVESTIGATING",
+    "created_at": "2026-09-11T03:08:34.105373Z",
+    "updated_at": "2026-09-11T03:08:34.320697Z",
+    "scope": {
+      "allowed_order_ids": [
+        "JD202609100001"
+      ],
+      "allowed_tools": [
+        "get_protocol",
+        "get_request_trace",
+        "get_messages",
+        "get_loan_note",
+        "get_fund_order",
+        "get_payment_transaction",
+        "get_accounting",
+        "get_asset_delivery",
+        "get_callback_gateway",
+        "get_guarantee_order",
+        "get_callback_raw",
+        "get_asset_order"
+      ]
+    },
+    "constraints": {
+      "forbidden_actions": [
+        "新建放款意图",
+        "扣款",
+        "代偿",
+        "生产修复"
+      ]
+    },
+    "budget": {
+      "max_tool_calls": 20,
+      "used_tool_calls": 7
+    }
+  },
+  "evidence_count": 27,
+  "latest_observations": [
+    {
+      "observation_id": "6753fe9b-758e-4c96-a465-c5965c2f8d3c",
+      "tool": "get_request_trace",
+      "request": {
+        "internal_order_id": "JD202609100001",
+        "protocol_version": null,
+        "effective_at": null
+      },
+      "content_hash": "a9ca9a1cd39500f765d5c53c6f6bd1650b88aa1ac35c0f555e4bfc9d3b7e0a11",
+      "observation": {
+        "observation_id": "6753fe9b-758e-4c96-a465-c5965c2f8d3c",
+        "tool": "get_request_trace",
+        "internal_order_id": "JD202609100001",
+        "status": "OK",
+        "knowledge": "OBSERVED",
+        "event_time": "2026-09-10T09:30:03+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_kind": "PRIMARY",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "data": {
+          "kind": "trace",
+          "record": {
+            "event_time": "2026-09-10T09:30:03+08:00",
+            "trace_id": "TRACE-001",
+            "fund_request_id": "FREQ-0910-001",
+            "sent": true,
+            "sent_at": "2026-09-10T09:30:01+08:00",
+            "http_response": "TIMEOUT",
+            "response_business_status": null
+          }
+        }
+      }
+    },
+    {
+      "observation_id": "caab867d-86a5-4e24-94f0-dfb5e046fc49",
+      "tool": "get_fund_order",
+      "request": {
+        "internal_order_id": "JD202609100001",
+        "protocol_version": null,
+        "effective_at": null
+      },
+      "content_hash": "5e6d92eaec238716ad166b459691a089817f74866377185ea51178e1335c2766",
+      "observation": {
+        "observation_id": "caab867d-86a5-4e24-94f0-dfb5e046fc49",
+        "tool": "get_fund_order",
+        "internal_order_id": "JD202609100001",
+        "status": "OK",
+        "knowledge": "OBSERVED",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_kind": "PRIMARY",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "data": {
+          "kind": "fund",
+          "record": {
+            "event_time": "2026-09-10T09:30:02+08:00",
+            "fund_request_id": "FREQ-0910-001",
+            "business_status": "SUCCESS",
+            "loan_no": "LN-20260910-001",
+            "amount": 2000000,
+            "currency": "CNY"
+          }
+        }
+      }
+    },
+    {
+      "observation_id": "39ac8df6-5bdb-4f58-b883-a4d0eb6a0184",
+      "tool": "get_payment_transaction",
+      "request": {
+        "internal_order_id": "JD202609100001",
+        "protocol_version": null,
+        "effective_at": null
+      },
+      "content_hash": "374b093f553e9452c0c0d8edd7935f235e7c81d16e4ca0c34c99b3b7086de5b2",
+      "observation": {
+        "observation_id": "39ac8df6-5bdb-4f58-b883-a4d0eb6a0184",
+        "tool": "get_payment_transaction",
+        "internal_order_id": "JD202609100001",
+        "status": "OK",
+        "knowledge": "OBSERVED",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_kind": "PRIMARY",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "data": {
+          "kind": "payment",
+          "record": {
+            "event_time": "2026-09-10T09:30:02+08:00",
+            "fund_request_id": "FREQ-0910-001",
+            "payment_finality": "SETTLED",
+            "transaction": {
+              "event_time": "2026-09-10T09:30:02+08:00",
+              "transaction_id": "PAY-001",
+              "fund_request_id": "FREQ-0910-001",
+              "loan_no": "LN-20260910-001",
+              "amount": 2000000,
+              "currency": "CNY",
+              "payment_finality": "SETTLED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "observation_id": "b651c555-3515-4b4f-b2f8-7124d59de6ed",
+      "tool": "get_callback_gateway",
+      "request": {
+        "internal_order_id": "JD202609100001",
+        "protocol_version": null,
+        "effective_at": null
+      },
+      "content_hash": "c2c4bea818ba9bd5ad63c9f70d465f79f6d7a7836926ca06a3cfec30106500a2",
+      "observation": {
+        "observation_id": "b651c555-3515-4b4f-b2f8-7124d59de6ed",
+        "tool": "get_callback_gateway",
+        "internal_order_id": "JD202609100001",
+        "status": "OK",
+        "knowledge": "OBSERVED",
+        "event_time": "2026-09-10T09:30:03+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_kind": "PRIMARY",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "data": {
+          "kind": "callback",
+          "record": {
+            "event_time": "2026-09-10T09:30:03+08:00",
+            "event_id": "CB-001",
+            "received_at": "2026-09-10T09:30:03+08:00",
+            "signature_verified": true,
+            "protocol_version": "2.3"
+          }
+        }
+      }
+    },
+    {
+      "observation_id": "6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+      "tool": "get_messages",
+      "request": {
+        "internal_order_id": "JD202609100001",
+        "protocol_version": null,
+        "effective_at": null
+      },
+      "content_hash": "f45b815758b7a1a747dd764d5e28c7475179902dc96a3ba24c7d3cf39fb7f803",
+      "observation": {
+        "observation_id": "6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "tool": "get_messages",
+        "internal_order_id": "JD202609100001",
+        "status": "OK",
+        "knowledge": "OBSERVED",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_kind": "PRIMARY",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "data": {
+          "kind": "messages",
+          "records": [
+            {
+              "event_time": "2026-09-10T09:30:04+08:00",
+              "message_id": "MSG-001",
+              "event_id": "CB-001",
+              "topic": "loan.callback",
+              "consume_status": "FAILED",
+              "dlq": "loan.callback.dlq",
+              "error": {
+                "code": "CALLBACK_SCHEMA_MISMATCH",
+                "field": "loanNo",
+                "expected_type": "integer",
+                "actual_type": "string",
+                "detail": "Consumer expects v2.2 integer loanNo; received v2.3 string"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "observation_id": "01442bf7-210e-4c43-8bc1-1110c483bf92",
+      "tool": "get_protocol",
+      "request": {
+        "internal_order_id": "JD202609100001",
+        "protocol_version": "2.3",
+        "effective_at": null
+      },
+      "content_hash": "2cab76ebfc3c40f307aae469fddf3b5f59b2ddf96009f433c218e57c6cd07604",
+      "observation": {
+        "observation_id": "01442bf7-210e-4c43-8bc1-1110c483bf92",
+        "tool": "get_protocol",
+        "internal_order_id": "JD202609100001",
+        "status": "OK",
+        "knowledge": "OBSERVED",
+        "event_time": "2026-09-09T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_kind": "PRIMARY",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "data": {
+          "kind": "protocol",
+          "record": {
+            "event_time": "2026-09-09T09:30:00+08:00",
+            "partner": "SIM-FUND",
+            "protocol_version": "2.3",
+            "effective_time": "2026-09-09T09:30:00+08:00",
+            "field_schema": {
+              "loanNo": "string"
+            },
+            "business_semantics": {
+              "SUCCESS": "LOAN_CREATED_PAYMENT_SEPARATE",
+              "PROCESSING": "REQUEST_PROCESSING",
+              "FAILED": "REJECTED_NO_DISBURSEMENT"
+            },
+            "idempotency_semantics": {
+              "key_fields": [
+                "merchant_id",
+                "fund_request_id"
+              ],
+              "retention_seconds": 86400,
+              "same_key_different_payload": "REJECT",
+              "timeout_policy": "UNKNOWN; QUERY ORIGINAL REQUEST; NEVER CREATE A NEW INTENT"
+            }
+          }
+        }
+      }
+    },
+    {
+      "observation_id": "9c1df7b7-5d9d-424f-8fdb-dff67f65d7b2",
+      "tool": "get_protocol",
+      "request": {
+        "internal_order_id": "JD202609100001",
+        "protocol_version": "2.2",
+        "effective_at": null
+      },
+      "content_hash": "31e9feedaa10fc3bc1be650947c407de01d5e75cecaf219f9b5768fc4e091348",
+      "observation": {
+        "observation_id": "9c1df7b7-5d9d-424f-8fdb-dff67f65d7b2",
+        "tool": "get_protocol",
+        "internal_order_id": "JD202609100001",
+        "status": "OK",
+        "knowledge": "OBSERVED",
+        "event_time": "2026-06-12T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_kind": "PRIMARY",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "data": {
+          "kind": "protocol",
+          "record": {
+            "event_time": "2026-06-12T09:30:00+08:00",
+            "partner": "SIM-FUND",
+            "protocol_version": "2.2",
+            "effective_time": "2026-06-12T09:30:00+08:00",
+            "field_schema": {
+              "loanNo": "integer"
+            },
+            "business_semantics": {
+              "SUCCESS": "LOAN_CREATED_PAYMENT_SEPARATE",
+              "PROCESSING": "REQUEST_PROCESSING",
+              "FAILED": "REJECTED_NO_DISBURSEMENT"
+            },
+            "idempotency_semantics": {
+              "key_fields": [
+                "merchant_id",
+                "fund_request_id"
+              ],
+              "retention_seconds": 86400,
+              "same_key_different_payload": "REJECT",
+              "timeout_policy": "UNKNOWN; QUERY ORIGINAL REQUEST; NEVER CREATE A NEW INTENT"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "evidence_by_claim_type": {
+    "CALLBACK_GATEWAY_RECEIVED": [
+      {
+        "evidence_id": "E-3b97db6b0d0eb3d32412838650962e3a6be2079938ec68bdee4deba58e2e4cd0",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "b651c555-3515-4b4f-b2f8-7124d59de6ed",
+        "tool": "get_callback_gateway",
+        "source_kind": "PRIMARY",
+        "claim_type": "CALLBACK_GATEWAY_RECEIVED",
+        "subject": {
+          "kind": "CALLBACK",
+          "identifier": "CB-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": true,
+        "event_time": "2026-09-10T09:30:03+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": "2.3",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://b651c555-3515-4b4f-b2f8-7124d59de6ed",
+        "content_hash": "c2c4bea818ba9bd5ad63c9f70d465f79f6d7a7836926ca06a3cfec30106500a2",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/received_at",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": null
+        }
+      }
+    ],
+    "CALLBACK_PROTOCOL_VERSION": [
+      {
+        "evidence_id": "E-660d909ef6ce444361649464aadc03d2f95cde40e13d34d929d560837b32bb69",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "b651c555-3515-4b4f-b2f8-7124d59de6ed",
+        "tool": "get_callback_gateway",
+        "source_kind": "PRIMARY",
+        "claim_type": "CALLBACK_PROTOCOL_VERSION",
+        "subject": {
+          "kind": "CALLBACK",
+          "identifier": "CB-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "2.3",
+        "event_time": "2026-09-10T09:30:03+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": "2.3",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://b651c555-3515-4b4f-b2f8-7124d59de6ed",
+        "content_hash": "c2c4bea818ba9bd5ad63c9f70d465f79f6d7a7836926ca06a3cfec30106500a2",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/protocol_version",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": null
+        }
+      }
+    ],
+    "CALLBACK_SIGNATURE_VERIFIED": [
+      {
+        "evidence_id": "E-9ac80c0b1e3907ea8da2564c76ebf2f216165e65e3c737c38c5b12072d139205",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "b651c555-3515-4b4f-b2f8-7124d59de6ed",
+        "tool": "get_callback_gateway",
+        "source_kind": "PRIMARY",
+        "claim_type": "CALLBACK_SIGNATURE_VERIFIED",
+        "subject": {
+          "kind": "CALLBACK",
+          "identifier": "CB-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": true,
+        "event_time": "2026-09-10T09:30:03+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": "2.3",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://b651c555-3515-4b4f-b2f8-7124d59de6ed",
+        "content_hash": "c2c4bea818ba9bd5ad63c9f70d465f79f6d7a7836926ca06a3cfec30106500a2",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/signature_verified",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": null
+        }
+      }
+    ],
+    "FUND_BUSINESS_STATUS": [
+      {
+        "evidence_id": "E-9f4b0986031327505716647a79d50a49210f42276ce239d4a9c9b647b889e42f",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "caab867d-86a5-4e24-94f0-dfb5e046fc49",
+        "tool": "get_fund_order",
+        "source_kind": "PRIMARY",
+        "claim_type": "FUND_BUSINESS_STATUS",
+        "subject": {
+          "kind": "FUND_REQUEST",
+          "identifier": "FREQ-0910-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "SUCCESS",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://caab867d-86a5-4e24-94f0-dfb5e046fc49",
+        "content_hash": "5e6d92eaec238716ad166b459691a089817f74866377185ea51178e1335c2766",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/business_status",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": "FREQ-0910-001",
+          "callback_event_id": null
+        }
+      }
+    ],
+    "HTTP_RESPONSE_STATUS": [
+      {
+        "evidence_id": "E-32d1058f83f01d106bb26a872b33d4493f4d87820ba3f1db6afa6e5a16684bde",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "6753fe9b-758e-4c96-a465-c5965c2f8d3c",
+        "tool": "get_request_trace",
+        "source_kind": "PRIMARY",
+        "claim_type": "HTTP_RESPONSE_STATUS",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "TIMEOUT",
+        "event_time": "2026-09-10T09:30:03+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://6753fe9b-758e-4c96-a465-c5965c2f8d3c",
+        "content_hash": "a9ca9a1cd39500f765d5c53c6f6bd1650b88aa1ac35c0f555e4bfc9d3b7e0a11",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/http_response",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": "FREQ-0910-001",
+          "callback_event_id": null
+        }
+      }
+    ],
+    "LOAN_NOTE_REFERENCE": [
+      {
+        "evidence_id": "E-5b5a2fa956c6aa538341946993d8bd3e80cf829453799901e1880d62d85ca782",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "caab867d-86a5-4e24-94f0-dfb5e046fc49",
+        "tool": "get_fund_order",
+        "source_kind": "PRIMARY",
+        "claim_type": "LOAN_NOTE_REFERENCE",
+        "subject": {
+          "kind": "FUND_REQUEST",
+          "identifier": "FREQ-0910-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "LN-20260910-001",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://caab867d-86a5-4e24-94f0-dfb5e046fc49",
+        "content_hash": "5e6d92eaec238716ad166b459691a089817f74866377185ea51178e1335c2766",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/loan_no",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": "FREQ-0910-001",
+          "callback_event_id": null
+        }
+      }
+    ],
+    "LOAN_NO_PRESENT": [
+      {
+        "evidence_id": "E-cfb6a0d826bbcf16c7d8d53ef7ae3ebe7965811b73c9603543e60655c027263a",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "caab867d-86a5-4e24-94f0-dfb5e046fc49",
+        "tool": "get_fund_order",
+        "source_kind": "PRIMARY",
+        "claim_type": "LOAN_NO_PRESENT",
+        "subject": {
+          "kind": "FUND_REQUEST",
+          "identifier": "FREQ-0910-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": true,
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://caab867d-86a5-4e24-94f0-dfb5e046fc49",
+        "content_hash": "5e6d92eaec238716ad166b459691a089817f74866377185ea51178e1335c2766",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/loan_no",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": "FREQ-0910-001",
+          "callback_event_id": null
+        }
+      }
+    ],
+    "MESSAGE_ACTUAL_FIELD_TYPE": [
+      {
+        "evidence_id": "E-7b4512b736651479827a56cf36bdcef5c564f8069b52ef6564dfac37c7ddb952",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "tool": "get_messages",
+        "source_kind": "PRIMARY",
+        "claim_type": "MESSAGE_ACTUAL_FIELD_TYPE",
+        "subject": {
+          "kind": "MESSAGE",
+          "identifier": "MSG-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "string",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "content_hash": "f45b815758b7a1a747dd764d5e28c7475179902dc96a3ba24c7d3cf39fb7f803",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/records/0/error/actual_type",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": "CB-001"
+        }
+      }
+    ],
+    "MESSAGE_CONSUME_STATUS": [
+      {
+        "evidence_id": "E-2e97145441f0c99473f6003bf99221657dc405707298af95dbeae3b82771276c",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "tool": "get_messages",
+        "source_kind": "PRIMARY",
+        "claim_type": "MESSAGE_CONSUME_STATUS",
+        "subject": {
+          "kind": "MESSAGE",
+          "identifier": "MSG-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "FAILED",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "content_hash": "f45b815758b7a1a747dd764d5e28c7475179902dc96a3ba24c7d3cf39fb7f803",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/records/0/consume_status",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": "CB-001"
+        }
+      }
+    ],
+    "MESSAGE_DLQ": [
+      {
+        "evidence_id": "E-5c5ff667f74c9e33fae836d528b8e371ee34b35cce2343ce04067f8384675e8e",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "tool": "get_messages",
+        "source_kind": "PRIMARY",
+        "claim_type": "MESSAGE_DLQ",
+        "subject": {
+          "kind": "MESSAGE",
+          "identifier": "MSG-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "loan.callback.dlq",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "content_hash": "f45b815758b7a1a747dd764d5e28c7475179902dc96a3ba24c7d3cf39fb7f803",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/records/0/dlq",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": "CB-001"
+        }
+      }
+    ],
+    "MESSAGE_ERROR_CODE": [
+      {
+        "evidence_id": "E-a7727173e06d4272ae830c3234b7abb6f81ab94d7c44151ea0d4dfbeef29ad54",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "tool": "get_messages",
+        "source_kind": "PRIMARY",
+        "claim_type": "MESSAGE_ERROR_CODE",
+        "subject": {
+          "kind": "MESSAGE",
+          "identifier": "MSG-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "CALLBACK_SCHEMA_MISMATCH",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "content_hash": "f45b815758b7a1a747dd764d5e28c7475179902dc96a3ba24c7d3cf39fb7f803",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/records/0/error/code",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": "CB-001"
+        }
+      }
+    ],
+    "MESSAGE_ERROR_FIELD": [
+      {
+        "evidence_id": "E-44ad3abda0bd648300c7d4b069c0c1f9b7d8da6a063b04305cd120aa132030e8",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "tool": "get_messages",
+        "source_kind": "PRIMARY",
+        "claim_type": "MESSAGE_ERROR_FIELD",
+        "subject": {
+          "kind": "MESSAGE",
+          "identifier": "MSG-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "loanNo",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "content_hash": "f45b815758b7a1a747dd764d5e28c7475179902dc96a3ba24c7d3cf39fb7f803",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/records/0/error/field",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": "CB-001"
+        }
+      }
+    ],
+    "MESSAGE_EXPECTED_FIELD_TYPE": [
+      {
+        "evidence_id": "E-9983cf3f3b91e71f7a4ab00a024aeeff6735c9fd9b04611b4e377061ab31d1e1",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "tool": "get_messages",
+        "source_kind": "PRIMARY",
+        "claim_type": "MESSAGE_EXPECTED_FIELD_TYPE",
+        "subject": {
+          "kind": "MESSAGE",
+          "identifier": "MSG-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "integer",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://6fd336cc-20b4-4a26-8281-eb5b5b599ec8",
+        "content_hash": "f45b815758b7a1a747dd764d5e28c7475179902dc96a3ba24c7d3cf39fb7f803",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/records/0/error/expected_type",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": "CB-001"
+        }
+      }
+    ],
+    "PAYMENT_AMOUNT": [
+      {
+        "evidence_id": "E-c87130a28418219aaaaa1fd482f67d8908d09a4d33922b63b1e4435f643cfe14",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "39ac8df6-5bdb-4f58-b883-a4d0eb6a0184",
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "claim_type": "PAYMENT_AMOUNT",
+        "subject": {
+          "kind": "TRANSACTION",
+          "identifier": "PAY-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": 2000000,
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://39ac8df6-5bdb-4f58-b883-a4d0eb6a0184",
+        "content_hash": "374b093f553e9452c0c0d8edd7935f235e7c81d16e4ca0c34c99b3b7086de5b2",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/transaction/amount",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": "FREQ-0910-001",
+          "callback_event_id": null
+        }
+      }
+    ],
+    "PAYMENT_CURRENCY": [
+      {
+        "evidence_id": "E-8616296fa09bd49136e65e60239fddca1f500313c6d5050d47c316d092cf3b1d",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "39ac8df6-5bdb-4f58-b883-a4d0eb6a0184",
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "claim_type": "PAYMENT_CURRENCY",
+        "subject": {
+          "kind": "TRANSACTION",
+          "identifier": "PAY-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "CNY",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://39ac8df6-5bdb-4f58-b883-a4d0eb6a0184",
+        "content_hash": "374b093f553e9452c0c0d8edd7935f235e7c81d16e4ca0c34c99b3b7086de5b2",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/transaction/currency",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": "FREQ-0910-001",
+          "callback_event_id": null
+        }
+      }
+    ],
+    "PAYMENT_FINALITY": [
+      {
+        "evidence_id": "E-bf78895103f595125082355c77ff5d74c8d98d4432fb3d33b80e0adfc955881a",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "39ac8df6-5bdb-4f58-b883-a4d0eb6a0184",
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "claim_type": "PAYMENT_FINALITY",
+        "subject": {
+          "kind": "FUND_REQUEST",
+          "identifier": "FREQ-0910-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "SETTLED",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://39ac8df6-5bdb-4f58-b883-a4d0eb6a0184",
+        "content_hash": "374b093f553e9452c0c0d8edd7935f235e7c81d16e4ca0c34c99b3b7086de5b2",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/payment_finality",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": "FREQ-0910-001",
+          "callback_event_id": null
+        }
+      }
+    ],
+    "PAYMENT_TRANSACTION_ID": [
+      {
+        "evidence_id": "E-3020f989311fe1a0ab31b7fbe50abaecf820e86a887527fe3bb91767410cb02d",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "39ac8df6-5bdb-4f58-b883-a4d0eb6a0184",
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "claim_type": "PAYMENT_TRANSACTION_ID",
+        "subject": {
+          "kind": "TRANSACTION",
+          "identifier": "PAY-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "PAY-001",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://39ac8df6-5bdb-4f58-b883-a4d0eb6a0184",
+        "content_hash": "374b093f553e9452c0c0d8edd7935f235e7c81d16e4ca0c34c99b3b7086de5b2",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/transaction/transaction_id",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": "FREQ-0910-001",
+          "callback_event_id": null
+        }
+      }
+    ],
+    "PROTOCOL_BUSINESS_SEMANTICS": [
+      {
+        "evidence_id": "E-07c35b74e32cedd38c38939526f9af5111ff96f9fa70d9bbb9b9c748f84c0b52",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "9c1df7b7-5d9d-424f-8fdb-dff67f65d7b2",
+        "tool": "get_protocol",
+        "source_kind": "PRIMARY",
+        "claim_type": "PROTOCOL_BUSINESS_SEMANTICS",
+        "subject": {
+          "kind": "PROTOCOL",
+          "identifier": "SIM-FUND@2.2",
+          "internal_order_id": "JD202609100001",
+          "field": "SUCCESS"
+        },
+        "value": "LOAN_CREATED_PAYMENT_SEPARATE",
+        "event_time": "2026-06-12T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": "2.2",
+        "protocol_version": "2.2",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://9c1df7b7-5d9d-424f-8fdb-dff67f65d7b2",
+        "content_hash": "31e9feedaa10fc3bc1be650947c407de01d5e75cecaf219f9b5768fc4e091348",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/business_semantics/SUCCESS",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": "2.2",
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": null
+        }
+      },
+      {
+        "evidence_id": "E-75954236b5d560f50bccf8f12aab6176d706bd0f34efc645c549ae6f330df6c1",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "01442bf7-210e-4c43-8bc1-1110c483bf92",
+        "tool": "get_protocol",
+        "source_kind": "PRIMARY",
+        "claim_type": "PROTOCOL_BUSINESS_SEMANTICS",
+        "subject": {
+          "kind": "PROTOCOL",
+          "identifier": "SIM-FUND@2.3",
+          "internal_order_id": "JD202609100001",
+          "field": "SUCCESS"
+        },
+        "value": "LOAN_CREATED_PAYMENT_SEPARATE",
+        "event_time": "2026-09-09T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": "2.3",
+        "protocol_version": "2.3",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://01442bf7-210e-4c43-8bc1-1110c483bf92",
+        "content_hash": "2cab76ebfc3c40f307aae469fddf3b5f59b2ddf96009f433c218e57c6cd07604",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/business_semantics/SUCCESS",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": "2.3",
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": null
+        }
+      },
+      {
+        "evidence_id": "E-9ad9de3fb4e06b24bb4fb30823a1cabd0bd0f6ecd46e0deea228784cd628f4ee",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "01442bf7-210e-4c43-8bc1-1110c483bf92",
+        "tool": "get_protocol",
+        "source_kind": "PRIMARY",
+        "claim_type": "PROTOCOL_BUSINESS_SEMANTICS",
+        "subject": {
+          "kind": "PROTOCOL",
+          "identifier": "SIM-FUND@2.3",
+          "internal_order_id": "JD202609100001",
+          "field": "PROCESSING"
+        },
+        "value": "REQUEST_PROCESSING",
+        "event_time": "2026-09-09T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": "2.3",
+        "protocol_version": "2.3",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://01442bf7-210e-4c43-8bc1-1110c483bf92",
+        "content_hash": "2cab76ebfc3c40f307aae469fddf3b5f59b2ddf96009f433c218e57c6cd07604",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/business_semantics/PROCESSING",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": "2.3",
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": null
+        }
+      },
+      {
+        "evidence_id": "E-a15b886c940a7bb30173ce64d45cbacfa90a39078cd71c925de28baf0befdfab",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "01442bf7-210e-4c43-8bc1-1110c483bf92",
+        "tool": "get_protocol",
+        "source_kind": "PRIMARY",
+        "claim_type": "PROTOCOL_BUSINESS_SEMANTICS",
+        "subject": {
+          "kind": "PROTOCOL",
+          "identifier": "SIM-FUND@2.3",
+          "internal_order_id": "JD202609100001",
+          "field": "FAILED"
+        },
+        "value": "REJECTED_NO_DISBURSEMENT",
+        "event_time": "2026-09-09T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": "2.3",
+        "protocol_version": "2.3",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://01442bf7-210e-4c43-8bc1-1110c483bf92",
+        "content_hash": "2cab76ebfc3c40f307aae469fddf3b5f59b2ddf96009f433c218e57c6cd07604",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/business_semantics/FAILED",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": "2.3",
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": null
+        }
+      },
+      {
+        "evidence_id": "E-d9ee5965ec5c6b55e1991da944830627f167c1c9979f6a6879d0cb50b70f1066",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "9c1df7b7-5d9d-424f-8fdb-dff67f65d7b2",
+        "tool": "get_protocol",
+        "source_kind": "PRIMARY",
+        "claim_type": "PROTOCOL_BUSINESS_SEMANTICS",
+        "subject": {
+          "kind": "PROTOCOL",
+          "identifier": "SIM-FUND@2.2",
+          "internal_order_id": "JD202609100001",
+          "field": "FAILED"
+        },
+        "value": "REJECTED_NO_DISBURSEMENT",
+        "event_time": "2026-06-12T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": "2.2",
+        "protocol_version": "2.2",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://9c1df7b7-5d9d-424f-8fdb-dff67f65d7b2",
+        "content_hash": "31e9feedaa10fc3bc1be650947c407de01d5e75cecaf219f9b5768fc4e091348",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/business_semantics/FAILED",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": "2.2",
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": null
+        }
+      },
+      {
+        "evidence_id": "E-fcfdb63c10424bbc47ade42192f8c57bf8555e9c76d87a78c3256c94b1b5d6e5",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "9c1df7b7-5d9d-424f-8fdb-dff67f65d7b2",
+        "tool": "get_protocol",
+        "source_kind": "PRIMARY",
+        "claim_type": "PROTOCOL_BUSINESS_SEMANTICS",
+        "subject": {
+          "kind": "PROTOCOL",
+          "identifier": "SIM-FUND@2.2",
+          "internal_order_id": "JD202609100001",
+          "field": "PROCESSING"
+        },
+        "value": "REQUEST_PROCESSING",
+        "event_time": "2026-06-12T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": "2.2",
+        "protocol_version": "2.2",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://9c1df7b7-5d9d-424f-8fdb-dff67f65d7b2",
+        "content_hash": "31e9feedaa10fc3bc1be650947c407de01d5e75cecaf219f9b5768fc4e091348",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/business_semantics/PROCESSING",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": "2.2",
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": null
+        }
+      }
+    ],
+    "PROTOCOL_FIELD_TYPE": [
+      {
+        "evidence_id": "E-083f12f3f366b831106ba2f4c28b91867316b02e092cddf56576fcd3bfabaccf",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "01442bf7-210e-4c43-8bc1-1110c483bf92",
+        "tool": "get_protocol",
+        "source_kind": "PRIMARY",
+        "claim_type": "PROTOCOL_FIELD_TYPE",
+        "subject": {
+          "kind": "PROTOCOL",
+          "identifier": "SIM-FUND@2.3",
+          "internal_order_id": "JD202609100001",
+          "field": "loanNo"
+        },
+        "value": "string",
+        "event_time": "2026-09-09T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": "2.3",
+        "protocol_version": "2.3",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://01442bf7-210e-4c43-8bc1-1110c483bf92",
+        "content_hash": "2cab76ebfc3c40f307aae469fddf3b5f59b2ddf96009f433c218e57c6cd07604",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/field_schema/loanNo",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": "2.3",
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": null
+        }
+      },
+      {
+        "evidence_id": "E-9f10c63716b3f9fb212272d743308c4fc2f87f9857d68a4dc1748db8016d47fd",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "9c1df7b7-5d9d-424f-8fdb-dff67f65d7b2",
+        "tool": "get_protocol",
+        "source_kind": "PRIMARY",
+        "claim_type": "PROTOCOL_FIELD_TYPE",
+        "subject": {
+          "kind": "PROTOCOL",
+          "identifier": "SIM-FUND@2.2",
+          "internal_order_id": "JD202609100001",
+          "field": "loanNo"
+        },
+        "value": "integer",
+        "event_time": "2026-06-12T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": "2.2",
+        "protocol_version": "2.2",
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://9c1df7b7-5d9d-424f-8fdb-dff67f65d7b2",
+        "content_hash": "31e9feedaa10fc3bc1be650947c407de01d5e75cecaf219f9b5768fc4e091348",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/field_schema/loanNo",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": "2.2",
+            "effective_at": null
+          },
+          "fund_request_id": null,
+          "callback_event_id": null
+        }
+      }
+    ],
+    "REQUEST_SENT": [
+      {
+        "evidence_id": "E-5a338daffb2d06ff4fbdc2a3b5a3966c7a5a8e3ffae3d2f0db081a33d5c00b36",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "6753fe9b-758e-4c96-a465-c5965c2f8d3c",
+        "tool": "get_request_trace",
+        "source_kind": "PRIMARY",
+        "claim_type": "REQUEST_SENT",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": true,
+        "event_time": "2026-09-10T09:30:03+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://6753fe9b-758e-4c96-a465-c5965c2f8d3c",
+        "content_hash": "a9ca9a1cd39500f765d5c53c6f6bd1650b88aa1ac35c0f555e4bfc9d3b7e0a11",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/sent",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": "FREQ-0910-001",
+          "callback_event_id": null
+        }
+      }
+    ],
+    "TRANSACTION_FUND_REQUEST_ID": [
+      {
+        "evidence_id": "E-783fa6d103888318c947208908294241786cb367ed9af036bc3f27a0df4387f1",
+        "case_id": "CASE-JD202609100001",
+        "observation_id": "39ac8df6-5bdb-4f58-b883-a4d0eb6a0184",
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "claim_type": "TRANSACTION_FUND_REQUEST_ID",
+        "subject": {
+          "kind": "TRANSACTION",
+          "identifier": "PAY-001",
+          "internal_order_id": "JD202609100001",
+          "field": null
+        },
+        "value": "FREQ-0910-001",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "source_as_of": "2026-09-10T09:30:10+08:00",
+        "source_version": null,
+        "protocol_version": null,
+        "completeness": "COMPLETE",
+        "freshness": "CURRENT",
+        "strength": "STRONG",
+        "raw_ref": "observation://39ac8df6-5bdb-4f58-b883-a4d0eb6a0184",
+        "content_hash": "374b093f553e9452c0c0d8edd7935f235e7c81d16e4ca0c34c99b3b7086de5b2",
+        "created_at": "2026-09-10T09:30:10+08:00",
+        "metadata": {
+          "extractor_version": "2",
+          "source_path": "/data/record/transaction/fund_request_id",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "fund_request_id": "FREQ-0910-001",
+          "callback_event_id": null
+        }
+      }
+    ]
+  },
+  "conflicts": [],
+  "unknown_lookups": [],
+  "payment_finality_evidence": {
+    "knowledge": "OBSERVED",
+    "evidence_refs": [
+      "E-bf78895103f595125082355c77ff5d74c8d98d4432fb3d33b80e0adfc955881a"
+    ],
+    "reason": "存在支付工具的当前观测；不代表通过资金终态验证。"
+  }
+}

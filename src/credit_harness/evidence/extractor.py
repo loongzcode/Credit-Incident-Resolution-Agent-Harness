@@ -39,7 +39,7 @@ class EvidenceExtractor:
         # created_at is the extraction input's observation time, ensuring repeatability.
         # Case updated_at and conflict detected_at use the runtime clock separately.
         def emit(claim, value, path, *, kind=S.ORDER, identifier=None, field=None,
-                 event_time=None, protocol=None, version=None):
+                 event_time=None, protocol=None, version=None, callback_event_id=None):
             strength = (EvidenceStrength.HINT if claim == C.SOURCE_LOOKUP_STATUS else
                         EvidenceStrength.WEAK if o.freshness != Freshness.CURRENT else
                         EvidenceStrength.STRONG if o.source_kind == SourceKind.PRIMARY else
@@ -55,7 +55,12 @@ class EvidenceExtractor:
                 completeness=o.completeness, freshness=o.freshness, strength=strength,
                 raw_ref=f"observation://{o.observation_id}",
                 content_hash=json_hash(o.model_dump(mode="json")), created_at=o.observed_at,
-                metadata=EvidenceMetadata(source_path=path, scope=query),
+                metadata=EvidenceMetadata(
+                    extractor_version="2", source_path=path, scope=query,
+                    fund_request_id=(data.record.fund_request_id if isinstance(
+                        data, (TraceData, FundData, PaymentData, GuaranteeData, LoanNoteData),
+                    ) else None), callback_event_id=callback_event_id,
+                ),
             )
             output.append(evidence.model_copy(update={"evidence_id": "E-" + fingerprint(evidence)}))
 
@@ -93,7 +98,8 @@ class EvidenceExtractor:
                      identifier=r.event_id, protocol=r.protocol_version)
         elif isinstance(data, MessagesData):
             for index, r in enumerate(data.records):
-                subject = dict(kind=S.MESSAGE, identifier=r.message_id, event_time=r.event_time)
+                subject = dict(kind=S.MESSAGE, identifier=r.message_id, event_time=r.event_time,
+                               callback_event_id=r.event_id)
                 emit(C.MESSAGE_CONSUME_STATUS, r.consume_status.value,
                      f"/data/records/{index}/consume_status", **subject)
                 if r.dlq is not None:
