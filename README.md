@@ -2,7 +2,7 @@
 
 接管资深信贷生产支持工程师对“三方放款状态异常订单”的调查、受控修复、故障恢复和独立验收工作。
 
-**当前状态：已实现 Simulator、Case Runtime、Evidence Store、Hypothesis、Context Boundary、LLM Planner、Step 6 只读调查循环，以及 Step 7 修复建议与确定性预检。** 调查阶段每轮最多执行一个经验证及数据库 CAS 的只读 Tool。独立修复建议阶段只生成 Evidence-bound Proposal / Preflight / PROPOSED Intent，绝不执行修复。默认 Fake 离线运行，可选独立 OpenAI 结构化输出适配器。写执行、审批、Capability、独立 Evaluator 和 Crash Recovery 尚未实现；下文整体项目契约仍包含后续建设目标。
+**当前状态：已实现 Simulator、Case Runtime、Evidence Store、Hypothesis、Context Boundary、LLM Planner、Step 6 只读调查循环、Step 7 修复建议与确定性预检，以及 Step 8 持久化审批、签名 Capability 和幂等 synthetic 非资金副作用边界。** 调查阶段每轮最多执行一个经验证及数据库 CAS 的只读 Tool。独立修复建议阶段仍只生成 PROPOSED Intent；可信授权服务重新预检后，执行器才允许一个受限的模拟消息/通知/任务效果。默认 Fake 离线运行，可选独立 OpenAI 结构化输出适配器。真实金融写入、独立 Evaluator 和 Crash Recovery 尚未实现；下文整体项目契约仍包含后续建设目标。
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。
 
@@ -20,7 +20,9 @@ Step 6 见 [Agent Runtime 文档](docs/agent-runtime.md)。运行 `python script
 
 第一阶段全部使用 Simulator。目标是以可本地运行的系统证明生产关键约束：真实状态与工具返回分离、证据驱动调查、权限控制、幂等执行、崩溃恢复和独立验收。
 
-Step 7 见 [Remediation Boundary 文档](docs/remediation-boundary.md)。运行 `python scripts/demo_remediation.py --scenario S6 --provider fake`：先完成只读调查，再独立演示重放建议因当前部署兼容性未知被阻断、人工复核 Intent 保持 PROPOSED。`--scenario S8` 展示 UNKNOWN 不允许 L2 修复。`--provider openai` 仅替换修复建议模型，使用 `REMEDIATION_MODEL`；调查前置流程仍使用 Fake。所有预检输出都不是执行授权，没有 Step 8 写入口。
+Step 7 见 [Remediation Boundary 文档](docs/remediation-boundary.md)。运行 `python scripts/demo_remediation.py --scenario S6 --provider fake`：先完成只读调查，再独立演示重放建议因当前部署兼容性未知被阻断、人工复核 Intent 保持 PROPOSED。`--scenario S8` 展示 UNKNOWN 不允许 L2 修复。`--provider openai` 仅替换修复建议模型，使用 `REMEDIATION_MODEL`；调查前置流程仍使用 Fake。所有预检输出都不是执行授权，该演示不调用 Step 8。
+
+Step 8 见 [Side-Effect Boundary 文档](docs/side-effect-boundary.md)。配置环境变量 `CAPABILITY_SIGNING_SECRET` 后，运行 `python scripts/demo_side_effect.py` 演示 S6-ready 的审批、单效果签名凭据、PREPARED → DISPATCHED → APPLIED、幂等重复请求，以及再次 Read 后出现的 CONSUMED Evidence。`--scenario S7` 演示通知重投；`--administrative` 演示任务行；`--timeout` 演示效果发生但响应丢失后保持 UNKNOWN；`--reject` 演示不签发、不执行。执行不会写 Evidence、改变资金事实或关闭 Case。授权与执行服务不向模型开放，调查循环保持只读。
 
 暂定技术栈：**Python、FastAPI、Pydantic、PostgreSQL、SQLAlchemy、pytest**。采用模块化单体 monorepo，不引入 LangGraph、CrewAI、AutoGen。
 

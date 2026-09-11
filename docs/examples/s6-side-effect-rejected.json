@@ -1,0 +1,63 @@
+{
+  "case_id": "CASE-JD202609100001",
+  "intent": {
+    "intent_id": "86edd66919fde417ad1e521eb5900586f95de0c192588f0f63562a99b1f288fc",
+    "case_id": "CASE-JD202609100001",
+    "tenant_id": "demo",
+    "internal_order_id": "JD202609100001",
+    "action_type": "REPLAY_CALLBACK_CONSUMPTION",
+    "risk_level": "L2_SINGLE_ORDER_SIDE_EFFECT",
+    "target": {
+      "case_id": "CASE-JD202609100001",
+      "tenant_id": "demo",
+      "internal_order_id": "JD202609100001",
+      "callback_event_ref": "CB-001",
+      "message_ref": "MSG-001",
+      "delivery_ref": null
+    },
+    "supporting_evidence_refs": [
+      "E-052fd90176b0987bcbcc6e0327cc15c480e03be6f65bd1d422f0b5469fcb3ed8",
+      "E-1939b072e949ec0594650d930a523f29ff5eb5be0241125d77cfacfcc44c5592",
+      "E-1ad05f3ff84cec64791899197b0e43090b1bcc906f7d12439246aec5a37ab38d",
+      "E-22cd36defcd0347b6df4d7c92bd22ca5be8e724599cc38af8df69032ae7f811d",
+      "E-2b15a79249c4b0c2b8dff46f14ed115db706598e25d62bfdaea8f10e123eecc2",
+      "E-2fb606751d9a64e53ab3d3b7909eb373a0b9723ffcccd264df53caaae315b27a",
+      "E-3b277e0a47f21caa5825a14320e13fabbd207ac9bc4688ffee1e160ef95b513f",
+      "E-5af2786f6718b9d8eaf5b8c1153e4e7c9117eaf38a9b27488d9fe6c4ce092d6d",
+      "E-69faaa755d414809f40a09b8212db36bf75e589153e8bb07fe0cacb6fdf56187",
+      "E-6c2db7c30c47b11a4a305f2039d558217089392a1ca40d94a3259159d6882c13",
+      "E-72072f7fd95461b4b7ce8e8e5e3c76ef8cab12a2ea407c6f6952051059477dab",
+      "E-7f5a2ca72f905c73f595e6512020ac4c456a07d543b390afee83d0bfcc5e54fa",
+      "E-97be804ea45357e1d471033179626c20d260098e272fde6b7f3b12dfc7c04f23",
+      "E-97beb89f621ea2ebbd4df62e492dba9b481657580e71a9c6576dbbfc3d732cef",
+      "E-9ad2a8807618da1ad07d8462a0469fb84cd03ecbe8dd35d9426b0f3928748c95",
+      "E-aea56151365cc3a24bb275c84d9b7eb392f0d6f9d3ab00ae1ff1d64f7cde94d4",
+      "E-b127f354e7f4f503a1f7fbc4bb9bc2c4a72c724a7c3e377c17299341970ffcb3",
+      "E-bf0b6cedbb517f0997cd3f2478e0a88deaff15073e715389b23bfb1373de17b8",
+      "E-d18e10273520bc2b31b890136929601353258440a0a9a8042f77ac95ed9cf5e1",
+      "E-e61c38c51a383de51df3ae38700f138982ec7e8d9dae146ef2577b508554da21",
+      "E-fc81849598adf97080fff930e57b586d68ddb2c53b458a3f8553528213190fcb",
+      "E-fdd8fa0f39281b59fcc08f88eb457fc16378884d421b291397aad8e0826b70b3",
+      "E-ff1247207c2f8424d9e50329053f9967ae5d56d42932b8df44de3f106ff01020"
+    ],
+    "snapshot_id": "0fc47da9bd6a59316f580ccf3ddcbaa56c309d6b693b8f2be61dd13566b86ce7",
+    "evidence_hash": "1d020ccf36dfbb04121e968d0c7d9f881be3f3e72f8235845962251f6ae3cdb2",
+    "catalog_version": "2",
+    "policy_version": "2",
+    "preflight_fingerprint": "9af956dfa8a6d9626ea53d3e96672d1d2a76af5bf982046dd0056e88fe26e189",
+    "requires_approval": true,
+    "requires_capability": true,
+    "status": "PROPOSED"
+  },
+  "approval": {
+    "approval_id": "5d947ddc-6d50-4365-86d2-9cfb779b9061",
+    "status": "REJECTED",
+    "requested_at": "2026-09-11T13:37:44.359603Z",
+    "decided_at": "2026-09-11T13:37:44.368250Z",
+    "expires_at": "2026-09-11T13:42:44.359603Z",
+    "actor_ref": "OPERATOR-001",
+    "reason_code": "OPERATOR_REJECTED"
+  },
+  "execution": "NOT_AUTHORIZED",
+  "case_status": "INVESTIGATING"
+}

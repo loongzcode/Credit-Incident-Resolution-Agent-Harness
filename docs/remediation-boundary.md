@@ -212,6 +212,6 @@ docs/examples/s8-remediation.json
 
 另更新 README、.env.example、Tool DTO、Evidence claim/extractor、Context claim 类型与 eligibility version、Graph catalog relevant claims / aggregate version、外部引用 alias，以及两条现有版本断言。没有改 Case Runtime、数据库表、现有 Simulator 场景、正常 Observation projection、Tool dispatch、调查 Planner policy / ranking 或 Agent Loop。
 
-## Step 8 明确未实现
+## Step 7 的阶段边界与后续实现
 
-Approval、Capability Token、SideEffectLedger、真正 Idempotency、Domain Command、业务 Side Effect、崩溃恢复、Independent Evaluator 都留待 Step 8 及后续。没有发 Callback、重新消费 MQ、重投资产通知、创建 reconciliation task、新资金意图、改变金额/账户/收款方、Case CLOSED、Shell/SQL/HTTP 写入口。已有 UI 不增加执行按钮；不新建 UI。不接真实数据、不引入 LangGraph / CrewAI / AutoGen，不新增微服务。
+Step 7 自身仍不包含 Approval、Capability Token、SideEffectLedger、Idempotency 或 Domain Command 执行。后续新增的独立授权与 synthetic 非资金效果实现见 [Step 8 文档](side-effect-boundary.md)，不会改变 RemediationPlanner 在 PROPOSED Intent 处停止的契约。崩溃恢复、Independent Evaluator、真实金融写入、Case CLOSED、UI 执行按钮仍未实现。不接真实数据、不引入 LangGraph / CrewAI / AutoGen，不新增微服务。
