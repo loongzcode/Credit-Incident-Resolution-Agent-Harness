@@ -13,13 +13,22 @@ from .audit import InMemoryPlannerAuditStore, PlannerAuditRecord
 
 
 class PlannerService:
-    def __init__(self, model: PlannerModel, *, audit=None):
+    def __init__(self, model: PlannerModel, *, audit=None, guidance_provider=None):
         self.model = model
+        self.guidance_provider = guidance_provider
         self.audit = audit if audit is not None else InMemoryPlannerAuditStore()
 
-    def plan(self, snapshot: ReasoningContextSnapshot) -> PlannerDecision:
+    def plan(self, snapshot: ReasoningContextSnapshot, *, guidance=None) -> PlannerDecision:
         renderer = ModelInputRenderer()
-        bundle = renderer.render(snapshot)
+        if guidance is None and self.guidance_provider is not None:
+            try:
+                guidance = self.guidance_provider.build(snapshot)
+            except Exception:
+                guidance = None
+        bundle = renderer.render(snapshot, guidance)
+        guidance_refs = dict(guidance_fingerprint=bundle.guidance_fingerprint,
+            skill_refs=tuple(s.skill for s in bundle.organizational_guidance.active_skills) if bundle.organizational_guidance else (),
+            experience_refs=tuple(e.experience_id for e in bundle.historical_guidance.verified_experiences) if bundle.historical_guidance else ())
         input_hash = digest(bundle.model_dump(mode="json"))
         try:
             draft = parse_draft(self.model.plan(bundle))
@@ -51,7 +60,7 @@ class PlannerService:
         decision = PlannerDecision(decision_id=decision_id, snapshot_id=snapshot.snapshot_id,
             planner_draft_hash=output_hash, valid_candidates=tuple(valid), rejected_candidates=tuple(rejected),
             selected_action=ranked[0] if ranked else None, selection_reason=reason, ranking_details=details,
-            planner_model_metadata=metadata, created_at=snapshot.assembled_at)
+            planner_model_metadata=metadata, created_at=snapshot.assembled_at, **guidance_refs)
         self.audit.append(PlannerAuditRecord(decision_id=decision_id, case_id=snapshot.case_id,
             snapshot_id=snapshot.snapshot_id, planner_schema_version=decision.planner_schema_version,
             policy_version=decision.policy_version, ranking_version=decision.ranking_version,
@@ -59,6 +68,6 @@ class PlannerService:
             model_provider=metadata.model_provider, model_name=metadata.model_name,
             input_hash=input_hash, output_hash=output_hash, validated_at=decision.created_at,
             selected_action=decision.selected_action, rejection_summary=decision.rejected_candidates,
-            usage_metadata=metadata))
+            usage_metadata=metadata, **guidance_refs))
         # Intentional STOP. No execution client, callback, credential, or dispatcher.
         return decision

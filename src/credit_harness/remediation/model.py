@@ -1,6 +1,6 @@
 from typing import Protocol
 from pydantic import ValidationError
-from credit_harness.planner.models import PlannerModelMetadata
+from credit_harness.planner.metadata import PlannerModelMetadata
 from .models import RemediationInputBundle, RemediationDraft, RemediationProtocolError
 
 

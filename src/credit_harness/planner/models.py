@@ -14,10 +14,12 @@ from credit_harness.context.models import (
 )
 from credit_harness.context.structured_values import ContextReference, OpaqueSubjectRef
 from credit_harness.identity.models import FinancialSubject
+from credit_harness.memory.models import OrganizationalGuidanceSection, HistoricalGuidanceSection, SkillRef
+from .metadata import PlannerModelMetadata
 
 PLANNER_SCHEMA_VERSION = "1"
 PLANNER_POLICY_VERSION = "3"
-MODEL_INPUT_SCHEMA_VERSION = "1"
+MODEL_INPUT_SCHEMA_VERSION = "2"
 ACTION_RANKING_VERSION = "1"
 ShortText = Annotated[str, Field(max_length=600)]
 CandidateId = Annotated[str, Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")]
@@ -121,6 +123,9 @@ class ModelInputBundle(Model):
     deterministic_derived: DeterministicDerived
     untrusted_external_data: UntrustedExternalData
     planner_output_schema: dict[str, JsonValue]
+    organizational_guidance: OrganizationalGuidanceSection | None = None
+    historical_guidance: HistoricalGuidanceSection | None = None
+    guidance_fingerprint: Hash | None = None
 
     @property
     def model_visible_payload(self):
@@ -169,13 +174,6 @@ class RankingDetail(Model):
     repeated_query_penalty: int
 
 
-class PlannerModelMetadata(Model):
-    model_provider: str
-    model_name: str
-    input_tokens: Annotated[int, Field(ge=0)] | None = None
-    output_tokens: Annotated[int, Field(ge=0)] | None = None
-
-
 class PlannerDecision(Model):
     decision_id: Hash
     snapshot_id: Hash
@@ -191,6 +189,9 @@ class PlannerDecision(Model):
     ranking_version: str = ACTION_RANKING_VERSION
     model_input_schema_version: str = MODEL_INPUT_SCHEMA_VERSION
     created_at: AwareDatetime
+    guidance_fingerprint: Hash | None = None
+    skill_refs: tuple[SkillRef, ...] = ()
+    experience_refs: tuple[Hash, ...] = ()
 
 
 class PlannerUnavailable(RuntimeError):

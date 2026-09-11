@@ -6,13 +6,15 @@ from credit_harness.context.budget import snapshot_digest, fits
 from .models import ModelInputBundle, PlannerDraft, PlannerProtocolError
 from .aliases import ReferenceAliasProjector
 from .prompt_contract import SYSTEM_CONTRACT
+from credit_harness.memory.models import OrganizationalGuidanceSection, HistoricalGuidanceSection
+from credit_harness.memory.guidance import validate_guidance
 
 
 class ModelInputRenderer:
     def __init__(self):
         self.alias_map = MappingProxyType({})
 
-    def render(self, snapshot: ReasoningContextSnapshot) -> ModelInputBundle:
+    def render(self, snapshot: ReasoningContextSnapshot, guidance=None) -> ModelInputBundle:
         self.alias_map = MappingProxyType({})
         ContextEnvelopeInvariantValidator().validate(snapshot)
         if snapshot.snapshot_id != snapshot_digest(snapshot) or not fits(snapshot):
@@ -27,7 +29,16 @@ class ModelInputRenderer:
             "deterministic_derived": sections[T.DETERMINISTIC_DERIVED],
             "untrusted_external_data": sections[T.UNTRUSTED_EXTERNAL_DATA],
         })
+        extra = {}
+        if guidance is not None:
+            try:
+                guidance = validate_guidance(guidance, snapshot)
+                extra = dict(organizational_guidance=OrganizationalGuidanceSection(active_skills=guidance.active_skills),
+                    historical_guidance=HistoricalGuidanceSection(verified_experiences=guidance.verified_experiences),
+                    guidance_fingerprint=guidance.guidance_fingerprint)
+            except Exception:
+                pass  # malformed guidance is omitted, never promoted to control
         bundle = ModelInputBundle(snapshot_id=snapshot.snapshot_id, system_contract=SYSTEM_CONTRACT,
-                                  planner_output_schema=PlannerDraft.model_json_schema(), **projection.payload)
+                                  planner_output_schema=PlannerDraft.model_json_schema(), **projection.payload, **extra)
         self.alias_map = projection.alias_map
         return bundle

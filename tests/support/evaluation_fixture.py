@@ -47,7 +47,7 @@ READS = (T.TRACE, T.FUND, T.PAYMENT, T.GUARANTEE, T.ASSET, T.ACCOUNTING,
 
 
 class EvaluationFixture:
-    def __init__(self, engine, *, scenario=ScenarioId.S6):
+    def __init__(self, engine, *, scenario=ScenarioId.S6, case_id=CASE, tenant_id="demo"):
         self.engine = engine
         for create in (create_schema, create_harness_schema, create_authorization_schema,
                        create_synthetic_effect_schema, create_evaluation_schema):
@@ -60,10 +60,10 @@ class EvaluationFixture:
         # Align Case audit timestamps with this fixture's controlled clock too;
         # a historical simulation must not appear closed before Case creation.
         self.stack.enter_context(patch.object(case_repository, "utc_now", self.business_time))
-        self.cases = CaseRepository(engine, "demo")
+        self.cases = CaseRepository(engine, tenant_id)
         started_at = self.business_time()
         task = investigation_case(self.sid, max_tool_calls=100).model_copy(update={
-            "created_at": started_at, "updated_at": started_at})
+            "created_at": started_at, "updated_at": started_at, "case_id": case_id, "tenant_id": tenant_id})
         self.case = CaseService(self.cases).create(task, tool_credential=self.token)
         self.evidence = EvidenceRepository(self.cases)
         http = self.stack.enter_context(TestClient(create_app(engine)))
@@ -90,11 +90,11 @@ class EvaluationFixture:
     def read(self, *tools):
         for tool in tools or READS:
             self.advance(1)
-            self.executor.execute(CASE, tool, ToolQuery(internal_order_id=self.case.internal_order_id))
+            self.executor.execute(self.case.case_id, tool, ToolQuery(internal_order_id=self.case.internal_order_id))
         if not tools:
             for version in ("2.3", "2.2"):
                 self.advance(1)
-                self.executor.execute(CASE, T.PROTOCOL,
+                self.executor.execute(self.case.case_id, T.PROTOCOL,
                     ToolQuery(internal_order_id=self.case.internal_order_id, protocol_version=version))
 
     def progress(self, *, converged=True, no_disbursement=False, transaction_updates=None, changes=None):
@@ -137,13 +137,13 @@ class EvaluationFixture:
 
     def remediate(self, action=A.REPLAY_CALLBACK_CONSUMPTION, *, timeout=False, prepared_only=False):
         def proposal(bundle):
-            state = self.reader.read(CASE)
+            state = self.reader.read(self.case.case_id)
             return RemediationDraft(snapshot_id=bundle.snapshot_id, candidates=(RemediationCandidate(
                 candidate_id="synthetic-action", action_type=action, target_order_id=self.case.internal_order_id,
                 target_problem_ids=("H6",) if action == A.REPLAY_CALLBACK_CONSUMPTION else
                     ("H4",) if action == A.REQUEST_OPERATOR_REVIEW else ("H7",),
                 evidence_refs=tuple(e.evidence_id for e in state.index.evidence), reason_summary="Synthetic test proposal."),))
-        decision = RemediationPlanner(self.reader, FakeRemediationModel(proposal)).plan(CASE)
+        decision = RemediationPlanner(self.reader, FakeRemediationModel(proposal)).plan(self.case.case_id)
         assert decision.final_intent is not None
         signer = HMACCapabilitySigner()
         self.auth = RemediationAuthorizationService(self.reader, signer, clock=lambda: self.clock.now)
@@ -154,7 +154,7 @@ class EvaluationFixture:
                 decision=ApprovalStatus.APPROVED, actor_ref="SYNTHETIC-OPERATOR"))
         self.capability = self.auth.issue_capability(decision.final_intent,
             approval_id=approval.approval_id if approval else None)
-        adapter = SyntheticRemediationAdapter(self.engine, "demo")
+        adapter = SyntheticRemediationAdapter(self.engine, self.case.tenant_id)
         class LostResponse:
             def dispatch(_, command, correlation):
                 adapter.dispatch(command, correlation)
@@ -166,4 +166,4 @@ class EvaluationFixture:
         return self.effect
 
     def evaluate(self):
-        return self.repository.record(self.evaluator.evaluate(CASE))
+        return self.repository.record(self.evaluator.evaluate(self.case.case_id))

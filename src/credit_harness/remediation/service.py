@@ -1,5 +1,5 @@
 from credit_harness.context.budget import digest
-from credit_harness.planner.models import PlannerModelMetadata
+from credit_harness.planner.metadata import PlannerModelMetadata
 from .models import (RemediationDecision, RejectedRemediationCandidate, RemediationPreview,
                      PreflightStatus as S, RejectReason as R, RemediationUnavailable, RemediationProtocolError)
 from .catalog import RemediationActionCatalog

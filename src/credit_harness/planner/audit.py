@@ -3,6 +3,7 @@ from credit_harness.domain.models import Model
 from credit_harness.context.models import Hash
 from pydantic import AwareDatetime
 from .models import ValidatedActionProposal, RejectedCandidate, PlannerModelMetadata
+from credit_harness.memory.models import SkillRef
 
 
 class PlannerAuditRecord(Model):
@@ -21,6 +22,9 @@ class PlannerAuditRecord(Model):
     selected_action: ValidatedActionProposal | None
     rejection_summary: tuple[RejectedCandidate, ...]
     usage_metadata: PlannerModelMetadata
+    guidance_fingerprint: Hash | None = None
+    skill_refs: tuple[SkillRef, ...] = ()
+    experience_refs: tuple[Hash, ...] = ()
 
 
 class PlannerAuditStore(Protocol):

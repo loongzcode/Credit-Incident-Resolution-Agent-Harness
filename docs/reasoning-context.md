@@ -248,3 +248,5 @@ Step 4.2 新增 **93 个测试实例**，Step 0–4.1 的 300 个既有测试实
 上文回归数字和压力样例记录 Step 4.2 的历史基线。Step 5 新增只读 capability requirement 描述、RepeatedLookupGroup.latest_consecutive_count、HistoryDigest.lookup_history_complete，因此 schema/context policy 升至 4、compaction 升至 3。连续计数考虑相同 Tool/scope 中间的成功观测；预算/资格省略历史，或 Evidence 去重导致 Observation 来源不足以覆盖 Case.used_tool_calls 时，Planner 保守禁止 CALL_TOOL。既有累计 range/count 及事实、证明和隔离语义保留。
 
 ModelInputRenderer 按 section_trust 输出独立分区，外部引用映射稳定 alias，私有反向映射不传模型。diagnostic view 仍不能作为 Planner 输入。详细错误语义、运行命令、测试与 Step 6 的停止边界见 [Planner 文档](planner.md)。Context 本身没有 SDK、Prompt、Provider 或执行器依赖。
+
+Step 11 的 Skill / Experience 保存在独立 `InvestigationGuidanceBundle`，不写入本 Snapshot、不改变本 Context 的三种 trust class 或 Evidence/Graph 指纹。历史 Guidance 有独立预算与 provenance，由 Planner Renderer 添加到另外两个分区；它不能满足当前 Gap 或确认 Hypothesis。详见 [Organizational Memory](organizational-memory.md)。

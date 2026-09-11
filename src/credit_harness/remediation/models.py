@@ -9,7 +9,7 @@ from credit_harness.context.models import (
     Hash, TaskContext, SafetyContext, PaymentIdentityContext, FactCapsule, HypothesisCapsule, GapCapsule,
 )
 from credit_harness.context.structured_values import OpaqueSubjectRef, ContextReference
-from credit_harness.planner.models import PlannerModelMetadata
+from credit_harness.planner.metadata import PlannerModelMetadata
 
 REMEDIATION_POLICY_VERSION = "2"
 REMEDIATION_CATALOG_VERSION = "2"

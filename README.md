@@ -2,7 +2,7 @@
 
 接管资深信贷生产支持工程师对“三方放款状态异常订单”的调查、受控修复、故障恢复和独立验收工作。
 
-**当前状态：已实现 Simulator、Case Runtime、Evidence Store、Hypothesis、Context Boundary、LLM Planner、Step 6 只读调查循环、Step 7 修复建议与确定性预检、Step 8 持久化授权与 synthetic 非资金副作用边界、Step 9 Durable Recovery，以及 Step 10 Independent Evaluator / Verified Closure。** 调查阶段每轮最多执行一个经验证及数据库 CAS 的只读 Tool。独立修复建议阶段仍只生成 PROPOSED Intent；可信授权服务重新预检后，执行器才允许一个受限的模拟消息/通知/任务效果。Recovery 对已发送但结果未知的效果只读查证，绝不重发。Evaluator 独立检查当前持久 Evidence、身份、三方状态、操作与恢复，只有新的 PASS 经事务重验和 Closure CAS 才能 CLOSED_VERIFIED。默认 Fake 离线运行，可选独立 OpenAI 结构化输出适配器；Evaluator 完全不使用 LLM。真实金融写入与经验学习尚未实现。
+**当前状态：已实现 Simulator、Case Runtime、Evidence Store、Hypothesis、Context Boundary、LLM Planner、Step 6 只读调查循环、Step 7 修复建议与确定性预检、Step 8 持久化授权与 synthetic 非资金副作用边界、Step 9 Durable Recovery，Step 10 Independent Evaluator / Verified Closure，以及 Step 11 Skill Library / Verified Experience Memory。** 调查阶段每轮最多执行一个经验证及数据库 CAS 的只读 Tool。独立修复建议阶段仍只生成 PROPOSED Intent；可信授权服务重新预检后，执行器才允许一个受限的模拟消息/通知/任务效果。Recovery 对已发送但结果未知的效果只读查证，绝不重发。Evaluator 独立检查当前持久 Evidence、身份、三方状态、操作与恢复，只有新的 PASS 经事务重验和 Closure CAS 才能 CLOSED_VERIFIED。默认 Fake 离线运行，可选独立 OpenAI 结构化输出适配器；Evaluator 完全不使用 LLM。已验证关闭的 Case 可显式发布历史经验，供调查 Planner 使用；历史经验不能替代当前 Evidence。真实金融写入与自动修改 Skill 尚未实现。
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。
 
@@ -27,6 +27,8 @@ Step 8 见 [Side-Effect Boundary 文档](docs/side-effect-boundary.md)。配置�
 Step 9 见 [Durable Recovery 文档](docs/recovery.md)。运行 `python scripts/demo_recovery.py --scenario read-orphan` 观察原 Observation 的幂等 Evidence 发布；配置上述 synthetic 签名密钥后，`--scenario effect-timeout` 展示 UNKNOWN 经匹配证明恢复为 APPLIED，`--scenario worker-crash-after-prepared` 展示原授权下首次发送恢复，`--scenario worker-crash-after-dispatch` 展示不确定时只查证、不补发。Recovery 使用数据库 lease/fencing、有限 backoff 和持久化审计；APPLIED 不等于业务验收，Case 不会因此 CLOSED。
 
 Step 10 见 [Independent Evaluator 文档](docs/evaluator.md)。运行 `python scripts/demo_evaluator.py --scenario s6-partially-repaired` 查看“REPLAY APPLIED / MESSAGE CONSUMED，但业务未验收”；`--scenario s6-converged` 展示八维 PASS 后的 CLOSED_VERIFIED。另有 `unknown-effect`、`identity-mismatch` 与 `no-disbursement`。使用上述进程内 synthetic 签名密钥；仅修改模拟外部世界，并经真实 Read Tool 产生证据。Evaluator 不查询外部系统，不把 APPLIED、模型说明或 Hypothesis CONFIRMED 当作关闭证明。
+
+Step 11 见 [Organizational Memory 文档](docs/organizational-memory.md)。运行 `python scripts/demo_memory.py --output .local/memory-demo.json`，使用 synthetic 签名密钥演示两个已验证关闭 Case 的幂等经验发布、ACTIVE Skill v1、tenant 内确定性检索、独立历史 Guidance 与 Planner 审计。当前 Case 实际 Payment 返回 NOT_EXECUTED 时，历史 SETTLED 不会改变当前 Graph / Evaluator。演示采用可检查的 Fake Planner，未宣称真实模型或效率收益；Skill 激活、经验撤销属于可信管理入口。
 
 暂定技术栈：**Python、FastAPI、Pydantic、PostgreSQL、SQLAlchemy、pytest**。采用模块化单体 monorepo，不引入 LangGraph、CrewAI、AutoGen。
 

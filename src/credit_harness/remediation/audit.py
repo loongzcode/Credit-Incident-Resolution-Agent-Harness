@@ -1,7 +1,7 @@
 from typing import Protocol
 from credit_harness.domain.models import Model
 from credit_harness.context.models import Hash
-from credit_harness.planner.models import PlannerModelMetadata
+from credit_harness.planner.metadata import PlannerModelMetadata
 from .models import (RemediationCandidate, RejectedRemediationCandidate, RemediationPreflightResult,
                      REMEDIATION_POLICY_VERSION, REMEDIATION_CATALOG_VERSION)
 

@@ -100,7 +100,8 @@ class SQLApprovalStore:
         decision = ApprovalDecision.model_validate(decision.model_dump())
         current = self.get_approval(decision.approval_id, now)
         with Session(self.engine) as session, session.begin():
-            self._lock_case(session, current.intent.case_id)
+            case = self._lock_case(session, current.intent.case_id)
+            self._require_open(case)
             row = session.get(ApprovalRow, decision.approval_id)
             current = approval_from_row(row, now)
             allowed = current.status == P.PENDING or (current.status == P.APPROVED and decision.decision == P.REVOKED)

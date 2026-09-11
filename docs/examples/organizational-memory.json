@@ -1,0 +1,516 @@
+{
+  "mode": "OFFLINE_FAKE; no measured model-quality or efficiency claim",
+  "notice": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+  "experience_count": 2,
+  "source_closures": [
+    {
+      "case_id": "CASE-MEMORY-A",
+      "closure_id": "5c35a9a9c7fb1eb0da3fc7096b1172a6df6415aa386960741b338d4d1d9977e5",
+      "report_id": "2bd640cf5d5b4cb9b3f6b541bce651629566aea9f2ffe1499f1743e2a547e08c"
+    },
+    {
+      "case_id": "CASE-MEMORY-B",
+      "closure_id": "f77d37ef3dc2fb5e6b2af22c5f2914286f00f15d1e834dc40e9297a79038f233",
+      "report_id": "c82026f7d5480d94f6ca261c3b001dfc6526a0ffb51d81d22920d8ab4e7c9573"
+    }
+  ],
+  "guidance": {
+    "schema_version": "1",
+    "tenant_id": "demo",
+    "case_id": "CASE-MEMORY-C",
+    "snapshot_id": "30ea1677816041ee9026cdf703a54f00b148961cac528d89289230f27bea1b9e",
+    "active_skills": [
+      {
+        "skill": {
+          "skill_id": "tri-party-disbursement",
+          "version": "1"
+        },
+        "evidence_strategy": [
+          {
+            "goal": "ESTABLISH_PAYMENT_FINALITY",
+            "recommended_claim_types": [
+              "PAYMENT_FINALITY",
+              "PAYMENT_TRANSACTION_ID"
+            ],
+            "priority": "SAFETY_CRITICAL",
+            "rationale_code": "MONEY_TRUTH_FIRST"
+          },
+          {
+            "goal": "ESTABLISH_PAYMENT_IDENTITY",
+            "recommended_claim_types": [
+              "PAYMENT_CUSTOMER_REF",
+              "PAYMENT_BENEFICIARY_REF",
+              "PAYMENT_ACCOUNT_REF"
+            ],
+            "priority": "SAFETY_CRITICAL",
+            "rationale_code": "IDENTITY_BEFORE_EFFECT"
+          },
+          {
+            "goal": "INVESTIGATE_CALLBACK_CONSUMPTION",
+            "recommended_claim_types": [
+              "CALLBACK_GATEWAY_RECEIVED",
+              "MESSAGE_CONSUME_STATUS"
+            ],
+            "priority": "DISCRIMINATING",
+            "rationale_code": "CURRENT_GAP_DRIVEN"
+          }
+        ],
+        "safety_invariants": [
+          {
+            "invariant": "CURRENT_EVIDENCE_OVERRIDES_HISTORICAL_PATTERN",
+            "enforced": true
+          },
+          {
+            "invariant": "HISTORICAL_EXPERIENCE_CANNOT_SATISFY_CURRENT_GAP",
+            "enforced": true
+          },
+          {
+            "invariant": "MEMORY_CANNOT_AUTHORIZE_SIDE_EFFECT",
+            "enforced": true
+          },
+          {
+            "invariant": "NO_NEW_DISBURSEMENT_WHILE_PAYMENT_UNKNOWN",
+            "enforced": true
+          }
+        ],
+        "anti_patterns": [
+          "HTTP_TIMEOUT_DOES_NOT_PROVE_PAYMENT_FAILURE",
+          "PAYMENT_IDENTITY_REQUIRED_BEFORE_L2_REMEDIATION",
+          "UNKNOWN_SIDE_EFFECT_MUST_NOT_BE_BLINDLY_RETRIED",
+          "APPLIED_DOES_NOT_PROVE_BUSINESS_CONVERGENCE"
+        ]
+      }
+    ],
+    "verified_experiences": [
+      {
+        "experience_id": "1eeca5aa90c5fb3ef3ca8d28f8429710968d10be51c3b16ea3e8bb6cfbc28cfc",
+        "verified_outcome_path": "SETTLED_PATH",
+        "similarity_features": [
+          "request_transport_status"
+        ],
+        "retrieval_score": 3,
+        "observed_pattern": {
+          "request_transport_status": "TIMEOUT",
+          "fund_business_status": "SUCCESS",
+          "payment_finality_at_detection": "SETTLED",
+          "payment_identity_state": "MATCH",
+          "callback_gateway_state": true,
+          "message_consume_state": "FAILED",
+          "schema_mismatch_present": true,
+          "asset_state": "PROCESSING",
+          "guarantee_state": "PROCESSING",
+          "accounting_state": false,
+          "protocol_version": "2.3",
+          "funding_partner": null,
+          "asset_partner": null,
+          "product_code": null
+        },
+        "useful_evidence_claim_types": [
+          "ACCOUNTING_ENTRY_PRESENT",
+          "ASSET_DELIVERY_EVENT_REF",
+          "ASSET_DELIVERY_STATUS",
+          "ASSET_STATUS",
+          "CALLBACK_GATEWAY_RECEIVED",
+          "CALLBACK_PROTOCOL_VERSION",
+          "CALLBACK_SIGNATURE_VERIFIED",
+          "CONSUMER_ACCEPTED_PROTOCOL_VERSION",
+          "CONSUMER_DEPLOYED_SCHEMA_VERSION",
+          "CONSUMER_LOAN_NO_FIELD_TYPE",
+          "FUND_BUSINESS_STATUS",
+          "GUARANTEE_STATUS",
+          "GUARANTEE_VERSION",
+          "HTTP_RESPONSE_STATUS",
+          "LOAN_NOTE_REFERENCE",
+          "LOAN_NO_PRESENT",
+          "MESSAGE_ACTUAL_FIELD_TYPE",
+          "MESSAGE_CONSUME_STATUS",
+          "MESSAGE_DLQ",
+          "MESSAGE_ERROR_CODE",
+          "MESSAGE_ERROR_FIELD",
+          "MESSAGE_EXPECTED_FIELD_TYPE",
+          "PAYMENT_ACCOUNT_REF",
+          "PAYMENT_AMOUNT",
+          "PAYMENT_BENEFICIARY_REF",
+          "PAYMENT_CURRENCY",
+          "PAYMENT_CUSTOMER_REF",
+          "PAYMENT_FINALITY",
+          "PAYMENT_TRANSACTION_ID",
+          "PROTOCOL_BUSINESS_SEMANTICS",
+          "PROTOCOL_FIELD_TYPE",
+          "REQUEST_SENT",
+          "TRANSACTION_FUND_REQUEST_ID"
+        ],
+        "observed_tool_sequence": [
+          "get_payment_transaction",
+          "get_request_trace",
+          "get_fund_order",
+          "get_payment_transaction",
+          "get_guarantee_order",
+          "get_asset_order",
+          "get_accounting",
+          "get_callback_gateway",
+          "get_messages",
+          "get_asset_delivery",
+          "get_protocol",
+          "get_protocol",
+          "get_messages",
+          "get_asset_order",
+          "get_guarantee_order",
+          "get_accounting",
+          "get_request_trace",
+          "get_fund_order",
+          "get_payment_transaction",
+          "get_guarantee_order",
+          "get_asset_order",
+          "get_accounting",
+          "get_callback_gateway",
+          "get_messages"
+        ],
+        "verified_safety_lessons": [
+          "HTTP_TIMEOUT_DOES_NOT_PROVE_PAYMENT_FAILURE",
+          "PAYMENT_IDENTITY_REQUIRED_BEFORE_L2_REMEDIATION",
+          "APPLIED_DOES_NOT_PROVE_BUSINESS_CONVERGENCE"
+        ],
+        "historical_error_codes": [
+          "CALLBACK_SCHEMA_MISMATCH"
+        ]
+      },
+      {
+        "experience_id": "6f256e9a5dd296461db8035df92296823188835f13ab3e205c07312bafcb2b99",
+        "verified_outcome_path": "SETTLED_PATH",
+        "similarity_features": [
+          "request_transport_status"
+        ],
+        "retrieval_score": 3,
+        "observed_pattern": {
+          "request_transport_status": "TIMEOUT",
+          "fund_business_status": "SUCCESS",
+          "payment_finality_at_detection": "SETTLED",
+          "payment_identity_state": "MATCH",
+          "callback_gateway_state": true,
+          "message_consume_state": "FAILED",
+          "schema_mismatch_present": true,
+          "asset_state": "PROCESSING",
+          "guarantee_state": "PROCESSING",
+          "accounting_state": false,
+          "protocol_version": "2.3",
+          "funding_partner": null,
+          "asset_partner": null,
+          "product_code": null
+        },
+        "useful_evidence_claim_types": [
+          "ACCOUNTING_ENTRY_PRESENT",
+          "ASSET_DELIVERY_EVENT_REF",
+          "ASSET_DELIVERY_STATUS",
+          "ASSET_STATUS",
+          "CALLBACK_GATEWAY_RECEIVED",
+          "CALLBACK_PROTOCOL_VERSION",
+          "CALLBACK_SIGNATURE_VERIFIED",
+          "CONSUMER_ACCEPTED_PROTOCOL_VERSION",
+          "CONSUMER_DEPLOYED_SCHEMA_VERSION",
+          "CONSUMER_LOAN_NO_FIELD_TYPE",
+          "FUND_BUSINESS_STATUS",
+          "GUARANTEE_STATUS",
+          "GUARANTEE_VERSION",
+          "HTTP_RESPONSE_STATUS",
+          "LOAN_NOTE_REFERENCE",
+          "LOAN_NO_PRESENT",
+          "MESSAGE_ACTUAL_FIELD_TYPE",
+          "MESSAGE_CONSUME_STATUS",
+          "MESSAGE_DLQ",
+          "MESSAGE_ERROR_CODE",
+          "MESSAGE_ERROR_FIELD",
+          "MESSAGE_EXPECTED_FIELD_TYPE",
+          "PAYMENT_ACCOUNT_REF",
+          "PAYMENT_AMOUNT",
+          "PAYMENT_BENEFICIARY_REF",
+          "PAYMENT_CURRENCY",
+          "PAYMENT_CUSTOMER_REF",
+          "PAYMENT_FINALITY",
+          "PAYMENT_TRANSACTION_ID",
+          "PROTOCOL_BUSINESS_SEMANTICS",
+          "PROTOCOL_FIELD_TYPE",
+          "REQUEST_SENT",
+          "TRANSACTION_FUND_REQUEST_ID"
+        ],
+        "observed_tool_sequence": [
+          "get_payment_transaction",
+          "get_request_trace",
+          "get_fund_order",
+          "get_payment_transaction",
+          "get_guarantee_order",
+          "get_asset_order",
+          "get_accounting",
+          "get_callback_gateway",
+          "get_messages",
+          "get_asset_delivery",
+          "get_protocol",
+          "get_protocol",
+          "get_messages",
+          "get_asset_order",
+          "get_guarantee_order",
+          "get_accounting",
+          "get_request_trace",
+          "get_fund_order",
+          "get_payment_transaction",
+          "get_guarantee_order",
+          "get_asset_order",
+          "get_accounting",
+          "get_callback_gateway",
+          "get_messages"
+        ],
+        "verified_safety_lessons": [
+          "HTTP_TIMEOUT_DOES_NOT_PROVE_PAYMENT_FAILURE",
+          "PAYMENT_IDENTITY_REQUIRED_BEFORE_L2_REMEDIATION",
+          "APPLIED_DOES_NOT_PROVE_BUSINESS_CONVERGENCE"
+        ],
+        "historical_error_codes": [
+          "CALLBACK_SCHEMA_MISMATCH"
+        ]
+      }
+    ],
+    "guidance_fingerprint": "c61c2a469c3c7a6dd0d7e90c4f50ca5d762b40be14fe932b8dff6b33a4da5313",
+    "skill_versions": [
+      {
+        "skill_id": "tri-party-disbursement",
+        "version": "1"
+      }
+    ],
+    "experience_ids": [
+      "1eeca5aa90c5fb3ef3ca8d28f8429710968d10be51c3b16ea3e8bb6cfbc28cfc",
+      "6f256e9a5dd296461db8035df92296823188835f13ab3e205c07312bafcb2b99"
+    ]
+  },
+  "cold_selected": "ESCALATE",
+  "guided_selected": {
+    "candidate_id": "guided-current-read",
+    "action_type": "CALL_TOOL",
+    "target_gap_ids": [
+      "CASE-MEMORY-C:PAYMENT_FINALITY"
+    ],
+    "tool_name": "get_payment_transaction",
+    "query": {
+      "internal_order_id": "JD202609100001",
+      "protocol_version": null,
+      "effective_at": null
+    },
+    "expected_claim_types": [
+      "PAYMENT_FINALITY"
+    ],
+    "reason_summary": "Active skill suggests obtaining current safety evidence."
+  },
+  "planner_audit": {
+    "decision_id": "184c7cac29963b4f3cdd0fa47f9ad7a623094b0535b01f391d23b623b5416860",
+    "case_id": "CASE-MEMORY-C",
+    "snapshot_id": "30ea1677816041ee9026cdf703a54f00b148961cac528d89289230f27bea1b9e",
+    "planner_schema_version": "1",
+    "policy_version": "3",
+    "ranking_version": "1",
+    "model_input_schema_version": "2",
+    "model_provider": "fake",
+    "model_name": "scripted-v1",
+    "input_hash": "6441b37be63303fc1434fac910e5b142c93dfc06d23a08998600fdb375c8140d",
+    "output_hash": "53134925b2782ae0c2772a014d73b91ce7ad9dc5b612270806c6833d82c3e80e",
+    "validated_at": "2026-09-10T01:34:12Z",
+    "selected_action": {
+      "snapshot_id": "30ea1677816041ee9026cdf703a54f00b148961cac528d89289230f27bea1b9e",
+      "policy_version": "3",
+      "candidate": {
+        "candidate_id": "guided-current-read",
+        "action_type": "CALL_TOOL",
+        "target_gap_ids": [
+          "CASE-MEMORY-C:PAYMENT_FINALITY"
+        ],
+        "tool_name": "get_payment_transaction",
+        "query": {
+          "internal_order_id": "JD202609100001",
+          "protocol_version": null,
+          "effective_at": null
+        },
+        "expected_claim_types": [
+          "PAYMENT_FINALITY"
+        ],
+        "reason_summary": "Active skill suggests obtaining current safety evidence."
+      }
+    },
+    "rejection_summary": [],
+    "usage_metadata": {
+      "model_provider": "fake",
+      "model_name": "scripted-v1",
+      "input_tokens": null,
+      "output_tokens": null
+    },
+    "guidance_fingerprint": "c61c2a469c3c7a6dd0d7e90c4f50ca5d762b40be14fe932b8dff6b33a4da5313",
+    "skill_refs": [
+      {
+        "skill_id": "tri-party-disbursement",
+        "version": "1"
+      }
+    ],
+    "experience_refs": [
+      "1eeca5aa90c5fb3ef3ca8d28f8429710968d10be51c3b16ea3e8bb6cfbc28cfc",
+      "6f256e9a5dd296461db8035df92296823188835f13ab3e205c07312bafcb2b99"
+    ]
+  },
+  "current_payment": [
+    {
+      "case_id": "CASE-MEMORY-C",
+      "evidence_id": "E-b579542a4ecd33f5c614a3978010c84d1009c528f95388ea242a1e58592eb173",
+      "observation_id": "2e3d89c2-879c-4312-8147-15d7dc69113e",
+      "value": "NOT_EXECUTED"
+    }
+  ],
+  "current_hypotheses": {
+    "H1": "ELIMINATED",
+    "H2": "ELIMINATED",
+    "H3": "SUPPORTED",
+    "H4": "SUPPORTED",
+    "H5": "ELIMINATED",
+    "H6": "CONFIRMED",
+    "H6_SCHEMA_MISMATCH": "CONFIRMED",
+    "H6_STALE_CONSUMER_SCHEMA": "SUPPORTED",
+    "H7": "POSSIBLE",
+    "H8": "CONFIRMED"
+  },
+  "current_evaluation": {
+    "verdict": "PASS",
+    "outcome_path": "NO_DISBURSEMENT_PATH"
+  },
+  "current_case_status": "INVESTIGATING",
+  "statistics": {
+    "sample_size": 2,
+    "experience_ids": [
+      "1eeca5aa90c5fb3ef3ca8d28f8429710968d10be51c3b16ea3e8bb6cfbc28cfc",
+      "6f256e9a5dd296461db8035df92296823188835f13ab3e205c07312bafcb2b99"
+    ],
+    "outcome_counts": [
+      {
+        "outcome": "SETTLED_PATH",
+        "count": 2
+      }
+    ],
+    "first_useful_evidence": [
+      {
+        "tool": "get_payment_transaction",
+        "count": 2
+      }
+    ],
+    "tool_yield": [
+      {
+        "tool": "get_accounting",
+        "calls": 6,
+        "calls_with_new_evidence": 6,
+        "new_evidence_count": 6,
+        "median_position": 16.0
+      },
+      {
+        "tool": "get_asset_delivery",
+        "calls": 4,
+        "calls_with_new_evidence": 4,
+        "new_evidence_count": 6,
+        "median_position": 17.5
+      },
+      {
+        "tool": "get_asset_order",
+        "calls": 6,
+        "calls_with_new_evidence": 6,
+        "new_evidence_count": 6,
+        "median_position": 14.0
+      },
+      {
+        "tool": "get_callback_gateway",
+        "calls": 4,
+        "calls_with_new_evidence": 4,
+        "new_evidence_count": 12,
+        "median_position": 15.5
+      },
+      {
+        "tool": "get_fund_order",
+        "calls": 4,
+        "calls_with_new_evidence": 4,
+        "new_evidence_count": 12,
+        "median_position": 10.5
+      },
+      {
+        "tool": "get_guarantee_order",
+        "calls": 6,
+        "calls_with_new_evidence": 6,
+        "new_evidence_count": 12,
+        "median_position": 15.0
+      },
+      {
+        "tool": "get_messages",
+        "calls": 6,
+        "calls_with_new_evidence": 6,
+        "new_evidence_count": 34,
+        "median_position": 13.0
+      },
+      {
+        "tool": "get_payment_transaction",
+        "calls": 6,
+        "calls_with_new_evidence": 6,
+        "new_evidence_count": 48,
+        "median_position": 4.0
+      },
+      {
+        "tool": "get_protocol",
+        "calls": 8,
+        "calls_with_new_evidence": 8,
+        "new_evidence_count": 32,
+        "median_position": 19.0
+      },
+      {
+        "tool": "get_request_trace",
+        "calls": 4,
+        "calls_with_new_evidence": 4,
+        "new_evidence_count": 8,
+        "median_position": 9.5
+      }
+    ]
+  },
+  "skill_improvement_proposal": {
+    "skill_id": "tri-party-disbursement",
+    "base_version": "1",
+    "proposed_evidence_priority_changes": [
+      {
+        "claim_type": "FUND_BUSINESS_STATUS",
+        "proposed_priority": "DISCRIMINATING"
+      },
+      {
+        "claim_type": "HTTP_RESPONSE_STATUS",
+        "proposed_priority": "DISCRIMINATING"
+      },
+      {
+        "claim_type": "LOAN_NOTE_REFERENCE",
+        "proposed_priority": "DISCRIMINATING"
+      },
+      {
+        "claim_type": "LOAN_NO_PRESENT",
+        "proposed_priority": "DISCRIMINATING"
+      },
+      {
+        "claim_type": "PAYMENT_AMOUNT",
+        "proposed_priority": "DISCRIMINATING"
+      },
+      {
+        "claim_type": "PAYMENT_CURRENCY",
+        "proposed_priority": "DISCRIMINATING"
+      },
+      {
+        "claim_type": "REQUEST_SENT",
+        "proposed_priority": "DISCRIMINATING"
+      },
+      {
+        "claim_type": "TRANSACTION_FUND_REQUEST_ID",
+        "proposed_priority": "DISCRIMINATING"
+      }
+    ],
+    "supporting_experience_ids": [
+      "1eeca5aa90c5fb3ef3ca8d28f8429710968d10be51c3b16ea3e8bb6cfbc28cfc",
+      "6f256e9a5dd296461db8035df92296823188835f13ab3e205c07312bafcb2b99"
+    ],
+    "sample_size": 2,
+    "generated_at": "2026-09-10T09:34:23+08:00",
+    "status": "PROPOSED"
+  }
+}
