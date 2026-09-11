@@ -88,7 +88,19 @@ HardPolicyFilter 独立重查 Candidate 约束，拒绝不可调查状态、预�
 
 Risk 不参与评分。新颖覆盖是可检查的启发式，不是精确的信息增益或结论概率。OPEN Gap 的未采集关联 requirement 按潜在贡献计数；实际满足情况仍由新 Evidence 重算。
 
-存在合法覆盖 safety gap 的候选时，完全不相关的低优先级查询不能胜出。WAIT/ESCALATE 对已被合法 CALL 覆盖的同一 Gap 不抢先；对没有合法候选覆盖的更高优先级缺口，可胜过低优先级调查。CALL_TOOL 不是无条件高于 ESCALATE。排序只比较模型提出的候选，不自行生成 Tool Call。
+Step 5.1 的 Safety-Critical Omission Gate 检查完整 Snapshot，而非模型候选集合：只要存在 OPEN + SAFETY_CRITICAL Gap，且 available_tools 中至少一个 capability 能 address，它就是 actionable safety gap。未实际覆盖至少一个这样的 Gap 的 CALL_TOOL 在排名前被拒绝，拒绝码为 ACTIONABLE_SAFETY_GAP_NOT_ADDRESSED。只添加 safety target ID，但 Tool 没有对应能力，也不能通过。
+
+Actionable 按 Snapshot 的能力描述判断，不因模型省略候选而消失；预算、连续失败等仍由各自独立硬约束拒绝。没有 capability 能 address 的 safety gap 不触发此 Gate。模型未提出合法 safety call 时，合法 WAIT/ESCALATE 可继续排名；否则 selected_action=null。Harness 不补造遗漏的 PAYMENT 或其他 Tool Candidate。
+
+WAIT/ESCALATE 对已被合法 CALL 覆盖的同一 Gap 不抢先；对没有合法候选覆盖的更高优先级缺口，可胜过低优先级调查。CALL_TOOL 不是无条件高于 ESCALATE。排序只比较硬过滤后剩下的模型候选，不自行生成 Tool Call。
+
+## Step 5.1：Escalation Capability Binding
+
+EscalateCandidate.requested_capability 非空时，必须是 UncollectedClaimType，且出现在至少一个 target gap.required_claim_types 中，否则拒绝 ESCALATION_CAPABILITY_MISMATCH。部署 schema capability 可针对 DEPLOYED_CONSUMER_SCHEMA_VERSION Gap 请求，不能借 PAYMENT_FINALITY Gap 请求；普通 ClaimType 不能伪装成待采集 capability。
+
+NO_AVAILABLE_TOOL 也由 Harness 检查：所有 target gap 都必须没有 available capability 能 address。只要其中一个可 address，就拒绝 ESCALATION_REASON_INCONSISTENT；混合可解决和不可解决的 target 应拆开表达。其他 reason_code 不因此获得额外权限，reason_summary 始终不参与判断。
+
+本补丁把 PLANNER_POLICY_VERSION 从 1 升为 2，Decision、ValidatedActionProposal、Audit 与 decision hash 随之绑定新策略。Ranking、输入 Snapshot、执行边界保持原设计。
 
 ## Repeated Query Protection / WAIT / ESCALATE
 
@@ -144,7 +156,7 @@ Demo 外层先通过真实 Harness HTTP 路由完成指定人工步骤，再生�
 
 Step 5 终点是 ValidatedActionProposal。Step 6 才能在重新校验实时 Case 权限、预算、状态和 Snapshot 时效后，重新构造 ToolQuery 并提交现有 Runtime。本阶段无 Agent Loop、Write Tool、Repair、Capability Token、Side-effect Ledger、Human Approval 或自动结案，也没有 LLM → CaseToolExecutor.execute 的代码路径。
 
-## 本次验收记录（2026-09-11）
+## Step 5 历史验收记录（2026-09-11，policy 1）
 
 - 新增 Planner / Provider 测试：78 passed、1 skipped；包含真实 Harness HTTP 阶段测试、恶意 Fake、别名一致性/碰撞、去重历史保护，以及真实 OpenAI SDK 3.11.0 的离线 MockTransport 结构化输出往返。
 - SQLite 全量：486 passed、2 skipped，107.62 秒。跳过 PostgreSQL 专用测试与可选在线 LLM 测试。
@@ -153,3 +165,18 @@ Step 5 终点是 ValidatedActionProposal。Step 6 才能在重新校验实时 Ca
 - 两套测试各有一条既有 Starlette/AnyIO 弃用警告，无失败。Step 0–4.2 原有 393 个测试实例保持通过语义；当前工作区全量还包含其他已有模块测试。
 - S6/S8 Context 使用原保存 inputs 重建为 schema 4，反序重放结果一致；六阶段 Planner Demo 通过真实 Simulator/Harness 路由重新生成。
 - `git diff --check` 通过。模型成功返回与 Timeout 路径均断言未执行 Tool、未修改 Case/Evidence；Planner 包的依赖测试禁止执行器/Simulator/Tool Client 引入。
+
+## Step 5.1 验收
+
+Provider 离线测试明确使用 `pytest.importorskip("httpx")` 与真实 `httpx.MockTransport`。本地已安装 openai 3.11.0、httpx 0.28.1；没有更换 SDK 或修改 Provider 实现。测试断言只发出一次被 MockTransport 截获的 HTTP 请求，启用 strict JSON Schema、未注册业务 Tool，并完成响应解析、Harness 选择与 usage 审计；在线 LLM 测试单独跳过。
+
+新增 16 个 selection integrity 测试覆盖 omission、禁止合成候选、WAIT/ESCALATE 回退、伪造 safety target、不可解决/非 OPEN safety gap、capability 类型与 target 绑定、NO_AVAILABLE_TOOL 一致性。原 safety ranking 测试升级为断言无关候选被硬拒绝。
+
+- `pytest tests/test_planner_provider.py -q`：10 passed、1 skipped，2.48 秒。只跳过在线 LLM，离线 Structured Outputs roundtrip 实际执行。
+- 单独运行 `test_sdk_structured_output_roundtrip_offline`：1 passed，2.91 秒。
+- Planner / Selection Integrity / Provider 合计：94 passed、1 skipped，6.97 秒。
+- SQLite 全量：505 passed、2 skipped，126.49 秒；跳过 PostgreSQL 专用测试和在线 LLM。
+- PostgreSQL 全量：506 passed、1 skipped，189.19 秒；仅跳过在线 LLM。
+- `pytest -m llm`：1 skipped、506 deselected；本次未调用真实模型。
+
+以上为 policy 2 的当前验收结果；上面的 policy 1 数字及六阶段 JSON 保留为 Step 5 历史记录。本阶段没有新增 Tool 执行入口、Agent Loop 或 Step 6 功能。

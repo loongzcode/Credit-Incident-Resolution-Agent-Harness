@@ -1,6 +1,6 @@
 from credit_harness.domain.enums import ToolName
-from credit_harness.hypotheses.models import GapStatus
-from .models import CallToolCandidate, RejectionCode as R
+from credit_harness.hypotheses.models import GapStatus, UncollectedClaimType
+from .models import CallToolCandidate, EscalateCandidate, ReasonCode, RejectionCode as R
 
 
 def addressed_requirements(capability, gap):
@@ -13,6 +13,20 @@ class CandidateValidator:
         gaps = {g.gap_id: g for g in snapshot.open_evidence_gaps if g.status == GapStatus.OPEN}
         if not set(candidate.target_gap_ids) <= gaps.keys():
             reasons.append(R.UNKNOWN_TARGET_GAP)
+        if isinstance(candidate, EscalateCandidate):
+            targets = [gaps[g] for g in candidate.target_gap_ids if g in gaps]
+            requested = candidate.requested_capability
+            if requested is not None and (
+                not isinstance(requested, UncollectedClaimType)
+                or not any(requested in g.required_claim_types for g in targets)
+            ):
+                reasons.append(R.ESCALATION_CAPABILITY_MISMATCH)
+            # NO_AVAILABLE_TOOL is a claim about all targeted gaps, not authority
+            # supplied by the model. Mixed solvable/unsolvable targets must split.
+            if candidate.reason_code == ReasonCode.NO_AVAILABLE_TOOL and any(
+                addressed_requirements(tool, g) for g in targets for tool in snapshot.available_tools
+            ):
+                reasons.append(R.ESCALATION_REASON_INCONSISTENT)
         if not isinstance(candidate, CallToolCandidate):
             return tuple(reasons)
         capability = next((t for t in snapshot.available_tools if t.tool_name == candidate.tool_name), None)

@@ -70,7 +70,7 @@ def test_openai_configuration_is_explicit(monkeypatch):
 
 def test_sdk_structured_output_roundtrip_offline(snapshot):
     openai = pytest.importorskip("openai")
-    httpx = pytest.importorskip("httpx2")
+    httpx = pytest.importorskip("httpx")
     requests = []
     output = draft(snapshot, call(snapshot)).model_dump_json()
     def respond(request):

@@ -274,7 +274,8 @@ def test_safety_gap_has_priority(snapshot):
     payment = call(snapshot, candidate_id="last")
     d = decide(snapshot, lower, payment)
     assert d.selected_action.candidate.tool_name == T.PAYMENT
-    assert len(d.valid_candidates) == 2
+    assert len(d.valid_candidates) == 1
+    assert R.ACTIONABLE_SAFETY_GAP_NOT_ADDRESSED in d.rejected_candidates[0].reason_codes
 
 
 @pytest.mark.parametrize("extra", [{"score": 0.98}, {"confidence": 92}, {"chain_of_thought": "secret"}])
