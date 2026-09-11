@@ -1,16 +1,16 @@
 {
   "case_id": "CASE-JD202609100001",
-  "rule_version": "2",
+  "rule_version": "3",
   "evaluated_at": "2026-09-10T01:31:25Z",
-  "input_fingerprint": "f89a73df580065692935f0bc8b2fc026693d58841c20937d26f49359c87a2752",
+  "input_fingerprint": "c48a9b73851343ecfa4709a69b0201420e9ba664d218a3b884e56da02b02429b",
   "definitions": [
     {
       "hypothesis_id": "H1",
       "kind": "CAUSAL",
       "statement": "REQUEST_NOT_SENT",
       "description": "原资金请求没有从我方成功发出。",
-      "confirmation_rule_id": "H1.confirm.v2",
-      "elimination_rule_id": "H1.eliminate.v2",
+      "confirmation_rule_id": "H1.confirm.v3",
+      "elimination_rule_id": "H1.eliminate.v3",
       "relevant_claim_types": [
         "REQUEST_SENT"
       ],
@@ -21,8 +21,8 @@
       "kind": "CAUSAL",
       "statement": "FUND_NOT_ACCEPTED",
       "description": "资金方没有受理原资金请求。",
-      "confirmation_rule_id": "H2.confirmation_deferred.v2",
-      "elimination_rule_id": "H2.eliminate.v2",
+      "confirmation_rule_id": "H2.confirmation_deferred.v3",
+      "elimination_rule_id": "H2.eliminate.v3",
       "relevant_claim_types": [
         "FUND_BUSINESS_STATUS",
         "PAYMENT_FINALITY",
@@ -36,8 +36,8 @@
       "kind": "CAUSAL",
       "statement": "FUND_PROCESSING_FAILED",
       "description": "资金方已受理但最终处理失败，未产生放款效果。",
-      "confirmation_rule_id": "H3.confirmation_deferred.v2",
-      "elimination_rule_id": "H3.eliminate.v2",
+      "confirmation_rule_id": "H3.confirmation_deferred.v3",
+      "elimination_rule_id": "H3.eliminate.v3",
       "relevant_claim_types": [
         "FUND_BUSINESS_STATUS",
         "PAYMENT_FINALITY",
@@ -50,8 +50,8 @@
       "kind": "STATE",
       "statement": "PAYMENT_SETTLED_WITHOUT_SUCCESSFUL_HTTP_RESPONSE",
       "description": "原请求未获得成功 HTTP Response，但对应支付效果已有独立支付证据。",
-      "confirmation_rule_id": "H4.confirm.v2",
-      "elimination_rule_id": "H4.eliminate.v2",
+      "confirmation_rule_id": "H4.confirm.v3",
+      "elimination_rule_id": "H4.eliminate.v3",
       "relevant_claim_types": [
         "HTTP_RESPONSE_STATUS",
         "PAYMENT_FINALITY",
@@ -64,8 +64,8 @@
       "kind": "CAUSAL",
       "statement": "CALLBACK_NOT_OBSERVED_AT_GATEWAY",
       "description": "当前尚未观察到 Callback 到达 Gateway。",
-      "confirmation_rule_id": "H5.confirmation_deferred.v2",
-      "elimination_rule_id": "H5.eliminate.v2",
+      "confirmation_rule_id": "H5.confirmation_deferred.v3",
+      "elimination_rule_id": "H5.eliminate.v3",
       "relevant_claim_types": [
         "SOURCE_LOOKUP_STATUS",
         "CALLBACK_GATEWAY_RECEIVED"
@@ -77,8 +77,8 @@
       "kind": "CAUSAL",
       "statement": "CALLBACK_CONSUMPTION_FAILED",
       "description": "Callback 已到 Gateway，但业务消费未成功。",
-      "confirmation_rule_id": "H6.confirm.v2",
-      "elimination_rule_id": "H6.eliminate.v2",
+      "confirmation_rule_id": "H6.confirm.v3",
+      "elimination_rule_id": "H6.eliminate.v3",
       "relevant_claim_types": [
         "CALLBACK_GATEWAY_RECEIVED",
         "MESSAGE_CONSUME_STATUS"
@@ -90,8 +90,8 @@
       "kind": "CAUSAL",
       "statement": "CALLBACK_SCHEMA_MISMATCH_TRIGGERED_FAILURE",
       "description": "Callback 消费失败由 loanNo schema/type mismatch 直接触发。",
-      "confirmation_rule_id": "H6_SCHEMA_MISMATCH.confirm.v2",
-      "elimination_rule_id": "H6_SCHEMA_MISMATCH.eliminate.v2",
+      "confirmation_rule_id": "H6_SCHEMA_MISMATCH.confirm.v3",
+      "elimination_rule_id": "H6_SCHEMA_MISMATCH.eliminate.v3",
       "relevant_claim_types": [
         "CALLBACK_GATEWAY_RECEIVED",
         "MESSAGE_CONSUME_STATUS",
@@ -107,8 +107,8 @@
       "kind": "CAUSAL",
       "statement": "STALE_CONSUMER_SCHEMA",
       "description": "运行中的 Consumer 使用过期 schema，未能解析当前协议 Callback。",
-      "confirmation_rule_id": "H6_STALE_CONSUMER_SCHEMA.confirmation_deferred.v2",
-      "elimination_rule_id": "H6_STALE_CONSUMER_SCHEMA.eliminate.v2",
+      "confirmation_rule_id": "H6_STALE_CONSUMER_SCHEMA.confirmation_deferred.v3",
+      "elimination_rule_id": "H6_STALE_CONSUMER_SCHEMA.eliminate.v3",
       "relevant_claim_types": [
         "CALLBACK_GATEWAY_RECEIVED",
         "MESSAGE_CONSUME_STATUS",
@@ -126,8 +126,8 @@
       "kind": "CAUSAL",
       "statement": "ASSET_NOTIFICATION_FAILED",
       "description": "我方业务已成功应用，但资产方终态通知未收敛。",
-      "confirmation_rule_id": "H7.confirm.v2",
-      "elimination_rule_id": "H7.eliminate.v2",
+      "confirmation_rule_id": "H7.confirm.v3",
+      "elimination_rule_id": "H7.eliminate.v3",
       "relevant_claim_types": [
         "GUARANTEE_STATUS",
         "ASSET_DELIVERY_STATUS",
@@ -140,8 +140,8 @@
       "kind": "SEMANTIC_GUARD",
       "statement": "FUND_SUCCESS_NOT_EQUAL_PAYMENT_FINALITY",
       "description": "当前资金请求适用协议中的业务 SUCCESS 本身不足以证明支付终态。",
-      "confirmation_rule_id": "H8.confirm.v2",
-      "elimination_rule_id": "H8.eliminate.v2",
+      "confirmation_rule_id": "H8.confirm.v3",
+      "elimination_rule_id": "H8.eliminate.v3",
       "relevant_claim_types": [
         "PROTOCOL_BUSINESS_SEMANTICS",
         "GUARANTEE_STATUS"
@@ -160,7 +160,7 @@
         "CASE-JD202609100001:TRACE_REQUEST_STATUS"
       ],
       "reason": "完整当前 Trace 的出站标记决定该命题；缺失或不完整 Trace 不具有否定证明能力。",
-      "rule_version": "2",
+      "rule_version": "3",
       "evaluated_at": "2026-09-10T01:31:25Z"
     },
     {
@@ -174,7 +174,7 @@
         "CASE-JD202609100001:PAYMENT_IDENTITY"
       ],
       "reason": "同请求可靠资金业务记录或完整 Payment Identity MATCH 可排除未受理；NOT_FOUND 不能确认未受理。",
-      "rule_version": "2",
+      "rule_version": "3",
       "evaluated_at": "2026-09-10T01:31:25Z"
     },
     {
@@ -188,7 +188,7 @@
         "CASE-JD202609100001:PAYMENT_IDENTITY"
       ],
       "reason": "业务 FAILED 仅支持；完整 Payment Identity MATCH 否定未产生放款效果。本版缺少受理/拒绝的完整终态契约。",
-      "rule_version": "2",
+      "rule_version": "3",
       "evaluated_at": "2026-09-10T01:31:25Z"
     },
     {
@@ -202,7 +202,7 @@
         "CASE-JD202609100001:PAYMENT_IDENTITY"
       ],
       "reason": "原请求 HTTP TIMEOUT + Payment Identity MATCH：交易、请求、金额、币种、客户、收款主体和账户完整绑定；不定位网络原因。",
-      "rule_version": "2",
+      "rule_version": "3",
       "evaluated_at": "2026-09-10T01:31:25Z"
     },
     {
@@ -213,7 +213,7 @@
       "decisive_evidence_refs": [],
       "missing_evidence": [],
       "reason": "查询范围内未观察到 Callback 仅为支持；实际 Gateway 接收证据排除此命题，不推导从未发送。",
-      "rule_version": "2",
+      "rule_version": "3",
       "evaluated_at": "2026-09-10T01:31:25Z"
     },
     {
@@ -224,7 +224,7 @@
       "decisive_evidence_refs": [],
       "missing_evidence": [],
       "reason": "同一 Callback event 的 Gateway 接收与消费 FAILED 确认消费异常；消费完成可排除当前未成功。",
-      "rule_version": "2",
+      "rule_version": "3",
       "evaluated_at": "2026-09-10T01:31:25Z"
     },
     {
@@ -235,7 +235,7 @@
       "decisive_evidence_refs": [],
       "missing_evidence": [],
       "reason": "父级同一 Callback 的 Gateway/消费失败 witness，加上同消息、同观测、同事件的错误码、字段和互异类型。",
-      "rule_version": "2",
+      "rule_version": "3",
       "evaluated_at": "2026-09-10T01:31:25Z"
     },
     {
@@ -246,7 +246,7 @@
       "decisive_evidence_refs": [],
       "missing_evidence": [],
       "reason": "类型与历史协议相符只构成支持；没有部署 schema/release/config 证据，禁止确认运行版本。",
-      "rule_version": "2",
+      "rule_version": "3",
       "evaluated_at": "2026-09-10T01:31:25Z"
     },
     {
@@ -259,7 +259,7 @@
         "CASE-JD202609100001:ASSET_CONVERGENCE"
       ],
       "reason": "我方成功、通知失败及资产方仍处理中共同确认当前未收敛；资产方已成功则排除。",
-      "rule_version": "2",
+      "rule_version": "3",
       "evaluated_at": "2026-09-10T01:31:25Z"
     },
     {
@@ -270,7 +270,7 @@
       "decisive_evidence_refs": [],
       "missing_evidence": [],
       "reason": "业务 SUCCESS 的证明边界由适用协议确定；Callback 版本不等于原资金请求版本，支付已结算也不否定语义守卫。",
-      "rule_version": "2",
+      "rule_version": "3",
       "evaluated_at": "2026-09-10T01:31:25Z"
     }
   ],
@@ -281,7 +281,7 @@
       "evidence_id": "E-0ed027af410e04200aa81f33fd85bc7c4059500062dfb280d03e4f5ce66d2217",
       "relation": "CONTEXT_ONLY",
       "reason": "相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-      "rule_id": "H2.context.v2"
+      "rule_id": "H2.context.v3"
     },
     {
       "case_id": "CASE-JD202609100001",
@@ -289,7 +289,7 @@
       "evidence_id": "E-6d949fb4005d18005ae754966e540f84e76cbeec0d20f376479a32e470c23ea7",
       "relation": "CONTEXT_ONLY",
       "reason": "相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-      "rule_id": "H2.context.v2"
+      "rule_id": "H2.context.v3"
     },
     {
       "case_id": "CASE-JD202609100001",
@@ -297,7 +297,7 @@
       "evidence_id": "E-8a3a461dbf5f0fe91878f5b4c2dcce0dd4476fac084a535816d53da3e4d90d68",
       "relation": "CONTEXT_ONLY",
       "reason": "相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-      "rule_id": "H2.context.v2"
+      "rule_id": "H2.context.v3"
     },
     {
       "case_id": "CASE-JD202609100001",
@@ -305,7 +305,7 @@
       "evidence_id": "E-95dcc0053db3eb79da290fb9c1d5d265d0f918efc93e14f35b5e2d5e2df3dcfb",
       "relation": "CONTEXT_ONLY",
       "reason": "相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-      "rule_id": "H2.context.v2"
+      "rule_id": "H2.context.v3"
     },
     {
       "case_id": "CASE-JD202609100001",
@@ -313,7 +313,7 @@
       "evidence_id": "E-ca5eedb712ff9afbcb4af43a520beb9a8bc47b89572b93e0316a61bdc0eb08b8",
       "relation": "CONTEXT_ONLY",
       "reason": "相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-      "rule_id": "H2.context.v2"
+      "rule_id": "H2.context.v3"
     },
     {
       "case_id": "CASE-JD202609100001",
@@ -321,7 +321,7 @@
       "evidence_id": "E-e8eb7bee22a54911915dacbe9962df8307d3689838bfae54329bad94e79f43c4",
       "relation": "CONTEXT_ONLY",
       "reason": "相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-      "rule_id": "H2.context.v2"
+      "rule_id": "H2.context.v3"
     },
     {
       "case_id": "CASE-JD202609100001",
@@ -329,7 +329,7 @@
       "evidence_id": "E-0ed027af410e04200aa81f33fd85bc7c4059500062dfb280d03e4f5ce66d2217",
       "relation": "CONTEXT_ONLY",
       "reason": "相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-      "rule_id": "H5.context.v2"
+      "rule_id": "H5.context.v3"
     },
     {
       "case_id": "CASE-JD202609100001",
@@ -337,7 +337,7 @@
       "evidence_id": "E-6d949fb4005d18005ae754966e540f84e76cbeec0d20f376479a32e470c23ea7",
       "relation": "CONTEXT_ONLY",
       "reason": "相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-      "rule_id": "H5.context.v2"
+      "rule_id": "H5.context.v3"
     },
     {
       "case_id": "CASE-JD202609100001",
@@ -345,7 +345,7 @@
       "evidence_id": "E-8a3a461dbf5f0fe91878f5b4c2dcce0dd4476fac084a535816d53da3e4d90d68",
       "relation": "CONTEXT_ONLY",
       "reason": "相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-      "rule_id": "H5.context.v2"
+      "rule_id": "H5.context.v3"
     },
     {
       "case_id": "CASE-JD202609100001",
@@ -353,7 +353,7 @@
       "evidence_id": "E-95dcc0053db3eb79da290fb9c1d5d265d0f918efc93e14f35b5e2d5e2df3dcfb",
       "relation": "CONTEXT_ONLY",
       "reason": "相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-      "rule_id": "H5.context.v2"
+      "rule_id": "H5.context.v3"
     },
     {
       "case_id": "CASE-JD202609100001",
@@ -361,7 +361,7 @@
       "evidence_id": "E-ca5eedb712ff9afbcb4af43a520beb9a8bc47b89572b93e0316a61bdc0eb08b8",
       "relation": "CONTEXT_ONLY",
       "reason": "相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-      "rule_id": "H5.context.v2"
+      "rule_id": "H5.context.v3"
     },
     {
       "case_id": "CASE-JD202609100001",
@@ -369,7 +369,7 @@
       "evidence_id": "E-e8eb7bee22a54911915dacbe9962df8307d3689838bfae54329bad94e79f43c4",
       "relation": "CONTEXT_ONLY",
       "reason": "相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-      "rule_id": "H5.context.v2"
+      "rule_id": "H5.context.v3"
     }
   ],
   "gaps": [

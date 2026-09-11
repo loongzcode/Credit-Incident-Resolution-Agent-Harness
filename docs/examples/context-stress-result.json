@@ -1,0 +1,37 @@
+{
+  "total_evidence": 500,
+  "selected_evidence": 26,
+  "fact_capsules": 22,
+  "serialized_chars": 31250,
+  "identity": "MATCH",
+  "repeat_counts": [
+    300
+  ],
+  "historical_counts": [
+    100
+  ],
+  "open_safety_gaps": [
+    "CASE-JD202609100001:FUND_PROTOCOL_APPLICABILITY"
+  ],
+  "omitted": {
+    "total_evidence": 500,
+    "selected": 26,
+    "omitted": [
+      {
+        "reason": "HISTORICAL_SUPERSEDED",
+        "count": 98,
+        "evidence_ids_digest": "5abe6b5742d4f0a92887ad08fc62a3ba1fb93caabd5dd2ca60e1fe1ca64523c7"
+      },
+      {
+        "reason": "IRRELEVANT_TO_ACTIVE_HYPOTHESES",
+        "count": 78,
+        "evidence_ids_digest": "4a77639253d1f23fb3c244039e413a1c59fe8195f0f2c9a7100763caf2490d12"
+      },
+      {
+        "reason": "REPEATED_LOOKUP",
+        "count": 298,
+        "evidence_ids_digest": "c932da9752e9ffddcf491c7ff4077e6866aabd9d3f08e50a65f7f809b95892cb"
+      }
+    ]
+  }
+}

@@ -1,14 +1,14 @@
 from credit_harness.evidence.models import ClaimType as C
 from .models import HypothesisDefinition, HypothesisId as H, HypothesisKind as K
 
-HYPOTHESIS_RULESET_VERSION = "2"
+HYPOTHESIS_RULESET_VERSION = "3"
 
 
 def definition(h, kind, statement, description, claims, *, parent=None, deferred=False):
     return HypothesisDefinition(
         hypothesis_id=h, kind=kind, statement=statement, description=description,
-        confirmation_rule_id=f"{h.value}.{'confirmation_deferred' if deferred else 'confirm'}.v2",
-        elimination_rule_id=f"{h.value}.eliminate.v2", relevant_claim_types=claims,
+        confirmation_rule_id=f"{h.value}.{'confirmation_deferred' if deferred else 'confirm'}.v3",
+        elimination_rule_id=f"{h.value}.eliminate.v3", relevant_claim_types=claims,
         parent_hypothesis_id=parent,
     )
 

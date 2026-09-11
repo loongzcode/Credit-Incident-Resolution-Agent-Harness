@@ -1,0 +1,138 @@
+CASE JD202609100001
+SNAPSHOT 0deaa50051be3ecbb3bb168c893143afcae78714cce7012dc4d35d0ce4fddd7f
+未来 Planner 的结构化输入；本次没有 LLM 调用。
+
+TASK
+确认 JD202609100001 的真实放款状态，识别三方链路未收敛原因，在当前阶段只进行调查，不执行任何生产修复。
+
+SAFETY
+NO_NEW_FINANCIAL_INTENT
+UNKNOWN_IS_NOT_FAILED
+TOOL_SUCCESS_IS_NOT_BUSINESS_OUTCOME
+REQUIRE_COMPLETE_PAYMENT_IDENTITY
+READ_ONLY_INVESTIGATION
+NO_SELF_DECLARED_CASE_SUCCESS
+EVIDENCE_REFERENCES_REQUIRED
+
+FINANCIAL SUBJECT
+{"expected_principal_minor":2000000,"currency":"CNY","customer_ref":"CUS-JD-001","expected_beneficiary_ref":"BEN-JD-001","expected_account_ref":"ACC-JD-001"}
+
+PAYMENT IDENTITY
+UNKNOWN; mismatch=[]; unknown=['ACCOUNT', 'AMOUNT', 'BENEFICIARY', 'CURRENCY', 'CUSTOMER', 'FINALITY', 'REQUEST', 'TRANSACTION']
+
+CURRENT FACTS
+
+ACTIVE HYPOTHESES
+H2 POSSIBLE; decisive=[]
+H3 POSSIBLE; decisive=[]
+H4 POSSIBLE; decisive=[]
+H1 POSSIBLE; decisive=[]
+H5 POSSIBLE; decisive=[]
+H6 POSSIBLE; decisive=[]
+H6_SCHEMA_MISMATCH POSSIBLE; decisive=[]
+H6_STALE_CONSUMER_SCHEMA POSSIBLE; decisive=[]
+H7 POSSIBLE; decisive=[]
+H8 POSSIBLE; decisive=[]
+
+RESOLVED HYPOTHESES
+
+OPEN GAPS
+SAFETY_CRITICAL CASE-JD202609100001:PAYMENT_FINALITY
+SAFETY_CRITICAL CASE-JD202609100001:PAYMENT_IDENTITY
+DISCRIMINATING CASE-JD202609100001:ASSET_CONVERGENCE
+DISCRIMINATING CASE-JD202609100001:TRACE_REQUEST_STATUS
+
+TOOLS AVAILABLE (alphabetical; no selection)
+get_accounting
+get_asset_delivery
+get_asset_order
+get_callback_gateway
+get_callback_raw
+get_fund_order
+get_guarantee_order
+get_loan_note
+get_messages
+get_payment_transaction
+get_protocol
+get_request_trace
+
+HISTORY DIGEST
+{
+  "tool_calls_used": 6,
+  "evidence_count": 6,
+  "latest_observation_time": "2026-09-10T09:31:25+08:00",
+  "repeated_lookup_groups": [
+    {
+      "tool": "get_fund_order",
+      "scope": {
+        "internal_order_id": "JD202609100001",
+        "protocol_version": null,
+        "effective_at": null
+      },
+      "status": "NOT_FOUND",
+      "first_observed_at": "2026-09-10T09:30:10+08:00",
+      "last_observed_at": "2026-09-10T09:31:10+08:00",
+      "latest_freshness": "STALE",
+      "latest_completeness": "PARTIAL",
+      "references": {
+        "count": 3,
+        "first_ref": "E-ca5eedb712ff9afbcb4af43a520beb9a8bc47b89572b93e0316a61bdc0eb08b8",
+        "latest_ref": "E-8a3a461dbf5f0fe91878f5b4c2dcce0dd4476fac084a535816d53da3e4d90d68",
+        "range_digest": "f2407c0f256ab4d69a7b9995a0cdf876a4617a1d869ea5cc8f035daea3116d6f"
+      }
+    },
+    {
+      "tool": "get_payment_transaction",
+      "scope": {
+        "internal_order_id": "JD202609100001",
+        "protocol_version": null,
+        "effective_at": null
+      },
+      "status": "TIMEOUT",
+      "first_observed_at": "2026-09-10T09:30:25+08:00",
+      "last_observed_at": "2026-09-10T09:31:25+08:00",
+      "latest_freshness": "UNKNOWN",
+      "latest_completeness": "UNKNOWN",
+      "references": {
+        "count": 3,
+        "first_ref": "E-6d949fb4005d18005ae754966e540f84e76cbeec0d20f376479a32e470c23ea7",
+        "latest_ref": "E-95dcc0053db3eb79da290fb9c1d5d265d0f918efc93e14f35b5e2d5e2df3dcfb",
+        "range_digest": "e1f08d875275a5503f962d5e6bbaf67c5d749a6df813cae2617a20754e6ad7fb"
+      }
+    }
+  ],
+  "state_transitions": []
+}
+
+BUDGET USAGE
+{
+  "serialized_chars": 13725,
+  "approximate_tokens": 4575,
+  "fact_capsules": 0,
+  "hypothesis_capsules": 10,
+  "gap_capsules": 4,
+  "history_items": 2,
+  "limits": {
+    "max_serialized_chars": 60000,
+    "max_fact_capsules": 64,
+    "max_hypothesis_capsules": 16,
+    "max_gap_capsules": 24,
+    "max_history_items": 20
+  },
+  "estimator": "unicode_chars_div_3_ceiling_v1"
+}
+
+SELECTED / OMITTED
+{
+  "total_evidence": 6,
+  "selected": 4,
+  "omitted": [
+    {
+      "reason": "REPEATED_LOOKUP",
+      "count": 2,
+      "evidence_ids_digest": "57ad34795948134bdb2981a4b36830240bc2af8acaf19d900a8da1ac64696f04"
+    }
+  ]
+}
+
+Preview 仅用于检查；结构化 JSON Snapshot 是真相。

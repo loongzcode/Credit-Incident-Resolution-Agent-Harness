@@ -109,11 +109,11 @@ def evaluate_rules(index: EvidenceIndex) -> tuple[RuleResult, ...]:
                 relations[e.evidence_id] = EvidenceRelation(
                     case_id=index.case.case_id, hypothesis_id=h, evidence_id=e.evidence_id,
                     relation=R.CONTEXT_ONLY, reason="相关历史、查询结果或尚不满足关联/质量条件的上下文。",
-                    rule_id=f"{h.value}.context.v2",
+                    rule_id=f"{h.value}.context.v3",
                 )
         for items, relation, rule in (
-            (support, R.SUPPORTS, f"{h.value}.support.v2"),
-            (contradict, R.CONTRADICTS, f"{h.value}.contradict.v2"),
+            (support, R.SUPPORTS, f"{h.value}.support.v3"),
+            (contradict, R.CONTRADICTS, f"{h.value}.contradict.v3"),
             (confirm, R.DECISIVE_SUPPORT, definition.confirmation_rule_id),
             (eliminate, R.DECISIVE_CONTRADICTION, definition.elimination_rule_id),
         ):
@@ -171,6 +171,10 @@ def evaluate_rules(index: EvidenceIndex) -> tuple[RuleResult, ...]:
     versions = index.current(C.CALLBACK_PROTOCOL_VERSION)
     for group in mismatches:
         message = group[0]
+        parent_witness = tuple(e for pair in facts.callback_pairs("FAILED")
+                               if pair[1].evidence_id == message.evidence_id for e in pair)
+        if not parent_witness:
+            continue
         expected = next(e.value for e in group if e.claim_type == C.MESSAGE_EXPECTED_FIELD_TYPE)
         actual = next(e.value for e in group if e.claim_type == C.MESSAGE_ACTUAL_FIELD_TYPE)
         for version in versions:
@@ -186,7 +190,7 @@ def evaluate_rules(index: EvidenceIndex) -> tuple[RuleResult, ...]:
                               and e.event_time is not None and doc.event_time is not None
                               and e.event_time < doc.event_time]
                 if older_docs:
-                    stale_support.extend((*group, version, doc, *older_docs))
+                    stale_support.extend((*parent_witness, *group, version, doc, *older_docs))
     decide(H.H6_STALE_CONSUMER_SCHEMA, support=stale_support,
            reason="类型与历史协议相符只构成支持；没有部署 schema/release/config 证据，禁止确认运行版本。")
 

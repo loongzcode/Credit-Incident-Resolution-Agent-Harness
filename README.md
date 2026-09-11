@@ -2,13 +2,15 @@
 
 接管资深信贷生产支持工程师对“三方放款状态异常订单”的调查、受控修复、故障恢复和独立验收工作。
 
-**当前状态：已实现 Simulator、Case Runtime、Evidence Store，以及 Step 3.1 Hypothesis Integrity / Payment Identity / PII Boundary。** 包含七个业务组件、S1–S8 场景、受限只读 Tool API、可失真的 Observation、Case 权限与预算、确定性 Evidence 提取、来源回溯和 pytest。Hypothesis Engine 只根据 Case 与 Evidence 重算，不调用工具。Agent、修复 Runtime、审批及在线 Evaluator 尚未实现；下文的整体项目契约仍是后续建设目标。
+**当前状态：已实现 Simulator、Case Runtime、Evidence Store，以及 Step 4 Reasoning Context Snapshot / Information Eligibility / Deterministic Assembly。** 包含七个业务组件、S1–S8 场景、受限只读 Tool API、可失真的 Observation、Case 权限与预算、确定性 Evidence 提取、来源回溯和 pytest。Hypothesis Engine 只根据 Case 与 Evidence 重算，不调用工具。Agent、修复 Runtime、审批及在线 Evaluator 尚未实现；下文的整体项目契约仍是后续建设目标。
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。
 
 新增调查链路与运行命令见 [Case / Evidence 实现文档](docs/case-evidence.md)。本阶段只实现 `Case → Tool → Observation → Evidence → Provenance`，不调用 LLM、不修复、不结案。运行 `python scripts/demo_case_evidence.py --output .local/s6-case-evidence.json` 可以通过两个 FastAPI 应用的实际路由复现七次人工调查并导出完整 Case Evidence View。
 
-Step 3/3.1 的解释层见 [Hypothesis Engine 文档](docs/hypothesis-engine.md)。运行 `python scripts/demo_hypothesis_graph.py --output .local/s6-graph.json` 可查看规则版本、多个假设状态、实际 Evidence IDs 与事实缺口。S6 的 schema mismatch 可以确认，但部署旧 schema 仅受支持；本阶段不实现 Planner、LLM 或 Context Assembly。
+Step 3/3.1 的解释层见 [Hypothesis Engine 文档](docs/hypothesis-engine.md)。运行 `python scripts/demo_hypothesis_graph.py --output .local/s6-graph.json` 可查看规则版本、多个假设状态、实际 Evidence IDs 与事实缺口。S6 的 schema mismatch 可以确认，但部署旧 schema 仅受支持；Step 4 已增加独立 Context Assembly；仍不实现 Planner 或 LLM。
+
+Step 4 的上下文边界见 [Reasoning Context 文档](docs/reasoning-context.md)。运行 `python scripts/demo_reasoning_context.py --scenario S6 --output .local/s6-context.json` 导出冻结 Snapshot、可读 Preview 和审计输入。Context 每轮从 Case + Evidence 重建，安全关键内容超预算时拒绝生成；不调用 LLM。
 
 身份数据均为 synthetic test fixtures。Case 与 Evidence 使用 opaque refs；完整支付身份契约核对金额、币种、请求、客户、收款主体和账户。Raw PII fixture 位于独立内部边界，不进入 Tool DTO、Evidence 或 Graph。
 

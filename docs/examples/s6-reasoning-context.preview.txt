@@ -1,0 +1,120 @@
+CASE JD202609100001
+SNAPSHOT ddcbcfe9ec6acdeb2e25a45613b872966412e5b872dfc18ac90c70f0485e90e4
+未来 Planner 的结构化输入；本次没有 LLM 调用。
+
+TASK
+确认 JD202609100001 的真实放款状态，识别三方链路未收敛原因，在当前阶段只进行调查，不执行任何生产修复。
+
+SAFETY
+NO_NEW_FINANCIAL_INTENT
+UNKNOWN_IS_NOT_FAILED
+TOOL_SUCCESS_IS_NOT_BUSINESS_OUTCOME
+REQUIRE_COMPLETE_PAYMENT_IDENTITY
+READ_ONLY_INVESTIGATION
+NO_SELF_DECLARED_CASE_SUCCESS
+EVIDENCE_REFERENCES_REQUIRED
+
+FINANCIAL SUBJECT
+{"expected_principal_minor":2000000,"currency":"CNY","customer_ref":"CUS-JD-001","expected_beneficiary_ref":"BEN-JD-001","expected_account_ref":"ACC-JD-001"}
+
+PAYMENT IDENTITY
+MATCH; mismatch=[]; unknown=[]
+
+CURRENT FACTS
+TRANSACTION_FUND_REQUEST_ID [PAY-001; protocol=None] = FREQ-0910-001 (CURRENT)
+PAYMENT_AMOUNT [PAY-001; protocol=None] = 2000000 (CURRENT)
+HTTP_RESPONSE_STATUS [JD202609100001; protocol=None] = TIMEOUT (CURRENT)
+CALLBACK_GATEWAY_RECEIVED [CB-001; protocol=2.3] = True (CURRENT)
+PAYMENT_CUSTOMER_REF [PAY-001; protocol=None] = CUS-JD-001 (CURRENT)
+MESSAGE_CONSUME_STATUS [MSG-001; protocol=None] = FAILED (CURRENT)
+REQUEST_SENT [JD202609100001; protocol=None] = True (CURRENT)
+PAYMENT_ACCOUNT_REF [PAY-001; protocol=None] = ACC-JD-001 (CURRENT)
+PAYMENT_BENEFICIARY_REF [PAY-001; protocol=None] = BEN-JD-001 (CURRENT)
+MESSAGE_ERROR_CODE [MSG-001; protocol=None] = CALLBACK_SCHEMA_MISMATCH (CURRENT)
+FUND_BUSINESS_STATUS [FREQ-0910-001; protocol=None] = SUCCESS (CURRENT)
+MESSAGE_ERROR_FIELD [MSG-001; protocol=None] = loanNo (CURRENT)
+PAYMENT_FINALITY [PAY-001; protocol=None] = SETTLED (CURRENT)
+PAYMENT_TRANSACTION_ID [PAY-001; protocol=None] = PAY-001 (CURRENT)
+MESSAGE_ACTUAL_FIELD_TYPE [MSG-001; protocol=None] = string (CURRENT)
+MESSAGE_EXPECTED_FIELD_TYPE [MSG-001; protocol=None] = integer (CURRENT)
+PAYMENT_CURRENCY [PAY-001; protocol=None] = CNY (CURRENT)
+PROTOCOL_FIELD_TYPE [SIM-FUND@2.3; protocol=2.3] = string (CURRENT)
+PROTOCOL_BUSINESS_SEMANTICS [SIM-FUND@2.2; protocol=2.2] = LOAN_CREATED_PAYMENT_SEPARATE (CURRENT)
+PROTOCOL_BUSINESS_SEMANTICS [SIM-FUND@2.3; protocol=2.3] = LOAN_CREATED_PAYMENT_SEPARATE (CURRENT)
+PROTOCOL_FIELD_TYPE [SIM-FUND@2.2; protocol=2.2] = integer (CURRENT)
+CALLBACK_PROTOCOL_VERSION [CB-001; protocol=2.3] = 2.3 (CURRENT)
+
+ACTIVE HYPOTHESES
+H4 CONFIRMED; decisive=['E-05a141a83af1df4a80fdba07f7bddf703aa7764abd05ecb17f8652443f714cda', 'E-07b37f4a4a993e2315cddacef9088dadabe03c5abf14d545afae69c2a133c8bd', 'E-22d941c4dec08fcee14b18523b3b08dc74603080bae57b8db4d7deaba575ad75', 'E-44bc85d1a226b5d41237a31b3c4ada8a53bedfc63fd752c6d3d4b1347fd3543b', 'E-555bfdbbdc7735338d1e93600fdbd66c348fa6232223ec2d1b180ffe72a40ebe', 'E-68a914f778c5f25bedc9721646bf55dddaba63965e8cfd3a2224e420b87102ab', 'E-70d3546dcdb75dd9e23c8c4fcd460617196fdd3a4496eb29bd8a52a56b9feaaa', 'E-80a666bed25022eb1e75f6a86708607220d1bedfe25f9ed86b0e437ac3cdd99f', 'E-9d73dc365b18b85b7b130ec8c616e303e23d3fee1211ec8bb0a80c856dd25b52', 'E-a469d3e843d805a059ebc258bae02a0034df6a161abe1e1ab6da055c8926912d', 'E-e8d272c51c554bcbd404f87d0f5d583808524a0b97cb4550aa7b846b2cd58b70']
+H6 CONFIRMED; decisive=['E-26df72643b2658f56a298756946ca0ce1891f95cdeb665152b399f9648b8bcbe', 'E-48c5c92e71c15c0d5e29dd1b0bfa4eb1f2097a6d4dd86eba3cd078816365f167']
+H6_SCHEMA_MISMATCH CONFIRMED; decisive=['E-26df72643b2658f56a298756946ca0ce1891f95cdeb665152b399f9648b8bcbe', 'E-48c5c92e71c15c0d5e29dd1b0bfa4eb1f2097a6d4dd86eba3cd078816365f167', 'E-78e998d06ab23f63dcc4a8c19e71e4f27118c90104c78169cf0ffc06794508bd', 'E-8148c0da500c68def61c1edd4f5e706054244bb369528825ef5fa0c2f9472f1d', 'E-b332c61a8d23f8bd288b8328ff96c6ba5268f3fa804732220283e35270e0401b', 'E-e61d14c9fc73ca3eabbc5d3370b66233fdb918e021bfe7daa6c65f8ab8459fd7']
+H8 SUPPORTED; decisive=[]
+H6_STALE_CONSUMER_SCHEMA SUPPORTED; decisive=[]
+H7 POSSIBLE; decisive=[]
+
+RESOLVED HYPOTHESES
+H1 ELIMINATED
+H2 ELIMINATED
+H3 ELIMINATED
+H5 ELIMINATED
+
+OPEN GAPS
+SAFETY_CRITICAL CASE-JD202609100001:FUND_PROTOCOL_APPLICABILITY
+DISCRIMINATING CASE-JD202609100001:ASSET_CONVERGENCE
+DISCRIMINATING CASE-JD202609100001:DEPLOYED_CONSUMER_SCHEMA_VERSION
+
+TOOLS AVAILABLE (alphabetical; no selection)
+get_accounting
+get_asset_delivery
+get_asset_order
+get_callback_gateway
+get_callback_raw
+get_fund_order
+get_guarantee_order
+get_loan_note
+get_messages
+get_payment_transaction
+get_protocol
+get_request_trace
+
+HISTORY DIGEST
+{
+  "tool_calls_used": 7,
+  "evidence_count": 30,
+  "latest_observation_time": "2026-09-10T09:30:10+08:00",
+  "repeated_lookup_groups": [],
+  "state_transitions": []
+}
+
+BUDGET USAGE
+{
+  "serialized_chars": 29735,
+  "approximate_tokens": 9912,
+  "fact_capsules": 22,
+  "hypothesis_capsules": 10,
+  "gap_capsules": 3,
+  "history_items": 0,
+  "limits": {
+    "max_serialized_chars": 60000,
+    "max_fact_capsules": 64,
+    "max_hypothesis_capsules": 16,
+    "max_gap_capsules": 24,
+    "max_history_items": 20
+  },
+  "estimator": "unicode_chars_div_3_ceiling_v1"
+}
+
+SELECTED / OMITTED
+{
+  "total_evidence": 30,
+  "selected": 22,
+  "omitted": [
+    {
+      "reason": "IRRELEVANT_TO_ACTIVE_HYPOTHESES",
+      "count": 8,
+      "evidence_ids_digest": "4419e0b9c44194d53b3699e7f537b8a82caee8961b49bdd64fa73bf67cab354f"
+    }
+  ]
+}
+
+Preview 仅用于检查；结构化 JSON Snapshot 是真相。

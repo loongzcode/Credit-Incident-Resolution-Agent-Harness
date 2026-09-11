@@ -1,5 +1,7 @@
 # Step 3.1：Hypothesis Integrity、Financial Identity 与 PII Boundary
 
+Step 4 前置 hardening：H6_STALE_CONSUMER_SCHEMA 的 SUPPORT 也必须包含同一 Callback 的 Gateway received + FAILED consumption 父级 Evidence witness，不能读取父状态代替证据。缺少 Gateway 时，即使保留 callback protocol 和两版协议，也不能达到 SUPPORTED。规则版本升级为 3。Step 4 的纯 Context 投影见 [Reasoning Context](reasoning-context.md)。本页后续的“本阶段”范围说明记录 Step 3/3.1 边界。
+
 唯一入口是 `HypothesisEngine.evaluate(case, evidence)`。这是 Case 与 Evidence 的确定性投影，不接 LLM、Prompt、Planner、Agent Loop、Tool Ranking、Context Assembly、写工具、Repair、Capability 或 Evaluator；不新增 case.root_cause 或结案入口。
 
 ## 边界与目录
@@ -54,7 +56,7 @@ CAUSAL 表示原因候选，STATE 表示现实状态模式，SEMANTIC_GUARD 表�
 
 每次从完整输入重算，不读取先前状态；证据撤回、后续失败、规则升级均可改变结果。没有 `previous_status + new_evidence` 作为唯一真相，也没有聊天记忆。确认 Hypothesis 不是最终资金验收、写权限或结案授权。
 
-`HYPOTHESIS_RULESET_VERSION = "2"`，State 保存该版本，Relation 保存 `.v2` rule_id。`input_fingerprint` 对规范化 Case、按 ID 排序去重的完整 Evidence 和版本计算 SHA-256。输入乱序或重复相同 Evidence，输出不变；同 ID 内容互异则拒绝。
+`HYPOTHESIS_RULESET_VERSION = "3"`，State 保存该版本，Relation 保存 `.v3` rule_id。`input_fingerprint` 对规范化 Case、按 ID 排序去重的完整 Evidence 和版本计算 SHA-256。输入乱序或重复相同 Evidence，输出不变；同 ID 内容互异则拒绝。
 
 `evaluated_at` 是**逻辑水位**：最大 Evidence.observed_at，转 UTC；无证据时用 Case.created_at。它不是实际机器运行时间。这个设计使同一输入连时间字段也可完全重现；未来实际执行审计时间应由外层另记。
 
@@ -64,7 +66,7 @@ EvidenceIndex 提供 all、current、latest、has_value、refs，返回完整 Ev
 
 current 要求 CURRENT、COMPLETE、source_as_of 存在。latest 按完整 subject、字段与协议版本取最大业务时间；同一时刻的不同值保留，不任意选赢者。STALE 历史不删除，相关引用可留作 CONTEXT_ONLY。相同工具和查询范围更新或同时刻的查询失败，会阻止旧观测继续充当当前证据。
 
-v2 决定性规则使用明确工具来源的 PRIMARY 记录，不根据 strength 推断业务事实。即使标记 AUTHORITATIVE，不完整证据也不能决定状态。本阶段没有复杂 TTL 或 source lineage 推理；原 Conflict Detector 保持不变。
+v3 决定性规则使用明确工具来源的 PRIMARY 记录，不根据 strength 推断业务事实。即使标记 AUTHORITATIVE，不完整证据也不能决定状态。本阶段没有复杂 TTL 或 source lineage 推理；原 Conflict Detector 保持不变。
 
 为避免 Hypothesis 层重新解析 Observation，提取器版本 **3** 延续版本 2 的直接可见关联 Metadata，并新增三个 Payment 身份引用 Claim。S6 现在有 **30 条 Evidence**：
 
@@ -79,7 +81,7 @@ v2 决定性规则使用明确工具来源的 PRIMARY 记录，不根据 strengt
 
 H6 要求同 Callback event 的 Gateway 与消息记录，并检查事件时间先后。H6_SCHEMA 要求失败状态、错误码、loanNo、expected/actual 类型来自同一个 message subject、同次 Observation、同一事件时间。
 
-## v2 确认与消除规则
+## v3 确认与消除规则
 
 | 假设 | 确认条件 | 消除或保守限制 |
 |---|---|---|
