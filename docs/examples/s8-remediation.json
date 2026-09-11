@@ -1,7 +1,7 @@
 {
-  "decision_id": "b79dda2db94dee70ce3b96f01c29bda04f2d8d77631fe6a4e3e9da2cb2708da5",
-  "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
-  "draft_hash": "f8c302896689527db9184ef6a700dc6e2d472ec1fb001e7cda5254745dfec1f1",
+  "decision_id": "6e71407eae687abaaf18d72ee1c4711354cb2523b9de5f650e0d406e5fe747ac",
+  "snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
+  "draft_hash": "31c251b23fdcf713f9cc3e1477f68d9550503cb0eb2e6324dbc6f303e4af4441",
   "eligibility": {
     "status": "IDENTITY_UNSAFE",
     "can_plan": true,
@@ -36,10 +36,10 @@
       },
       "risk_level": "L0_READ_ONLY",
       "supporting_evidence_refs": [],
-      "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+      "snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
       "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-      "policy_version": "1",
-      "catalog_version": "1"
+      "policy_version": "2",
+      "catalog_version": "2"
     },
     {
       "candidate": {
@@ -65,17 +65,17 @@
       },
       "risk_level": "L1_ADMINISTRATIVE",
       "supporting_evidence_refs": [],
-      "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+      "snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
       "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-      "policy_version": "1",
-      "catalog_version": "1"
+      "policy_version": "2",
+      "catalog_version": "2"
     }
   ],
   "rejected_candidates": [],
   "selected_candidate": {
     "candidate": {
-      "candidate_id": "none",
-      "action_type": "NO_REMEDIATION",
+      "candidate_id": "review",
+      "action_type": "REQUEST_OPERATOR_REVIEW",
       "target_order_id": "JD202609100001",
       "target_problem_ids": [
         "CASE-JD202609100001:PAYMENT_FINALITY",
@@ -94,23 +94,23 @@
       "message_ref": null,
       "delivery_ref": null
     },
-    "risk_level": "L0_READ_ONLY",
+    "risk_level": "L1_ADMINISTRATIVE",
     "supporting_evidence_refs": [],
-    "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+    "snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
     "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "policy_version": "1",
-    "catalog_version": "1"
+    "policy_version": "2",
+    "catalog_version": "2"
   },
   "preflight_results": [
     {
       "candidate_id": "none",
       "status": "READY_FOR_FUTURE_AUTHORIZATION",
       "reason_codes": [],
-      "proposal_snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
-      "fresh_snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
-      "preflight_fingerprint": "13bf3d8ccb11ae21d62beed4f340228de6e5449a200a0bc289008dcd8776f6c1",
+      "proposal_snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
+      "fresh_snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
+      "preflight_fingerprint": "5bd47f50bcca569bd6ff47887290e62a86122756d8ef594453c38f88e1f0a4bf",
       "intent": {
-        "intent_id": "9d00a5d34569e7fd76373cae9f0d5bdc33b9186de3327f6ca8276a0221d49e05",
+        "intent_id": "b57351ea5ab7d17d1b379c40de8a4c7b818d523bfb78f85ffff414fbf4bc607a",
         "case_id": "CASE-JD202609100001",
         "tenant_id": "demo",
         "internal_order_id": "JD202609100001",
@@ -125,11 +125,11 @@
           "delivery_ref": null
         },
         "supporting_evidence_refs": [],
-        "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+        "snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
         "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-        "catalog_version": "1",
-        "policy_version": "1",
-        "preflight_fingerprint": "13bf3d8ccb11ae21d62beed4f340228de6e5449a200a0bc289008dcd8776f6c1",
+        "catalog_version": "2",
+        "policy_version": "2",
+        "preflight_fingerprint": "5bd47f50bcca569bd6ff47887290e62a86122756d8ef594453c38f88e1f0a4bf",
         "requires_approval": false,
         "requires_capability": false,
         "status": "PROPOSED"
@@ -139,11 +139,11 @@
       "candidate_id": "review",
       "status": "READY_FOR_FUTURE_AUTHORIZATION",
       "reason_codes": [],
-      "proposal_snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
-      "fresh_snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
-      "preflight_fingerprint": "bd0d1bef9701ffdf9257fa40d7a63aa02bc57ac0a7193308123c8aebd46d864a",
+      "proposal_snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
+      "fresh_snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
+      "preflight_fingerprint": "296d2858034a477cd5b844cb607dadc22dc725d45d2eadd5cbee0df978594b0d",
       "intent": {
-        "intent_id": "fdc408bdb69f34165fd8537c57e4ec145c2636df86924bc48b7caafeaee31229",
+        "intent_id": "ece0cc8bf86c77760ddb8b4a2239106c965a9de6c1ffffd9021bd5b51829ecd3",
         "case_id": "CASE-JD202609100001",
         "tenant_id": "demo",
         "internal_order_id": "JD202609100001",
@@ -158,11 +158,11 @@
           "delivery_ref": null
         },
         "supporting_evidence_refs": [],
-        "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+        "snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
         "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-        "catalog_version": "1",
-        "policy_version": "1",
-        "preflight_fingerprint": "bd0d1bef9701ffdf9257fa40d7a63aa02bc57ac0a7193308123c8aebd46d864a",
+        "catalog_version": "2",
+        "policy_version": "2",
+        "preflight_fingerprint": "296d2858034a477cd5b844cb607dadc22dc725d45d2eadd5cbee0df978594b0d",
         "requires_approval": false,
         "requires_capability": true,
         "status": "PROPOSED"
@@ -170,19 +170,19 @@
     }
   ],
   "preflight_result": {
-    "candidate_id": "none",
+    "candidate_id": "review",
     "status": "READY_FOR_FUTURE_AUTHORIZATION",
     "reason_codes": [],
-    "proposal_snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
-    "fresh_snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
-    "preflight_fingerprint": "13bf3d8ccb11ae21d62beed4f340228de6e5449a200a0bc289008dcd8776f6c1",
+    "proposal_snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
+    "fresh_snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
+    "preflight_fingerprint": "296d2858034a477cd5b844cb607dadc22dc725d45d2eadd5cbee0df978594b0d",
     "intent": {
-      "intent_id": "9d00a5d34569e7fd76373cae9f0d5bdc33b9186de3327f6ca8276a0221d49e05",
+      "intent_id": "ece0cc8bf86c77760ddb8b4a2239106c965a9de6c1ffffd9021bd5b51829ecd3",
       "case_id": "CASE-JD202609100001",
       "tenant_id": "demo",
       "internal_order_id": "JD202609100001",
-      "action_type": "NO_REMEDIATION",
-      "risk_level": "L0_READ_ONLY",
+      "action_type": "REQUEST_OPERATOR_REVIEW",
+      "risk_level": "L1_ADMINISTRATIVE",
       "target": {
         "case_id": "CASE-JD202609100001",
         "tenant_id": "demo",
@@ -192,13 +192,13 @@
         "delivery_ref": null
       },
       "supporting_evidence_refs": [],
-      "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+      "snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
       "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-      "catalog_version": "1",
-      "policy_version": "1",
-      "preflight_fingerprint": "13bf3d8ccb11ae21d62beed4f340228de6e5449a200a0bc289008dcd8776f6c1",
+      "catalog_version": "2",
+      "policy_version": "2",
+      "preflight_fingerprint": "296d2858034a477cd5b844cb607dadc22dc725d45d2eadd5cbee0df978594b0d",
       "requires_approval": false,
-      "requires_capability": false,
+      "requires_capability": true,
       "status": "PROPOSED"
     }
   },
@@ -259,12 +259,12 @@
     }
   ],
   "final_intent": {
-    "intent_id": "9d00a5d34569e7fd76373cae9f0d5bdc33b9186de3327f6ca8276a0221d49e05",
+    "intent_id": "ece0cc8bf86c77760ddb8b4a2239106c965a9de6c1ffffd9021bd5b51829ecd3",
     "case_id": "CASE-JD202609100001",
     "tenant_id": "demo",
     "internal_order_id": "JD202609100001",
-    "action_type": "NO_REMEDIATION",
-    "risk_level": "L0_READ_ONLY",
+    "action_type": "REQUEST_OPERATOR_REVIEW",
+    "risk_level": "L1_ADMINISTRATIVE",
     "target": {
       "case_id": "CASE-JD202609100001",
       "tenant_id": "demo",
@@ -274,13 +274,13 @@
       "delivery_ref": null
     },
     "supporting_evidence_refs": [],
-    "snapshot_id": "2de5a83086fd5ee2ddd53c7dfeed77b753cec547d30a9b1483869a8b49f59627",
+    "snapshot_id": "bc4f988e1d194161c8d01358d532cd702ac6c4f8979ac4528fb45d1fb9a9b221",
     "evidence_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "catalog_version": "1",
-    "policy_version": "1",
-    "preflight_fingerprint": "13bf3d8ccb11ae21d62beed4f340228de6e5449a200a0bc289008dcd8776f6c1",
+    "catalog_version": "2",
+    "policy_version": "2",
+    "preflight_fingerprint": "296d2858034a477cd5b844cb607dadc22dc725d45d2eadd5cbee0df978594b0d",
     "requires_approval": false,
-    "requires_capability": false,
+    "requires_capability": true,
     "status": "PROPOSED"
   },
   "model_metadata": {
@@ -289,6 +289,6 @@
     "input_tokens": null,
     "output_tokens": null
   },
-  "policy_version": "1",
-  "catalog_version": "1"
+  "policy_version": "2",
+  "catalog_version": "2"
 }

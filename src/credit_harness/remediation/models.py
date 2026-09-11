@@ -11,9 +11,9 @@ from credit_harness.context.models import (
 from credit_harness.context.structured_values import OpaqueSubjectRef, ContextReference
 from credit_harness.planner.models import PlannerModelMetadata
 
-REMEDIATION_POLICY_VERSION = "1"
-REMEDIATION_CATALOG_VERSION = "1"
-REMEDIATION_SCHEMA_VERSION = "1"
+REMEDIATION_POLICY_VERSION = "2"
+REMEDIATION_CATALOG_VERSION = "2"
+REMEDIATION_SCHEMA_VERSION = "2"
 
 
 class RemediationActionType(StrEnum):
@@ -22,6 +22,13 @@ class RemediationActionType(StrEnum):
     REDELIVER_ASSET_NOTIFICATION = "REDELIVER_ASSET_NOTIFICATION"
     CREATE_RECONCILIATION_TASK = "CREATE_RECONCILIATION_TASK"
     REQUEST_OPERATOR_REVIEW = "REQUEST_OPERATOR_REVIEW"
+
+
+class SelectionRole(StrEnum):
+    DIRECT_REMEDIATION = "DIRECT_REMEDIATION"
+    ADMINISTRATIVE_REMEDIATION = "ADMINISTRATIVE_REMEDIATION"
+    HUMAN_FALLBACK = "HUMAN_FALLBACK"
+    NO_ACTION = "NO_ACTION"
 
 
 class ActionRiskLevel(StrEnum):
@@ -82,6 +89,7 @@ class RejectReason(StrEnum):
 
 class RemediationActionContract(Model):
     action_type: RemediationActionType
+    selection_role: SelectionRole
     risk_level: ActionRiskLevel
     description: str
     required_evidence_conditions: tuple[EvidenceCondition, ...]

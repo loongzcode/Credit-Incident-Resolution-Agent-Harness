@@ -49,7 +49,7 @@ class RemediationPlanner:
                     previews.append(RemediationPreview(candidate=candidate, risk_level=checked.risk_level,
                         status=preview.status, blocking_reasons=preview.reason_codes, target=checked.target))
         # Only choose proposed candidates whose fresh preflight succeeded. No
-        # generated fallback. Lower catalog risk = smaller necessary effect.
+        # generated fallback. Static selection role precedes scope and risk.
         current = self.reader.read(case_id)
         # A preview may become stale while another candidate is checked. Never
         # return that older READY intent, including in diagnostic/audit results.
@@ -67,8 +67,8 @@ class RemediationPlanner:
         ready = [(v, p) for v in valid for p in results if p.candidate_id == v.candidate.candidate_id
                  and p.status == S.READY_FOR_FUTURE_AUTHORIZATION
                  and p.fresh_snapshot_id == current.snapshot.snapshot_id]
-        selected, preflight = min(ready, key=lambda item: (
-            item[0].risk_level.value, item[0].candidate.action_type.value, item[0].candidate.candidate_id)) if ready else (None, None)
+        selected, preflight = min(ready, key=lambda item: self.validator.catalog.selection_key(
+            item[0].candidate)) if ready else (None, None)
         intent = preflight.intent if preflight else None
         draft_hash = digest(draft.model_dump(mode="json")) if draft else None
         body = dict(snapshot_id=state.snapshot.snapshot_id, draft_hash=draft_hash, eligibility=eligibility,

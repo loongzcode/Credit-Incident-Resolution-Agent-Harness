@@ -1,4 +1,4 @@
-# Step 7：Remediation Proposal 与 Write Safety Boundary
+# Step 7 / 7.1：Remediation Proposal 与 Write Safety Boundary
 
 Step 7 停在 `READY_FOR_FUTURE_AUTHORIZATION` / `RemediationIntent(status=PROPOSED)`。没有执行器、写工具、消息投递、对账任务创建或资金操作。这里的「可预检」只表示当前证据支持将来申请授权，不表示已获批、可执行或故障恢复成功。
 
@@ -123,7 +123,22 @@ Fresh 的「已完成」是终止重放的优先抑制规则，所以即使它�
 
 ## Selection、Fingerprint 与 Audit
 
-只在模型提出并通过 fresh preflight 的候选中选择。按 Catalog 风险 L0 → L1 → L2，再按 action enum / candidate ID 稳定排序，优先最小必要效果。不自动补 Review、不自动重放；仅提出 BLOCKED Replay 时 selected_candidate / final_intent 为 None。S6-ready 如果同时合法提出 Review，保守选择 Review；仅提出合法 Replay 的 fixture 才选 Replay Intent。
+只在模型提出且 fresh preflight 为 READY_FOR_FUTURE_AUTHORIZATION 的候选中选择。Step 7.1 先按 Catalog 固定的 `SelectionRole` 分层，再在同层比较最小效果范围、较低风险、action name / candidate_id，防止 fallback 永久压过已有充分证据的直接修复建议。
+
+| 选择顺序 | SelectionRole | Catalog Action |
+|---|---|---|
+| 1 | DIRECT_REMEDIATION | REPLAY_CALLBACK_CONSUMPTION、REDELIVER_ASSET_NOTIFICATION |
+| 2 | ADMINISTRATIVE_REMEDIATION | CREATE_RECONCILIATION_TASK |
+| 3 | HUMAN_FALLBACK | REQUEST_OPERATOR_REVIEW |
+| 4 | NO_ACTION | NO_REMEDIATION |
+
+MESSAGE 和 DELIVERY 都是单个既有事件，效果范围同级；同级风险再按名称和候选 ID 稳定打破平局。角色不是模型字段，也不从 rationale 推断。风险硬禁、安全 Gap、Identity、Evidence 及部署兼容性先检查，角色优先级不能把 BLOCKED/STALE/NOT_NEEDED 变成 READY。
+
+S6-ready 同时提出合法 Replay 与 Review 时，选择 Replay **PROPOSED Intent**。普通 S6 的 Replay BLOCKED，不进入选择池，因而选择 READY Review。S8 的 L2 被拒绝，Review 比 NO 优先。没有更好的 READY 候选才选择 NO；仅提出 BLOCKED Replay 时仍为 None。Harness 不合成任何缺失候选。
+
+`VALIDATOR_HANDLERS`、`PREFLIGHT_HANDLERS` 是显式、只读的 Action → 函数注册表，没有默认分支。Validator 分别实现五个动作 handler；Preflight 对 Replay / Redelivery 有专用 handler，对 Reconciliation / Review / NO 显式注册 pass-through（仍需共享 fresh validation）。漏注册或 handler 不可调用时，Runtime 返回 ACTION_NOT_ALLOWED，绝不生成 Intent。Preflight 也检查 Validator 覆盖，旧 ValidatedCandidate 不能绕过后续漏配。
+
+覆盖测试要求 Catalog、Action Enum、两张 handler 表的集合完全相等且每项可调用；另外逐一移除五个动作的 Validator / Preflight handler，验证运行时同样拒绝。新增 Action 时，忘记补安全逻辑会使测试失败并在运行时默认阻断，不采用 generic rule engine。Remediation schema / catalog / policy version 均升为 2，以使旧预检绑定失效。
 
 `intent_id = SHA256(canonical payload)`，绑定 case/tenant/order、action、真实 target、supporting Evidence IDs + content hash、Snapshot、policy/catalog version、preflight fingerprint 和未来 approval/capability 标记。支持 Evidence 按稳定 ID 排序，非 UUID4；rationale 或 candidate_id 的变化不改变同一业务 Intent，Evidence / Snapshot / policy 的变化会改变 ID。这是内容身份，不是已经实现的执行幂等键。
 
@@ -140,35 +155,36 @@ Fresh 的「已完成」是终止重放的优先抑制规则，所以即使它�
 .\.venv\Scripts\python scripts/demo_remediation.py --scenario S8 --provider fake --output .local/s8-remediation.json
 # 只替换修复建议模型；前置调查 demo 仍为 Fake。
 .\.venv\Scripts\python scripts/demo_remediation.py --scenario S6 --provider openai
-.\.venv\Scripts\python -m pytest tests/test_remediation.py tests/test_remediation_provider.py -q
+.\.venv\Scripts\python -m pytest tests/test_remediation.py tests/test_remediation_selection.py tests/test_remediation_provider.py -q
 ```
 
 S6 正常调查：Identity MATCH，H4/H6/H6_SCHEMA_MISMATCH CONFIRMED。Replay 候选有效，但 Preflight BLOCKED / DEPLOYMENT_STATE_UNKNOWN；Review READY，最终 Intent 为 REQUEST_OPERATOR_REVIEW / PROPOSED。
 
-S6-ready synthetic 兼容配置：同样支付身份与失败链，再有直接当前 schema=2.3、accepted protocol=2.3、loanNo=string。只提出 Replay 时 READY_FOR_FUTURE_AUTHORIZATION；仍未授权、未执行、未改变消费状态或 Case budget。
+S6-ready synthetic 兼容配置：同样支付身份与失败链，再有直接当前 schema=2.3、accepted protocol=2.3、loanNo=string。Replay 与 Review 都 READY，选择 Replay / PROPOSED；仍未授权、未执行、未改变消费状态或 Case budget。
 
-S8：Identity UNKNOWN、Payment Finality UNKNOWN；Replay / Redelivery 均因 IDENTITY_UNKNOWN 拒绝。可提出 Review 或 NO；默认 Fake 同时给两者，最小效果规则选择 NO_REMEDIATION / PROPOSED。
+S8：Identity UNKNOWN、Payment Finality UNKNOWN；Replay / Redelivery 均因 IDENTITY_UNKNOWN 拒绝。默认 Fake 同时提出 Review / NO，角色顺序选择 REQUEST_OPERATOR_REVIEW / PROPOSED，不把 UNKNOWN 升级为资金失败。
 
 实际输出见 [S6](examples/s6-remediation.json)、[S6-ready](examples/s6-ready-remediation.json)、[S8](examples/s8-remediation.json)。样例包含真实本次生成的 Evidence IDs / Snapshot hash / Intent hash，仅含 synthetic 数据；重新 bootstrap 世界会产生不同 Observation / Case 时间与 hash。
 
 ## 验收记录
 
-最终共 677 个测试实例，原有 585 个保留，新增 92 个。既有测试只更新 Graph catalog aggregate version 的预期值，资金、Hypothesis、Context、Planner、Runtime 的原断言继续运行。
+Step 7.1 最终共 699 个测试实例：原有 677 个全部保留，新增 22 个选择 / handler 覆盖测试。既有测试未修改；资金、Hypothesis、Context、Planner、Runtime、部署 readiness、fresh preflight 的原断言继续运行。
 
 | 验证 | 最终结果 |
 |---|---|
-| SQLite full suite | **674 passed / 3 skipped**，201.97 秒 |
-| PostgreSQL full suite | **675 passed / 2 skipped**，236.08 秒 |
-| Remediation Provider 专项 | **9 passed / 1 skipped**，6.69 秒 |
+| SQLite full suite | **696 passed / 3 skipped**，235.75 秒 |
+| PostgreSQL full suite | **697 passed / 2 skipped**，312.01 秒 |
+| Remediation + Selection + Provider 专项 | **113 passed / 1 skipped**，55.66 秒 |
+| Remediation Provider 单独运行 | **9 passed / 1 skipped**，7.49 秒 |
 | 三份实际 Demo JSON Schema / Intent hash 重算 | 全部通过 |
 | git diff --check | 通过 |
 
-SQLite 跳过 PostgreSQL 专项与两个可选在线模型测试；PostgreSQL 仅跳过两个在线模型测试。新 Step 7 测试为 91 passed / 1 optional live skipped。真实 OpenAI SDK 的 MockTransport roundtrip 确实执行，没有 importorskip("httpx2")。两套均只有既有 Starlette / AnyIO 弃用警告，没有失败。默认网络完全不参与 Fake / Provider mock 验收；在线修复模型测试须同时显式设置 RUN_LLM_TESTS=1、OPENAI_API_KEY、REMEDIATION_MODEL。本次没有发出真实模型请求。
+SQLite 跳过 PostgreSQL 专项与两个可选在线模型测试；PostgreSQL 仅跳过两个在线模型测试。Remediation 域合计 113 passed / 1 optional live skipped，其中 Step 7.1 新增 22 项全部通过。真实 OpenAI SDK 的 MockTransport roundtrip 确实执行，没有 importorskip("httpx2")。两套均只有既有 Starlette / AnyIO 弃用警告，没有失败。默认网络完全不参与 Fake / Provider mock 验收；在线修复模型测试须同时显式设置 RUN_LLM_TESTS=1、OPENAI_API_KEY、REMEDIATION_MODEL。本次没有发出真实模型请求。
 
 ```powershell
-.\.venv\Scripts\python -m pytest -q --tb=short -p no:cacheprovider --basetemp=.local/step7-sqlite-verified
+.\.venv\Scripts\python -m pytest -q --tb=short -p no:cacheprovider --basetemp=.local/step71-sqlite-full
 # TEST_POSTGRES_URL 指向专用测试库，每个测试创建并清理独立 schema。
-.\.venv\Scripts\python -m pytest --postgres -q --tb=short -p no:cacheprovider --basetemp=.local/step7-postgres-verified
+.\.venv\Scripts\python -m pytest --postgres -q --tb=short -p no:cacheprovider --basetemp=.local/step71-postgres-full
 .\.venv\Scripts\python -m pytest tests/test_remediation_provider.py -q
 ```
 
@@ -185,6 +201,7 @@ src/credit_harness/adapters/
   remediation_fake.py              openai_remediation.py
 scripts/demo_remediation.py
 tests/test_remediation.py
+tests/test_remediation_selection.py
 tests/test_remediation_provider.py
 tests/support/remediation_fixture.py
 docs/remediation-boundary.md

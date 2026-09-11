@@ -1,7 +1,7 @@
 {
-  "decision_id": "1cece13d282c5b7a52308801aa8d4eca509bb9f31b36e3f6123cf655a738f63b",
-  "snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-  "draft_hash": "e3a270ddc78a054e408a44094c5acb3d1d04460031f01a3085ca420817a896d2",
+  "decision_id": "363c4491c6c0c0decdd174192b5704cdde9597c980aa49a19bd3696f8566bf67",
+  "snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+  "draft_hash": "34c9351d66f5902f9d6f7c2dd39063bb2308920f2cf20c474f51cd005ba7f95e",
   "eligibility": {
     "status": "ELIGIBLE",
     "can_plan": true,
@@ -80,10 +80,10 @@
         "E-bbe97d9871ec3bed439790b8a4956a7c9b660f5babdb181a3ab295a05a7432b7",
         "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc"
       ],
-      "snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-      "evidence_hash": "1d209d13417b34ea7c487628c1ad576a79ecd75d2a4fe3c146f4b5c42a900b5f",
-      "policy_version": "1",
-      "catalog_version": "1"
+      "snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+      "evidence_hash": "7a99f6f13b668190ec006062085b0b8e4c9c1ee0a696eddb662b63b310f0b744",
+      "policy_version": "2",
+      "catalog_version": "2"
     },
     {
       "candidate": {
@@ -158,10 +158,10 @@
         "E-c6a2888f6d248e62f512ed6a0ef91fbb9a2c236f0960ef5be915ff42130d3e75",
         "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc"
       ],
-      "snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-      "evidence_hash": "d98dabc52108242f69ef63cf935ccf94d9a39f2f2338b551e668be0868c89318",
-      "policy_version": "1",
-      "catalog_version": "1"
+      "snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+      "evidence_hash": "1310402a0e21e80c613753067a8133cd94f71c96ef1546866166db5b17803511",
+      "policy_version": "2",
+      "catalog_version": "2"
     }
   ],
   "rejected_candidates": [],
@@ -238,10 +238,10 @@
       "E-c6a2888f6d248e62f512ed6a0ef91fbb9a2c236f0960ef5be915ff42130d3e75",
       "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc"
     ],
-    "snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-    "evidence_hash": "d98dabc52108242f69ef63cf935ccf94d9a39f2f2338b551e668be0868c89318",
-    "policy_version": "1",
-    "catalog_version": "1"
+    "snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+    "evidence_hash": "1310402a0e21e80c613753067a8133cd94f71c96ef1546866166db5b17803511",
+    "policy_version": "2",
+    "catalog_version": "2"
   },
   "preflight_results": [
     {
@@ -250,20 +250,20 @@
       "reason_codes": [
         "DEPLOYMENT_STATE_UNKNOWN"
       ],
-      "proposal_snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-      "fresh_snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-      "preflight_fingerprint": "d071c08513a61dd536bf64bb0b86a786419be559fde49b523cec99a890e66d3c",
+      "proposal_snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+      "fresh_snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+      "preflight_fingerprint": "91e7c45ecaca5aa8b83d32da80b2af87792f0bd38ad745209194eab72709f8db",
       "intent": null
     },
     {
       "candidate_id": "review",
       "status": "READY_FOR_FUTURE_AUTHORIZATION",
       "reason_codes": [],
-      "proposal_snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-      "fresh_snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-      "preflight_fingerprint": "c3dc8e9f18d3be34f8e5cbbe56afdbd43d5e0daae7230289f9ad15e29bc7d36d",
+      "proposal_snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+      "fresh_snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+      "preflight_fingerprint": "8561c0f2a17edc92605678bccdb7b5cf2051e1dc40e83889c6883032b268ac49",
       "intent": {
-        "intent_id": "7615aae8da824f1ec50c3813324f262cd3b1aff831399d6c235de37adcf4ae92",
+        "intent_id": "f0ed65935a996c1e9be6c4a15a0d2e2d41437b4963a46a94fb8171fa81df5091",
         "case_id": "CASE-JD202609100001",
         "tenant_id": "demo",
         "internal_order_id": "JD202609100001",
@@ -303,11 +303,11 @@
           "E-c6a2888f6d248e62f512ed6a0ef91fbb9a2c236f0960ef5be915ff42130d3e75",
           "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc"
         ],
-        "snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-        "evidence_hash": "d98dabc52108242f69ef63cf935ccf94d9a39f2f2338b551e668be0868c89318",
-        "catalog_version": "1",
-        "policy_version": "1",
-        "preflight_fingerprint": "c3dc8e9f18d3be34f8e5cbbe56afdbd43d5e0daae7230289f9ad15e29bc7d36d",
+        "snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+        "evidence_hash": "1310402a0e21e80c613753067a8133cd94f71c96ef1546866166db5b17803511",
+        "catalog_version": "2",
+        "policy_version": "2",
+        "preflight_fingerprint": "8561c0f2a17edc92605678bccdb7b5cf2051e1dc40e83889c6883032b268ac49",
         "requires_approval": false,
         "requires_capability": true,
         "status": "PROPOSED"
@@ -318,11 +318,11 @@
     "candidate_id": "review",
     "status": "READY_FOR_FUTURE_AUTHORIZATION",
     "reason_codes": [],
-    "proposal_snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-    "fresh_snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-    "preflight_fingerprint": "c3dc8e9f18d3be34f8e5cbbe56afdbd43d5e0daae7230289f9ad15e29bc7d36d",
+    "proposal_snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+    "fresh_snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+    "preflight_fingerprint": "8561c0f2a17edc92605678bccdb7b5cf2051e1dc40e83889c6883032b268ac49",
     "intent": {
-      "intent_id": "7615aae8da824f1ec50c3813324f262cd3b1aff831399d6c235de37adcf4ae92",
+      "intent_id": "f0ed65935a996c1e9be6c4a15a0d2e2d41437b4963a46a94fb8171fa81df5091",
       "case_id": "CASE-JD202609100001",
       "tenant_id": "demo",
       "internal_order_id": "JD202609100001",
@@ -362,11 +362,11 @@
         "E-c6a2888f6d248e62f512ed6a0ef91fbb9a2c236f0960ef5be915ff42130d3e75",
         "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc"
       ],
-      "snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-      "evidence_hash": "d98dabc52108242f69ef63cf935ccf94d9a39f2f2338b551e668be0868c89318",
-      "catalog_version": "1",
-      "policy_version": "1",
-      "preflight_fingerprint": "c3dc8e9f18d3be34f8e5cbbe56afdbd43d5e0daae7230289f9ad15e29bc7d36d",
+      "snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+      "evidence_hash": "1310402a0e21e80c613753067a8133cd94f71c96ef1546866166db5b17803511",
+      "catalog_version": "2",
+      "policy_version": "2",
+      "preflight_fingerprint": "8561c0f2a17edc92605678bccdb7b5cf2051e1dc40e83889c6883032b268ac49",
       "requires_approval": false,
       "requires_capability": true,
       "status": "PROPOSED"
@@ -477,7 +477,7 @@
     }
   ],
   "final_intent": {
-    "intent_id": "7615aae8da824f1ec50c3813324f262cd3b1aff831399d6c235de37adcf4ae92",
+    "intent_id": "f0ed65935a996c1e9be6c4a15a0d2e2d41437b4963a46a94fb8171fa81df5091",
     "case_id": "CASE-JD202609100001",
     "tenant_id": "demo",
     "internal_order_id": "JD202609100001",
@@ -517,11 +517,11 @@
       "E-c6a2888f6d248e62f512ed6a0ef91fbb9a2c236f0960ef5be915ff42130d3e75",
       "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc"
     ],
-    "snapshot_id": "1ae25f91295cce51404ca33e5ad01d73187d9b4a5e2f01aa381a7b60de04a81c",
-    "evidence_hash": "d98dabc52108242f69ef63cf935ccf94d9a39f2f2338b551e668be0868c89318",
-    "catalog_version": "1",
-    "policy_version": "1",
-    "preflight_fingerprint": "c3dc8e9f18d3be34f8e5cbbe56afdbd43d5e0daae7230289f9ad15e29bc7d36d",
+    "snapshot_id": "5e3d9127c57dc38c27098bd176c029b6e63c645f1cb040d6e98b7e682f1cafad",
+    "evidence_hash": "1310402a0e21e80c613753067a8133cd94f71c96ef1546866166db5b17803511",
+    "catalog_version": "2",
+    "policy_version": "2",
+    "preflight_fingerprint": "8561c0f2a17edc92605678bccdb7b5cf2051e1dc40e83889c6883032b268ac49",
     "requires_approval": false,
     "requires_capability": true,
     "status": "PROPOSED"
@@ -532,6 +532,6 @@
     "input_tokens": null,
     "output_tokens": null
   },
-  "policy_version": "1",
-  "catalog_version": "1"
+  "policy_version": "2",
+  "catalog_version": "2"
 }
