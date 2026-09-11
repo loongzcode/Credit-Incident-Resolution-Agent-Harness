@@ -1,0 +1,176 @@
+{
+  "scenario": "unknown-effect",
+  "report": {
+    "report_id": "3767d4b7f123ac93f0e152d3f0e90fdf172f9f816be4fc8fb1bd3ef2a88d65cc",
+    "evaluation_run_id": "63aa7744-9221-4436-9d66-83a2c3310695",
+    "case_id": "CASE-JD202609100001",
+    "verification_snapshot_id": "955e642675dd1d25c2d7d7d6895be49ed6d2c85d07451945491a8e61a9ac0088",
+    "snapshot": {
+      "verification_snapshot_id": "955e642675dd1d25c2d7d7d6895be49ed6d2c85d07451945491a8e61a9ac0088",
+      "case_id": "CASE-JD202609100001",
+      "tenant_id": "demo",
+      "case_revision": "2026-09-10T09:31:13.000002+08:00",
+      "case_fingerprint": "e940f611c970583b5c0c41897450f0f0959b93e2cb4115205adccec691c208e8",
+      "evidence_fingerprint": "1adf76c395827c032a88d7413eac3ea1e70a666cbc57cbdf15043c00ce0552ae",
+      "payment_identity_fingerprint": "eeadb2351be70826d140de0c142910fff6b7a580cd2b11d7fa1d8641fd64b0db",
+      "current_state_fingerprint": "01bbf42d3ae853062a2823a86eb14ef2bc74adb6cf5adb74f547ca8b41008808",
+      "side_effect_ledger_fingerprint": "c36ce7e535fb1a55c73c773aaf5175b8bfff9941eb635a4749fcf0f198cbd622",
+      "recovery_fingerprint": "c441588bd1cee1581fe5e2b7f4c204265bc71902d1b1bd4fd4acd57083fff10b",
+      "call_history_fingerprint": "a4c37d4244cc58e06c2a44e9a02e094995af65c2717003bfadc716ef2ee83a10",
+      "authorization_policy_fingerprint": "e9f75ee129ad1f54dd105891817fcb2517d13ebcce7957a83207ad8f9eb14ff8",
+      "evaluation_policy_version": "1",
+      "verification_contract_version": "1",
+      "evaluation_policy_fingerprint": "7cf597f5ff332fbcc67e9f20f71120aab5f1f99f2aa72521387fc18293a01eca",
+      "verification_contract_fingerprint": "3e463c484c771818b4280b14578a24146006892dea88a3f0dcd97d03d55d5fb1"
+    },
+    "contract_version": "1",
+    "policy_version": "1",
+    "outcome_path": "SETTLED_PATH",
+    "overall_verdict": "INCONCLUSIVE",
+    "dimensions": [
+      {
+        "dimension": "MONEY",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [
+          "E-0b2b546342bc7152134e98fcd68d56b014a77c25bff6aeaddbc17f8dd398b417"
+        ],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "IDENTITY",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [
+          "E-0b2b546342bc7152134e98fcd68d56b014a77c25bff6aeaddbc17f8dd398b417",
+          "E-1084137b5682cfb5a033c4e883c57f114b56adadfcb14201d57d4f453240841c",
+          "E-1bb4519ea1bd220797ca28921fa6a3df339bb323b11cd5c657e0edffed0d7a20",
+          "E-27e242cfc9f0f343b90b11e06c7b9a2de0670df73789356126db6a79c8deff83",
+          "E-31fd781eabf311684cd2d453ddd8f2e0fe7a5bbf4428af1d1d6a00ea661c7bb7",
+          "E-625e784e0a312c4a073ace0f8d8cec5e40976e28f69d9b54fbf81d653e377a7d",
+          "E-8249858515e868d543d2b32ee32161752800c18323b61b8eec392b66979dfe63",
+          "E-8dc2dbe89dfd75ccc7e56435e017b6fabdac76a73790ec9ea0a68d5d07c52f1e",
+          "E-cdcfc8209d3537c534a628a86a4c6918f8facb1c7a6ad4fe350444e699dacf34",
+          "E-d94b05b81b86911cc9799e40a9350b69856c656e931bb2d7481eebf8d34d52d6",
+          "E-ece7d3f7fec461a9bd2c62a343ddc46a67cf8b630ed92b8b9887f842c06efe2a",
+          "E-ee814825c3117774ea5008ad2ce513226a6222b3bf11b988697cce63fc71a708"
+        ],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "STATE_CONVERGENCE",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [
+          "E-38b0a923d00d889c5531fa418dc5269061370c21907f697146f21429a32ae554",
+          "E-5098e3bfcf02eff641adcb7234e271ac30e70bee683e4dcec0a2eb30379c6e9f",
+          "E-6584846f6a5bdf9b8867367e37d417ac011951a447cfaf1fea674681048d0905",
+          "E-72fc1ec67df7678a923dd75212ba3ba109cfa7aefc6143e7d5715dcf46cf8881",
+          "E-8249858515e868d543d2b32ee32161752800c18323b61b8eec392b66979dfe63",
+          "E-835b6615ba15285dd160e871e2a993438d0643b6376f7c431014040abeed28a5",
+          "E-ee814825c3117774ea5008ad2ce513226a6222b3bf11b988697cce63fc71a708",
+          "E-f158a08227e8991e73aeae969373bdc249bb016b6753c2ff01999382e7675ddd"
+        ],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "SIDE_EFFECT",
+        "status": "INCONCLUSIVE",
+        "reason_codes": [
+          "UNRESOLVED_SIDE_EFFECT"
+        ],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [
+          "dacf3928e85f6464dc47854fca1978b36878100ffa1a9e6a3283682d85a3fe82"
+        ],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "EVIDENCE_SUFFICIENCY",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "POLICY",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "RECOVERY",
+        "status": "INCONCLUSIVE",
+        "reason_codes": [
+          "RECOVERY_UNRESOLVED"
+        ],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "OUTCOME",
+        "status": "INCONCLUSIVE",
+        "reason_codes": [],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      }
+    ],
+    "reason_codes": [
+      "RECOVERY_UNRESOLVED",
+      "UNRESOLVED_SIDE_EFFECT"
+    ],
+    "supporting_evidence_refs": [
+      "E-0b2b546342bc7152134e98fcd68d56b014a77c25bff6aeaddbc17f8dd398b417",
+      "E-1084137b5682cfb5a033c4e883c57f114b56adadfcb14201d57d4f453240841c",
+      "E-1bb4519ea1bd220797ca28921fa6a3df339bb323b11cd5c657e0edffed0d7a20",
+      "E-27e242cfc9f0f343b90b11e06c7b9a2de0670df73789356126db6a79c8deff83",
+      "E-31fd781eabf311684cd2d453ddd8f2e0fe7a5bbf4428af1d1d6a00ea661c7bb7",
+      "E-38b0a923d00d889c5531fa418dc5269061370c21907f697146f21429a32ae554",
+      "E-5098e3bfcf02eff641adcb7234e271ac30e70bee683e4dcec0a2eb30379c6e9f",
+      "E-625e784e0a312c4a073ace0f8d8cec5e40976e28f69d9b54fbf81d653e377a7d",
+      "E-6584846f6a5bdf9b8867367e37d417ac011951a447cfaf1fea674681048d0905",
+      "E-72fc1ec67df7678a923dd75212ba3ba109cfa7aefc6143e7d5715dcf46cf8881",
+      "E-8249858515e868d543d2b32ee32161752800c18323b61b8eec392b66979dfe63",
+      "E-835b6615ba15285dd160e871e2a993438d0643b6376f7c431014040abeed28a5",
+      "E-8dc2dbe89dfd75ccc7e56435e017b6fabdac76a73790ec9ea0a68d5d07c52f1e",
+      "E-cdcfc8209d3537c534a628a86a4c6918f8facb1c7a6ad4fe350444e699dacf34",
+      "E-d94b05b81b86911cc9799e40a9350b69856c656e931bb2d7481eebf8d34d52d6",
+      "E-ece7d3f7fec461a9bd2c62a343ddc46a67cf8b630ed92b8b9887f842c06efe2a",
+      "E-ee814825c3117774ea5008ad2ce513226a6222b3bf11b988697cce63fc71a708",
+      "E-f158a08227e8991e73aeae969373bdc249bb016b6753c2ff01999382e7675ddd"
+    ],
+    "side_effect_refs": [
+      "dacf3928e85f6464dc47854fca1978b36878100ffa1a9e6a3283682d85a3fe82"
+    ],
+    "unresolved_requirements": [
+      {
+        "requirement": "RECOVERY_FINALITY",
+        "dimension": "RECOVERY",
+        "reason_code": "RECOVERY_UNRESOLVED",
+        "required_claims": [],
+        "effect_ref": null
+      },
+      {
+        "requirement": "EFFECT_FINALITY",
+        "dimension": "SIDE_EFFECT",
+        "reason_code": "UNRESOLVED_SIDE_EFFECT",
+        "required_claims": [],
+        "effect_ref": "dacf3928e85f6464dc47854fca1978b36878100ffa1a9e6a3283682d85a3fe82"
+      }
+    ],
+    "created_at": "2026-09-10T09:31:13.000001+08:00"
+  },
+  "closure": null,
+  "case_status": "INVESTIGATING",
+  "effect_status": "UNKNOWN",
+  "evidence_count": 72,
+  "message": "INCONCLUSIVE"
+}

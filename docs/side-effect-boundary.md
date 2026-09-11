@@ -1,5 +1,7 @@
 # Step 8：Authorization + Capability + Idempotent Side-Effect Boundary
 
+后续 [Step 10 Independent Evaluator](evaluator.md) 已实现业务验收；本页保留 Step 8 的执行语义与历史测试记录。Executor 仍不验证业务、不关闭 Case，APPLIED 后必须通过新的 Read Evidence 和独立 Closure CAS。
+
 本阶段首次执行 **synthetic 非资金副作用**。没有真实金融连接、真实个人信息、资金客户端、自动恢复或 Evaluator。Step 7 的 RemediationPlanner 仍停在 PROPOSED Intent；Step 6 的只读调查循环没有接上执行器。
 
 ```text

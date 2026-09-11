@@ -1,7 +1,7 @@
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
-from credit_harness.cases.models import CaseAccessError
+from credit_harness.cases.models import CaseAccessError, CaseStatus
 from credit_harness.cases.repository import CallState, CaseRepository, hydrate, next_update_time
 from credit_harness.cases.tables import CaseCallRow, CaseRow
 from credit_harness.persistence.store import ObservationRow
@@ -47,6 +47,8 @@ class EvidenceRepository:
         if result.rowcount != 1:
             raise CaseAccessError("case unavailable")
         case_row = self.cases._row(session, case_id)
+        if CaseStatus(case_row.status).is_terminal:
+            raise ProvenanceError("terminal Case cannot publish new Evidence")
         call = session.get(CaseCallRow, call_id)
         if call is None or call.case_id != case_id or call.state not in ((CallState.DISPATCHED.value, CallState.ERROR.value, CallState.OBSERVED.value)
                                            if recovery else (CallState.DISPATCHED.value,)):

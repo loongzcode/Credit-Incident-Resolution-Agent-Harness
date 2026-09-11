@@ -1,0 +1,190 @@
+{
+  "scenario": "identity-mismatch",
+  "report": {
+    "report_id": "ad097a8ff6c86516230b0ed8307f61321312c3ac4020f38a5e895a343c0b7b8e",
+    "evaluation_run_id": "1971f2be-65c3-4132-8fb0-ed5fc3345aeb",
+    "case_id": "CASE-JD202609100001",
+    "verification_snapshot_id": "8786b8fe734e738d0069dcf2a4d4c1629ed7bc8767e31f290a4fba317aeef76e",
+    "snapshot": {
+      "verification_snapshot_id": "8786b8fe734e738d0069dcf2a4d4c1629ed7bc8767e31f290a4fba317aeef76e",
+      "case_id": "CASE-JD202609100001",
+      "tenant_id": "demo",
+      "case_revision": "2026-09-10T09:31:02.000001+08:00",
+      "case_fingerprint": "6eb61607ed84ae79ca0f67f34544a2054f2ea17f967cef511b3a0eae4746045b",
+      "evidence_fingerprint": "157065395275a9611b11f240a4d25479411c3701c4c83e7cbd704320fd82c358",
+      "payment_identity_fingerprint": "e428ce8d9329a81778fb59a0881e948056d7e1936f2e016ff863e84ddd285cc8",
+      "current_state_fingerprint": "fb361e9c2cd09ff581670296b926f46400831a4ed20e33e61ff7d249a4e573d7",
+      "side_effect_ledger_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "recovery_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "call_history_fingerprint": "143c05204ae833a6e02ed6f41c745d8bc106ae753fdf94ec392435730a5d7d07",
+      "authorization_policy_fingerprint": "69aca27f42671abba6b1189b19bcc46ef28914779c6c247df8a1d60c73ea44a5",
+      "evaluation_policy_version": "1",
+      "verification_contract_version": "1",
+      "evaluation_policy_fingerprint": "7cf597f5ff332fbcc67e9f20f71120aab5f1f99f2aa72521387fc18293a01eca",
+      "verification_contract_fingerprint": "3e463c484c771818b4280b14578a24146006892dea88a3f0dcd97d03d55d5fb1"
+    },
+    "contract_version": "1",
+    "policy_version": "1",
+    "outcome_path": "SETTLED_PATH",
+    "overall_verdict": "FAIL",
+    "dimensions": [
+      {
+        "dimension": "MONEY",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [
+          "E-88491bdea38431409ad5a36fed3332ebf08a7855afde45d17670cd70a9961ff0"
+        ],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "IDENTITY",
+        "status": "FAIL",
+        "reason_codes": [
+          "PAYMENT_IDENTITY_MISMATCH"
+        ],
+        "supporting_evidence_refs": [
+          "E-14bbbf97f7cdb879bbbd21360bb83600836e6dc67b7c329091eefd8a6f3a6621",
+          "E-2bb6451258f30c04f36ca702d7fd391d0693ebebc78d73ea717921f5b91bd121",
+          "E-5e459ccd727f66119afe758485a095108328439108eafdcb48be1d0123a7731d",
+          "E-6a8d45b5803eba0d7e96fce6bf6844f6e0b73373e55916f2e4ba1723d607334a",
+          "E-6d4df3b2916d8b400289e4ef2e93d708dac19740687616083ccdd02a4e542fce",
+          "E-733eceea17da83e3b984e36e51922cf398b887564a3a3601f52f95ed3ec31d8a",
+          "E-88491bdea38431409ad5a36fed3332ebf08a7855afde45d17670cd70a9961ff0",
+          "E-b5c2fe4f916a56872213d424a9b5254146c145f8d6f9180bdc5cc5480dc181e7",
+          "E-d5c1c8527e9a58091045cfc3192eeadb47284d68b56b4f2e41e738ee7c1eab75",
+          "E-e502e913c24a72440ccb81a5cfc08265e7cef4794650ba2b8072dd6960a30329",
+          "E-e97b7e8bf02bbcf13541d6724c40e5aef20c207d05c394fd274c5671c07634ec",
+          "E-f2ea7cb264e91f4b37fb22c6c81c6a5c45cbdf83ac386e7c62442e971433daac"
+        ],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "STATE_CONVERGENCE",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [
+          "E-028a819e908f82d9a8ffb0dd6b1c5c4264d1e100fbb4a0ef246df2ba548e5ca8",
+          "E-301f4822de7fcf252ac12eae420c52e85f43b8c8d067f52398c71d69d3bbf39c",
+          "E-5cb63223212c038851351a01881b1a1a25c957ebee5386142469cd6e4467cc01",
+          "E-5e459ccd727f66119afe758485a095108328439108eafdcb48be1d0123a7731d",
+          "E-6184f61cfaf83ab4d7fb2be2d32af4ddafa856e0cef90c52091b50c40b33f2f7",
+          "E-69d11ee7af27c54cc6711969d987765294e65db209bbe16472d9d8a165baceac",
+          "E-6a8d45b5803eba0d7e96fce6bf6844f6e0b73373e55916f2e4ba1723d607334a",
+          "E-82d03d65fcddfc341de1878720a9263b0928504b7f806b30b5dca7dd89ceaadb"
+        ],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "SIDE_EFFECT",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "EVIDENCE_SUFFICIENCY",
+        "status": "INCONCLUSIVE",
+        "reason_codes": [
+          "OPEN_SAFETY_CRITICAL_GAP"
+        ],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": [
+          "PAYMENT_ACCOUNT_REF",
+          "PAYMENT_AMOUNT",
+          "PAYMENT_BENEFICIARY_REF",
+          "PAYMENT_CURRENCY",
+          "PAYMENT_CUSTOMER_REF",
+          "PAYMENT_FINALITY",
+          "PAYMENT_TRANSACTION_ID",
+          "TRANSACTION_FUND_REQUEST_ID"
+        ]
+      },
+      {
+        "dimension": "POLICY",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "RECOVERY",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "OUTCOME",
+        "status": "FAIL",
+        "reason_codes": [],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      }
+    ],
+    "reason_codes": [
+      "OPEN_SAFETY_CRITICAL_GAP",
+      "PAYMENT_IDENTITY_MISMATCH"
+    ],
+    "supporting_evidence_refs": [
+      "E-028a819e908f82d9a8ffb0dd6b1c5c4264d1e100fbb4a0ef246df2ba548e5ca8",
+      "E-14bbbf97f7cdb879bbbd21360bb83600836e6dc67b7c329091eefd8a6f3a6621",
+      "E-2bb6451258f30c04f36ca702d7fd391d0693ebebc78d73ea717921f5b91bd121",
+      "E-301f4822de7fcf252ac12eae420c52e85f43b8c8d067f52398c71d69d3bbf39c",
+      "E-5cb63223212c038851351a01881b1a1a25c957ebee5386142469cd6e4467cc01",
+      "E-5e459ccd727f66119afe758485a095108328439108eafdcb48be1d0123a7731d",
+      "E-6184f61cfaf83ab4d7fb2be2d32af4ddafa856e0cef90c52091b50c40b33f2f7",
+      "E-69d11ee7af27c54cc6711969d987765294e65db209bbe16472d9d8a165baceac",
+      "E-6a8d45b5803eba0d7e96fce6bf6844f6e0b73373e55916f2e4ba1723d607334a",
+      "E-6d4df3b2916d8b400289e4ef2e93d708dac19740687616083ccdd02a4e542fce",
+      "E-733eceea17da83e3b984e36e51922cf398b887564a3a3601f52f95ed3ec31d8a",
+      "E-82d03d65fcddfc341de1878720a9263b0928504b7f806b30b5dca7dd89ceaadb",
+      "E-88491bdea38431409ad5a36fed3332ebf08a7855afde45d17670cd70a9961ff0",
+      "E-b5c2fe4f916a56872213d424a9b5254146c145f8d6f9180bdc5cc5480dc181e7",
+      "E-d5c1c8527e9a58091045cfc3192eeadb47284d68b56b4f2e41e738ee7c1eab75",
+      "E-e502e913c24a72440ccb81a5cfc08265e7cef4794650ba2b8072dd6960a30329",
+      "E-e97b7e8bf02bbcf13541d6724c40e5aef20c207d05c394fd274c5671c07634ec",
+      "E-f2ea7cb264e91f4b37fb22c6c81c6a5c45cbdf83ac386e7c62442e971433daac"
+    ],
+    "side_effect_refs": [],
+    "unresolved_requirements": [
+      {
+        "requirement": "SAFETY_GAP",
+        "dimension": "EVIDENCE_SUFFICIENCY",
+        "reason_code": "OPEN_SAFETY_CRITICAL_GAP",
+        "required_claims": [
+          "PAYMENT_FINALITY",
+          "PAYMENT_TRANSACTION_ID",
+          "TRANSACTION_FUND_REQUEST_ID",
+          "PAYMENT_AMOUNT",
+          "PAYMENT_CURRENCY",
+          "PAYMENT_CUSTOMER_REF",
+          "PAYMENT_BENEFICIARY_REF",
+          "PAYMENT_ACCOUNT_REF"
+        ],
+        "effect_ref": null
+      },
+      {
+        "requirement": "PAYMENT_IDENTITY",
+        "dimension": "IDENTITY",
+        "reason_code": "PAYMENT_IDENTITY_MISMATCH",
+        "required_claims": [],
+        "effect_ref": null
+      }
+    ],
+    "created_at": "2026-09-10T09:31:02+08:00"
+  },
+  "closure": null,
+  "case_status": "INVESTIGATING",
+  "effect_status": null,
+  "evidence_count": 34,
+  "message": "FAIL"
+}

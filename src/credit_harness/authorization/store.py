@@ -5,6 +5,7 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 from credit_harness.cases.tables import CaseRow
 from credit_harness.cases.repository import next_update_time
+from credit_harness.cases.models import CaseStatus
 from credit_harness.remediation import models as remediation_versions
 from credit_harness.remediation.models import RemediationIntent, RemediationActionType as A
 from . import models as versions
@@ -64,6 +65,10 @@ class SQLApprovalStore:
         elif row.payload != intent.model_dump(mode="json"):
             raise AuthorizationError(C.STALE_AUTHORIZATION)
 
+    def _require_open(self, case):
+        if CaseStatus(case.status).is_terminal:
+            raise AuthorizationError(C.ACTION_NOT_ALLOWED)
+
     def _audit(self, session, event, intent, now, **fields):
         record = AuthorizationAuditRecord(audit_id=str(uuid4()), event=event, tenant_id=intent.tenant_id,
             case_id=intent.case_id, intent_id=intent.intent_id, recorded_at=now, **fields)
@@ -73,6 +78,7 @@ class SQLApprovalStore:
     def request_approval(self, request, revision):
         with Session(self.engine) as session, session.begin():
             case = self._lock_case(session, request.intent.case_id)
+            self._require_open(case)
             if case.updated_at != revision.isoformat():
                 raise AuthorizationError(C.STALE_AUTHORIZATION)
             self._save_intent(session, request.intent)
@@ -127,6 +133,7 @@ class SQLApprovalStore:
     def issue(self, intent, capability, clock, *, signature=None):
         with Session(self.engine) as session, session.begin():
             case = self._lock_case(session, intent.case_id)
+            self._require_open(case)
             now = clock()
             if case.updated_at != capability.expected_case_revision.isoformat() or now >= capability.expires_at:
                 raise AuthorizationError(C.STALE_AUTHORIZATION)
@@ -186,6 +193,7 @@ class SQLApprovalStore:
     def prepare(self, cap, clock):
         with Session(self.engine) as session, session.begin():
             case = self._lock_case(session, cap.case_id)
+            self._require_open(case)
             now = clock()
             cap_row, intent = self._check_capability(session, cap, now)
             key = effect_key(cap)
@@ -219,6 +227,7 @@ class SQLApprovalStore:
     def dispatch_prepared(self, cap, clock, *, recovery_claim=None):
         with Session(self.engine) as session, session.begin():
             case = self._lock_case(session, cap.case_id)
+            self._require_open(case)
             now = clock()
             cap_row, intent = self._check_capability(session, cap, now)
             row = session.get(EffectRow, cap_row.used_effect_id)
@@ -267,7 +276,8 @@ class SQLApprovalStore:
             raise AuthorizationError(C.INVALID_TRANSITION)
         with Session(self.engine) as session, session.begin():
             row = session.get(EffectRow, effect_id)
-            self.cases._row(session, row.case_id)
+            self._lock_case(session, row.case_id)
+            session.refresh(row)
             ledger = SideEffectLedger.model_validate(row.payload)
             if receipt and receipt.correlation_id != ledger.dispatch_correlation_id:
                 raise AuthorizationError(C.INVALID_TRANSITION)

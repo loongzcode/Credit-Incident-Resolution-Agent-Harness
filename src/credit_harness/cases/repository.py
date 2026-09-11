@@ -134,7 +134,7 @@ class CaseRepository:
             row = self._row(session, case_id)
             result = session.execute(update(CaseRow).where(
                 CaseRow.case_id == case_id, CaseRow.tenant_id == self.tenant_id,
-                CaseRow.status != CaseStatus.CLOSED.value,
+                CaseRow.status.not_in([s.value for s in CaseStatus if s.is_terminal]),
             ).values(status=status.value, updated_at=next_update_time(datetime.fromisoformat(row.updated_at))))
             if result.rowcount != 1:
                 raise CasePolicyError("closed case")

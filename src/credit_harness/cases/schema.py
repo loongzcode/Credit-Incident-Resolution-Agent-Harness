@@ -14,3 +14,5 @@ def create_harness_schema(engine):
         AgentCheckpointRow.__table__,
     ])
     add_dispatch_correlation_columns(engine)
+    from credit_harness.evaluation.tables import create_evaluation_schema
+    create_evaluation_schema(engine)

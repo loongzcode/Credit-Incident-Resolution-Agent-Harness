@@ -40,7 +40,7 @@ class InvestigationStateReader:
 class RemediationEligibilityEvaluator:
     def evaluate(self, state):
         admin = (A.NO_REMEDIATION, A.REQUEST_OPERATOR_REVIEW, A.CREATE_RECONCILIATION_TASK)
-        if state.case.status == CaseStatus.CLOSED:
+        if state.case.status.is_terminal:
             return RemediationEligibility(status=S.NO_REMEDIATION_NEEDED, can_plan=False,
                                           allowed_actions=(A.NO_REMEDIATION,))
         if not state.index.evidence:

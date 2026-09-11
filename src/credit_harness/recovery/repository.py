@@ -10,6 +10,7 @@ from .models import (RecoveryPolicy, RecoveryClaim, RecoveryError, RecoveryFailu
 from .tables import EffectRecoveryStateRow as State, EffectRecoveryAttemptRow as Attempt, RecoveryAuditRow, synchronize_effect
 from .identity import reconstruct_identity
 from .proof import validate_lookup, reconcile_status
+from credit_harness.cases.models import CaseStatus
 
 RECOVERABLE = (S.PREPARED, S.DISPATCHED, S.ACCEPTED, S.UNKNOWN)
 LOOKUP_ONLY = (S.DISPATCHED, S.ACCEPTED, S.UNKNOWN)
@@ -31,9 +32,11 @@ class RecoveryRepository:
         row = session.get(EffectRow, effect_id)
         if row is None:
             raise KeyError("effect unavailable")
-        self.authorization._lock_case(session, row.case_id)
+        case = self.authorization._lock_case(session, row.case_id)
         session.refresh(row)
         ledger = SideEffectLedger.model_validate(row.payload)
+        if CaseStatus(case.status).is_terminal and ledger.status in RECOVERABLE:
+            raise RecoveryError(F.CLOSURE_INVARIANT_VIOLATION)
         state = session.get(State, effect_id)
         if state is None:
             raise RecoveryError(F.RECOVERY_STALE)

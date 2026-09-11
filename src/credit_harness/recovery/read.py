@@ -2,7 +2,7 @@ from uuid import uuid4
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 from pydantic import ValidationError
-from credit_harness.cases.models import CaseAccessError
+from credit_harness.cases.models import CaseAccessError, CaseStatus, CasePolicyError
 from credit_harness.cases.repository import CallState, utc_now
 from credit_harness.cases.tables import CaseRow, CaseCallRow
 from credit_harness.persistence.store import ObservationRow
@@ -32,6 +32,9 @@ class ReadObservationRecoveryService:
             call = session.get(CaseCallRow, call_id)
             if call is None or call.case_id != case_id:
                 raise CaseAccessError("call unavailable")
+            case = self.cases._row(session, case_id)
+            if CaseStatus(case.status).is_terminal:
+                raise CasePolicyError("terminal Case recovery violates closure invariant")
             previous = session.get(ReadDispatchRecoveryRow, call_id)
             before = S(previous.status) if previous else None
             refs, observation_id = (), None

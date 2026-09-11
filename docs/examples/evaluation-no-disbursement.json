@@ -1,0 +1,136 @@
+{
+  "scenario": "no-disbursement",
+  "report": {
+    "report_id": "6490c202f8220c8dfc4a31c4e499e2fd3ca7ef3f91322d8691dfa80fc39e38e0",
+    "evaluation_run_id": "4ae17a24-8953-457a-8ce9-d688fbe62e53",
+    "case_id": "CASE-JD202609100001",
+    "verification_snapshot_id": "5369c93530f73d1a8cb83c5652352ef5cfd4a3147becf9e8ad5df23aa5f5a630",
+    "snapshot": {
+      "verification_snapshot_id": "5369c93530f73d1a8cb83c5652352ef5cfd4a3147becf9e8ad5df23aa5f5a630",
+      "case_id": "CASE-JD202609100001",
+      "tenant_id": "demo",
+      "case_revision": "2026-09-10T09:31:02.000001+08:00",
+      "case_fingerprint": "a878912522f1e87381e8e5d3d6cd053ed5dcf5444750c92b8519a450cd5b1e82",
+      "evidence_fingerprint": "31e47e415376392119d6c41ed002b068f9a8eaf314e6c5204f6e1d5c4b4fc84a",
+      "payment_identity_fingerprint": "1f3e2ec69f31013b52aed2f4e555c369aaaaa02715d0c2be359a4ec7c79fab0c",
+      "current_state_fingerprint": "65d430f1eb8eb2c69b1bb5a9a35e7f0ff88cfe2ea1ea8f1d109137709340f6f2",
+      "side_effect_ledger_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "recovery_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "call_history_fingerprint": "83e11fc7c9dfc1670f898bab7cf880cb85e350dddbb9fdac9d639d599c6f307e",
+      "authorization_policy_fingerprint": "69aca27f42671abba6b1189b19bcc46ef28914779c6c247df8a1d60c73ea44a5",
+      "evaluation_policy_version": "1",
+      "verification_contract_version": "1",
+      "evaluation_policy_fingerprint": "7cf597f5ff332fbcc67e9f20f71120aab5f1f99f2aa72521387fc18293a01eca",
+      "verification_contract_fingerprint": "3e463c484c771818b4280b14578a24146006892dea88a3f0dcd97d03d55d5fb1"
+    },
+    "contract_version": "1",
+    "policy_version": "1",
+    "outcome_path": "NO_DISBURSEMENT_PATH",
+    "overall_verdict": "PASS",
+    "dimensions": [
+      {
+        "dimension": "MONEY",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [
+          "E-15b925e25f49c94fc98c4f925d114ac62de6a83675838c7030ff3bbcea1a90e8"
+        ],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "IDENTITY",
+        "status": "NOT_APPLICABLE",
+        "reason_codes": [],
+        "supporting_evidence_refs": [
+          "E-15b925e25f49c94fc98c4f925d114ac62de6a83675838c7030ff3bbcea1a90e8"
+        ],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "STATE_CONVERGENCE",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [
+          "E-57c627ef02cc3445dc7d72613ae6938d38b823d234c2e6b8e9bf34de40043419",
+          "E-6e46981c5618263682c0bf299079d76cac32eb5bd573465a04b9569059aa5e7d",
+          "E-945c200bc8e170627f20271fc144f57324c5df538ea226123bdb5adec1cc3977",
+          "E-b363d9eb78a4c189ec0e99e2c48657717f9752e8c0b1a4359ee2959aec9300b7"
+        ],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "SIDE_EFFECT",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "EVIDENCE_SUFFICIENCY",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "POLICY",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "RECOVERY",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      },
+      {
+        "dimension": "OUTCOME",
+        "status": "PASS",
+        "reason_codes": [],
+        "supporting_evidence_refs": [],
+        "side_effect_refs": [],
+        "required_claims_missing": []
+      }
+    ],
+    "reason_codes": [],
+    "supporting_evidence_refs": [
+      "E-15b925e25f49c94fc98c4f925d114ac62de6a83675838c7030ff3bbcea1a90e8",
+      "E-57c627ef02cc3445dc7d72613ae6938d38b823d234c2e6b8e9bf34de40043419",
+      "E-6e46981c5618263682c0bf299079d76cac32eb5bd573465a04b9569059aa5e7d",
+      "E-945c200bc8e170627f20271fc144f57324c5df538ea226123bdb5adec1cc3977",
+      "E-b363d9eb78a4c189ec0e99e2c48657717f9752e8c0b1a4359ee2959aec9300b7"
+    ],
+    "side_effect_refs": [],
+    "unresolved_requirements": [],
+    "created_at": "2026-09-10T09:31:02+08:00"
+  },
+  "closure": {
+    "status": "CLOSED_VERIFIED",
+    "record": {
+      "closure_id": "238b93accb0ea1e1561544e79c518f3328b2230af4922570ee529e14fd6c47c1",
+      "case_id": "CASE-JD202609100001",
+      "evaluation_run_id": "4ae17a24-8953-457a-8ce9-d688fbe62e53",
+      "report_id": "6490c202f8220c8dfc4a31c4e499e2fd3ca7ef3f91322d8691dfa80fc39e38e0",
+      "verification_snapshot_id": "5369c93530f73d1a8cb83c5652352ef5cfd4a3147becf9e8ad5df23aa5f5a630",
+      "evidence_fingerprint": "31e47e415376392119d6c41ed002b068f9a8eaf314e6c5204f6e1d5c4b4fc84a",
+      "ledger_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evaluation_policy_version": "1",
+      "contract_version": "1",
+      "closed_at": "2026-09-10T09:31:02+08:00"
+    }
+  },
+  "case_status": "CLOSED_VERIFIED",
+  "effect_status": null,
+  "evidence_count": 19,
+  "message": "PASS"
+}

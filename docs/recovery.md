@@ -1,5 +1,7 @@
 # Step 9：Durable Recovery
 
+后续 [Step 10 Independent Evaluator](evaluator.md) 已实现独立业务验收与 Closure CAS。下文的“未来 Evaluator”描述 Step 9 本身的边界：Recovery 仍无验收/关闭权限；CLOSED_VERIFIED 后发现未决恢复会报生命周期不变量异常。
+
 恢复依据持久化 Case、CaseCall、Observation、Evidence、Capability 和 SideEffectLedger，重新建立可以证明的状态；不把进程异常解释为业务失败，不把恢复写成 `except: retry()`。所有演示数据和外部效果均为 synthetic fixtures，无真实银行或个人数据。
 
 ```text

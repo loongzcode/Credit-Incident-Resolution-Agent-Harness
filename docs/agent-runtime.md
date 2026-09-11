@@ -160,7 +160,7 @@ S8：三轮 PAYMENT 都是真实 TIMEOUT，保留三条 SOURCE_LOOKUP_STATUS Evi
 
 Case、CaseCall、Observation、Evidence 已持久化；AgentRunTraceStore 与 Planner Audit 当前为 append-only 内存实现，进程崩溃仍可能丢失未导出的详细 Trace。Step 9 新增最小 DurableAgentCheckpoint，保存 run / turn / snapshot / decision / call ID 与停止状态，不保存模型会话。下一次 Run 先补齐 orphan reads，再从最新 Case + Evidence 生成 Snapshot，采用新的 run_id 和 Planner Decision；checkpoint 不授权继续执行旧 Decision。
 
-Step 6 调查循环仍保持只读。独立的 Step 8 授权/副作用边界和 Step 9 Recovery 已实现，但未决效果的恢复 dispatch 不会隐式接入调查循环。自动 WAIT 调度、Independent Evaluator、UI-1、完整 IAM 与真实 PII/银行接入仍未实现。只读 CAS 不能替代独立写授权与业务验收。
+Step 6 调查循环仍保持只读。独立的 Step 8 授权/副作用边界、Step 9 Recovery 和 [Step 10 Evaluator](evaluator.md) 已实现；恢复 dispatch 与 Verified Closure 都不会隐式接入调查循环。CLOSED_VERIFIED 是终态，Agent 无权写入或重开。自动 WAIT 调度、UI-1、完整 IAM 与真实 PII/银行接入仍未实现。只读 CAS 不能替代独立写授权与业务验收。
 
 ## Step 6 历史验收（Step 9 回归见 Recovery 文档）
 

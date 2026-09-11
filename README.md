@@ -2,7 +2,7 @@
 
 接管资深信贷生产支持工程师对“三方放款状态异常订单”的调查、受控修复、故障恢复和独立验收工作。
 
-**当前状态：已实现 Simulator、Case Runtime、Evidence Store、Hypothesis、Context Boundary、LLM Planner、Step 6 只读调查循环、Step 7 修复建议与确定性预检、Step 8 持久化授权与 synthetic 非资金副作用边界，以及 Step 9 Durable Recovery。** 调查阶段每轮最多执行一个经验证及数据库 CAS 的只读 Tool。独立修复建议阶段仍只生成 PROPOSED Intent；可信授权服务重新预检后，执行器才允许一个受限的模拟消息/通知/任务效果。Recovery 确定性找回 orphan Observation，并对已发送但结果未知的效果只读查证，绝不重发。默认 Fake 离线运行，可选独立 OpenAI 结构化输出适配器。真实金融写入与独立 Evaluator 尚未实现；下文整体项目契约仍包含后续建设目标。
+**当前状态：已实现 Simulator、Case Runtime、Evidence Store、Hypothesis、Context Boundary、LLM Planner、Step 6 只读调查循环、Step 7 修复建议与确定性预检、Step 8 持久化授权与 synthetic 非资金副作用边界、Step 9 Durable Recovery，以及 Step 10 Independent Evaluator / Verified Closure。** 调查阶段每轮最多执行一个经验证及数据库 CAS 的只读 Tool。独立修复建议阶段仍只生成 PROPOSED Intent；可信授权服务重新预检后，执行器才允许一个受限的模拟消息/通知/任务效果。Recovery 对已发送但结果未知的效果只读查证，绝不重发。Evaluator 独立检查当前持久 Evidence、身份、三方状态、操作与恢复，只有新的 PASS 经事务重验和 Closure CAS 才能 CLOSED_VERIFIED。默认 Fake 离线运行，可选独立 OpenAI 结构化输出适配器；Evaluator 完全不使用 LLM。真实金融写入与经验学习尚未实现。
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。
 
@@ -25,6 +25,8 @@ Step 7 见 [Remediation Boundary 文档](docs/remediation-boundary.md)。运行 
 Step 8 见 [Side-Effect Boundary 文档](docs/side-effect-boundary.md)。配置环境变量 `CAPABILITY_SIGNING_SECRET` 后，运行 `python scripts/demo_side_effect.py` 演示 S6-ready 的审批、单效果签名凭据、PREPARED → DISPATCHED → APPLIED、幂等重复请求，以及再次 Read 后出现的 CONSUMED Evidence。`--scenario S7` 演示通知重投；`--administrative` 演示任务行；`--timeout` 演示效果发生但响应丢失后保持 UNKNOWN；`--reject` 演示不签发、不执行。执行不会写 Evidence、改变资金事实或关闭 Case。授权与执行服务不向模型开放，调查循环保持只读。
 
 Step 9 见 [Durable Recovery 文档](docs/recovery.md)。运行 `python scripts/demo_recovery.py --scenario read-orphan` 观察原 Observation 的幂等 Evidence 发布；配置上述 synthetic 签名密钥后，`--scenario effect-timeout` 展示 UNKNOWN 经匹配证明恢复为 APPLIED，`--scenario worker-crash-after-prepared` 展示原授权下首次发送恢复，`--scenario worker-crash-after-dispatch` 展示不确定时只查证、不补发。Recovery 使用数据库 lease/fencing、有限 backoff 和持久化审计；APPLIED 不等于业务验收，Case 不会因此 CLOSED。
+
+Step 10 见 [Independent Evaluator 文档](docs/evaluator.md)。运行 `python scripts/demo_evaluator.py --scenario s6-partially-repaired` 查看“REPLAY APPLIED / MESSAGE CONSUMED，但业务未验收”；`--scenario s6-converged` 展示八维 PASS 后的 CLOSED_VERIFIED。另有 `unknown-effect`、`identity-mismatch` 与 `no-disbursement`。使用上述进程内 synthetic 签名密钥；仅修改模拟外部世界，并经真实 Read Tool 产生证据。Evaluator 不查询外部系统，不把 APPLIED、模型说明或 Hypothesis CONFIRMED 当作关闭证明。
 
 暂定技术栈：**Python、FastAPI、Pydantic、PostgreSQL、SQLAlchemy、pytest**。采用模块化单体 monorepo，不引入 LangGraph、CrewAI、AutoGen。
 
@@ -57,7 +59,7 @@ Step 9 见 [Durable Recovery 文档](docs/recovery.md)。运行 `python scripts/
 | Harness Runtime | 管理任务、上下文、预算、权限、命令、持久化及恢复 | 把模型置信度作为资金证明 |
 | Domain Command Handler | 在事务边界内校验并执行允许的业务变化 | 绕过幂等键、状态版本和业务不变量 |
 | Simulator | 提供模拟金融系统、实际模拟业务状态及故障 | 向 Agent 暴露场景答案或隐藏真值 |
-| Independent Evaluator | 重新获取观测、检查业务 Outcome、签发验收结果 | 接受 Agent 自述作为结案依据 |
+| Independent Evaluator | 核验独立 Read 形成的当前 Evidence、检查业务 Outcome、生成版本化验收报告 | 接受 Agent 自述、主动调用 Tool 或执行修复 |
 
 这里的“生产级”描述工程目标和约束，不代表真实接入、合规认证、业务规模或零风险承诺。
 
@@ -110,9 +112,10 @@ Repair Proposal + Evidence References
     → 登记固定业务操作意图
     → Domain Command Handler 幂等执行
     → 保存操作结果；结果不明则保持 UNKNOWN
-    → Independent Evaluator 获取新观测
+    → 显式 Read Tool 形成新的 Observation / Evidence
+    → Independent Evaluator 只读核验当前持久状态
     → PASS / FAIL / INCONCLUSIVE
-    → 仅 PASS 可使 Case 转入 CLOSED
+    → 仅当前 PASS 经 Closure CAS 可使 Case 转入 CLOSED_VERIFIED
 ```
 
 调查循环可重复、等待或停止；修复操作不能因模型重新规划而获得新的业务身份。
@@ -221,7 +224,7 @@ Simulator 必须有独立于 Agent 对话的持久化业务状态，并支持：
 5. 独立 Evaluator 与唯一结案入口。
 6. 可回放时间线、CLI 演示和 pytest 验收集。
 
-Simulator 的应用入口、初始化、种子命令与人工查询脚本现已实现，启动方式见 [Simulator 本地运行](docs/simulator.md#本地运行)。完整 Agent Harness 的修复、审批与结案流程仍待实现。
+Simulator 的应用入口、初始化、种子命令与人工查询脚本现已实现，启动方式见 [Simulator 本地运行](docs/simulator.md#本地运行)。修复建议、synthetic 审批/执行、恢复与独立结案的阶段实现及限制见上述 Step 7–10 文档。
 
 ## 6. 明确不做什么
 
@@ -240,7 +243,7 @@ Simulator 的应用入口、初始化、种子命令与人工查询脚本现已�
 
 ## 7. Success Criteria
 
-以下是第一阶段必须通过的验收契约，当前均待实现验证。验收既检查最终状态，也检查过程中的禁止动作；一个最终状态正确但中途发生危险操作的 Case 仍然失败。
+以下是第一阶段整体验收契约；已实现的确定性边界和实际测试结果见各阶段文档，真实模型调查质量验收仍需独立运行报告。验收既检查最终状态，也检查过程中的禁止动作；一个最终状态正确但中途发生危险操作的 Case 仍然失败。
 
 | ID | 成功标准 | 可观察的验收方式 |
 |---|---|---|
@@ -304,7 +307,7 @@ NEW → INVESTIGATING
     → ESCALATED / STOPPED_SAFE
 ```
 
-等待状态可返回调查或继续执行；`CLOSED` 必须由 Evaluator PASS 触发。`ESCALATED` 与 `STOPPED_SAFE` 不计作问题已解决。若结案后出现新的反向事实，应记录重开事件，不覆盖旧验收历史。
+上图是最初整体生命周期规划。Step 10 实际新增 `CLOSED_VERIFIED`，只有持久 PASS 与当前 VerificationSnapshot 一致且 Closure CAS 成功才能写入；旧 `CLOSED` 保留为 legacy 值。`ESCALATED` 不计作问题已解决。当前没有 reopen，关闭后的新工作被拒绝，历史验收记录保持不变。
 
 ## 9. Demo 场景
 

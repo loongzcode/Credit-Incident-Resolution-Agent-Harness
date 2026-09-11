@@ -18,6 +18,11 @@ class CaseStatus(StrEnum):
     WAITING = "WAITING"
     ESCALATED = "ESCALATED"
     CLOSED = "CLOSED"
+    CLOSED_VERIFIED = "CLOSED_VERIFIED"
+
+    @property
+    def is_terminal(self):
+        return self in (CaseStatus.CLOSED, CaseStatus.CLOSED_VERIFIED)
 
 
 class TaskContract(Model):
