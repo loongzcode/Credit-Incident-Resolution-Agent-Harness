@@ -1,4 +1,4 @@
-# Step 4 — Reasoning Context Snapshot
+# Step 4.1 — Reasoning Context Snapshot Hardening
 
 本阶段的边界是 `Case + Evidence → Immutable Snapshot`。没有 LLM、Prompt、Planner、Agent Loop、Next Best Action、Write Tool、Repair、embedding、Vector DB 或聊天记忆。Step 5 才消费这一结构化边界；当前 Demo 只做人工查询与确定性计算。
 
@@ -30,10 +30,10 @@ durable Case + Evidence
 | 部分 | 主要内容 |
 |---|---|
 | 标识与 provenance | snapshot_id、case/order ID、Case/Evidence/Graph 指纹、hypothesis_input_fingerprint、policy_fingerprint |
-| 版本 | context schema 1、eligibility 1、compaction 1、context policy 1、hypothesis rule 3 |
+| 版本 | context schema 2、eligibility 2、compaction 2、context policy 2、hypothesis rule 3 |
 | task | Goal、Success Criteria、Stop/Escalation Conditions、Forbidden Outcomes |
 | financial_subject | 预期金额分、币种、客户/收款主体/账户 opaque refs；旧 Case 可为 null |
-| financial_identity | MATCH/MISMATCH/UNKNOWN、具体维度、交易引用与完整身份 Evidence refs |
+| financial_identity | MATCH/MISMATCH/UNKNOWN、具体维度、关键身份见证；候选交易与全量引用的 count/digest/bounded preview |
 | current_facts | FactCapsule：claim/value/subject/business_time/observed_at/freshness/completeness/source/protocol/ref |
 | hypotheses | active capsules 与精简 eliminated summaries；决定性 refs 不截断 |
 | gaps | 类型化 question/required claims/priority/status/related hypotheses/refs |
@@ -50,7 +50,7 @@ assembled_at 是 Evidence 最大 observed_at 的逻辑水位；无 Evidence 时�
 
 分类区分 BUSINESS、TOKENIZED_IDENTITY、MASKED_PII、RAW_PII、INTERNAL_CONTROL、ORACLE。当前只允许 BUSINESS / TOKENIZED_IDENTITY / INTERNAL_CONTROL；对应 PII-A/B，C/D 均禁止，即使预算充足也不能开放。没有 Capability 授权入口。
 
-ContextEligibilityPolicy 使用显式 Claim allowlist 和正向结构化值契约。身份引用要求 CUS/BEN/ACC 格式，状态与业务语义使用现有 Enum vocabulary，当前 schema error 只允许已定义的 code/field，协议只传提取后的字段类型与语义。未知的新 Claim 或不符合结构化契约的值默认不可进入 Context。这不是对任意文本寻找手机号的 PII Scanner。
+ContextEligibilityPolicy 使用显式 Claim allowlist 和正向结构化值契约。身份引用要求 CUS/BEN/ACC 格式，状态与业务语义使用现有 Enum vocabulary，错误码、字段路径、topic、业务编号使用开放的安全结构化语法，协议只传提取后的字段类型与语义。未知的新 Claim 或不符合结构化契约的值默认不可进入 Context。这不是对任意文本寻找手机号的 PII Scanner。
 
 Snapshot schema 不包含 SyntheticIdentityRecord、SecretStr、PII 原始值 DTO、Observation、WorldState 或 GroundTruth。静态测试扫描 context 与 hypotheses imports；禁止 vault、Simulator、repository、数据库和 LLM SDK。纯输入边界保留原有身份引用验证、Oracle 隔离与 scope 校验。
 
@@ -84,13 +84,50 @@ Protocol relevance 当前限定 loanNo 字段与 SUCCESS 语义，或实际支�
 
 Repeated lookup 按 tool + query scope（含协议版本/effective_at）+ lookup status 分组：count、first/last observed_at、最新 freshness/completeness、first_ref、latest_ref、range_digest。不把 1,000 个 ID 复制进 Snapshot。
 
-Hypothesis supporting/contradicting refs 中的重复 lookup 同样压缩到首末，另保留原引用数量与 digest，避免从另一路径重新带回全部 ID。决定性 refs 始终完整保留。十次 Callback NOT_FOUND 仍然只是查询缺失，不能改写为从未收到。
+Hypothesis supporting/contradicting refs 先将重复 lookup 压缩到首末，再稳定排序并限制 preview 数量；非 lookup 辅助引用也受同一上限约束。分别保留全量 count 和排序后 ID digest，避免从另一路径重新带回全部 ID。决定性 refs 始终完整保留。十次 Callback NOT_FOUND 仍然只是查询缺失，不能改写为从未收到。
 
 ELIMINATED 保存 hypothesis ID、statement、status、decisive refs，不展开全部 Relations。History Digest 只描述次数、时间和观察值，不写“综合看来已经放款”。
 
+## Step 4.1：Confirmed Proof Contract
+
+CONFIRMED 的 Tier 0 capsule 包含 hypothesis_id、kind、statement、status、reason、open_gap_ids、**完整 decisive_evidence_refs**，以及 supporting_ref_count/supporting_refs_digest、contradicting_ref_count/contradicting_refs_digest。确认状态不会把辅助关系升级为 mandatory。
+
+Assembler 先用空 preview 构造并检查 Tier 0，再把 supporting_ref_preview/contradicting_ref_preview 作为可撤回的 Tier 1 增量。它们不额外占一个 hypothesis capsule；预算不够时撤回 preview，完整 decisive witness 不受影响。Invariant Validator 对每个 CONFIRMED capsule 检查 decisive refs 与 Graph 精确相等，并验证辅助 count/digest、preview 子集及上限。
+
+辅助关系不能通过 optional FactCapsule 或历史再次无界展开。只有有界 preview 或独立 mandatory contract 需要的事实才保留；Graph 继续保存所有关系。500 辅助引用测试使用未来规则的 synthetic graph producer，明确给一个已确认命题 8 个 decisive 和 500 个 supporting refs；不修改生产 Graph schema 或规则。
+
+## Step 4.1：Closed schema / Open Structured Vocabulary
+
+| 类型 | 安全结构契约 | 示例 |
+|---|---|---|
+| OpaqueBusinessRef | 严格字符串，1–128 字符，字母、数字、`- _ : . /`；禁止裸个人号码形态 | `20260911SSBANK000812`、`TXN:HAIER:20260911:001` |
+| StructuredErrorCode | `[A-Z][A-Z0-9_]{1,63}` | `SIGNATURE_INVALID`、`PROTOCOL_VERSION_UNSUPPORTED` |
+| StructuredFieldPath | 最多 128 字符，有限标识符、点路径和至多六位数字下标 | `repaymentPlan.items[0].dueDate` |
+| StructuredTopic | 最多 128 字符，有限字符组成的点分段 | `partner.loan.callback.dlq` |
+
+这些类型只扩展现有 Claim 的安全 vocabulary，不开放任意 Claim、payload 或自由文本槽。换行、控制字符、空白、HTML/Markdown payload、超长值仍被拒绝；状态、币种和业务语义继续使用 Enum。字段资格通过后，仍要接受 relevance 与预算选择，并不意味着一定出现在当前 Snapshot。
+
+Loan/request/transaction 不再绑定 PAY/FREQ/LN。是否符合具体合作方的编号规范，属于 Tool / Adapter / Extraction Boundary，Context 只检查结构安全。裸全数字和身份证末位 X 形态不能当作 opaque ref；合法但纯数字的合作方编号需由 Adapter 使用真正的内部替代引用。给原始 PII 添加前缀不等于 tokenization；当前语法验证不是 PII Scanner，也不能证明输入已去标识化。个人 CUS/BEN/ACC refs 保留已有类型域，真实 token 生成与敏感数据管理仍属于 Identity Service。
+
+Transaction preview 同样验证 OpaqueBusinessRef，不能借 full Identity Result 绕过资格边界。关键事实若资格不符仍 fail closed，不能删除它们重新计算更方便的安全结论。
+
+## Step 4.1：Identity Result 与 Context Projection
+
+PaymentIdentityResult 保留完整候选 witness 和全部 Evidence refs，验证规则和 Graph 不变。纯 IdentityContextProjector 输出原样的 result、mismatch_dimensions、unknown_dimensions、verification_version，额外提供 candidate_transaction_count、transaction_ref_preview、transaction_refs_digest、evidence_ref_count、evidence_refs_digest。digest 覆盖完整排序后的集合，preview 不是完整候选清单。
+
+- MATCH：稳定选择一个产生 MATCH 的完整单 observation witness，保留全部八个交易维度和请求关联见证。
+- MISMATCH：保留**每一个**直接导致 mismatch dimensions 的事实，以及对应交易/请求/终态关联；不只抽样一条错误记录。
+- UNKNOWN：多个交易时保留稳定排序后的两个完整不同交易 witness，足以证明唯一交易关联未建立。每个缺失维度保留一个实际受影响 observation 的关联上下文；同一交易存在等时互斥值时额外保留两种实际冲突值。无观测时保留明确 unknown dimensions 和安全 Gap，不虚构事实。
+
+候选的其余 matching auxiliary refs 由 count/digest 表示，不能再经 current_facts、relation preview 或历史全部展开。Mandatory current facts 中的支付字段针对关键 identity witness 投影；其他请求、资金、Callback/消费事实仍按原政策保留。若某个候选字段同时是 Graph 的 decisive witness 或安全 Gap witness，则独立证明契约优先，仍完整保留。
+
+100 个全匹配候选仍为 UNKNOWN/TRANSACTION，不挑一个方便的交易改成 MATCH。投影只保留两组完整见证、最多 3 个交易 preview；即使第 100 个候选收款主体不符，MISMATCH/BENEFICIARY 及其具体错误证据也必须保留。辅助候选从 10 增至 100 不会导致 Context 线性增长。
+
+这里平衡安全与可用性：允许压缩辅助信息以避免无意义 overflow，但不声称任何规模都能装下。若 100 个候选各有独立真实 mismatch、或 Graph 本身要求数百条 decisive refs，关键证明仍可能超过窗口，此时抛 MandatoryContextOverflow。预算压缩不能把 MISMATCH 变 UNKNOWN，或把 UNKNOWN 变 MATCH。
+
 ## Budget 与 Fail Closed
 
-ContextBudget 默认：60,000 serialized chars / 64 facts / 16 hypotheses（含 resolved summaries）/ 24 gaps / 20 history items。大小按 `snapshot.model_dump_json()` 的完整紧凑 JSON 测量，包含选中 refs、omission audit、所有版本与预算字段；不是只计 facts 的长度。导出文件结尾换行是文件 framing，不属于 JSON 内容。
+ContextBudget 默认：60,000 serialized chars / 64 facts / 16 hypotheses（含 resolved summaries）/ 24 gaps / 20 history items；每个 relation preview 默认最多 4 条，每个 identity transaction preview 默认最多 3 条，二者可配置为 0，硬上限均为 32。大小按 `snapshot.model_dump_json()` 的完整紧凑 JSON 测量，包含选中 refs、omission audit、所有版本与预算字段；不是只计 facts 的长度。导出文件结尾换行是文件 framing，不属于 JSON 内容。
 
 预算字段本身也占字符，通过确定性长度收敛后封存内容 hash。字符数/3 向上取整仅是固定近似，不宣称等于任何 GPT/Claude tokenizer。改变序列化格式时必须重新测量，不能把 pretty JSON 长度当成相同预算。
 
@@ -100,7 +137,7 @@ ContextBudget 默认：60,000 serialized chars / 64 facts / 16 hypotheses（含 
 
 selected_evidence_refs 是所有输出结构实际引用的闭包，必须属于输入。摘要首末引用也算 selected；中间已压缩的引用算 omitted，其事实次数由 digest 说明。
 
-OmittedEvidenceSummary 为每一条未选 Evidence 记录唯一原因组：ELIGIBILITY_DENIED、REPEATED_LOOKUP、HISTORICAL_SUPERSEDED、IRRELEVANT_TO_ACTIVE_HYPOTHESES、SIZE_BUDGET。组保存 count 和 evidence_ids_digest，不复制全量 ID。选中数 + 各 omitted 数必须等于去重后总输入数。
+OmittedEvidenceSummary 为每一条未选 Evidence 记录唯一原因组：ELIGIBILITY_DENIED、REPEATED_LOOKUP、HISTORICAL_SUPERSEDED、IRRELEVANT_TO_ACTIVE_HYPOTHESES、SIZE_BUDGET、RELATION_COMPACTED、IDENTITY_COMPACTED。后两项表示策略主动压缩，不能冒充预算不足或无关。重复 lookup 仍优先标注 REPEATED_LOOKUP，资格不符仍优先标注 ELIGIBILITY_DENIED。组保存 count 和 evidence_ids_digest，不复制全量 ID。选中数 + 各 omitted 数必须等于去重后总输入数。
 
 指纹与审计 inputs 可以重放回答“当时尚无该证据”“eligibility 禁止”“budget 没放下”。`.inputs.json` 是可信审计附件，不是模型输入；只含 Case/Evidence，完整底层 Tool provenance 仍在已有数据库。本阶段不新增 Context 数据库、缓存、记忆或 Event Sourcing Framework。
 
@@ -123,24 +160,35 @@ Snapshot 仅显示 Case.allowed_tools 与 catalog 的交集，并排除明确 fo
 
 | 实际样例 | Evidence 输入/选中 | 当前 Facts | History items | 字符数 | Identity |
 |---|---:|---:|---:|---:|---|
-| [S6 Snapshot](examples/s6-reasoning-context.json) | 30 / 22 | 22 | 0 | 29,735 | MATCH |
-| [S8 Snapshot](examples/s8-reasoning-context.json) | 6 / 4 | 0 | 2 | 13,725 | UNKNOWN |
-| [500 条压力测试](examples/context-stress-result.json) | 500 / 26 | 22 | 2 | 31,250 | MATCH |
+| [S6 Snapshot](examples/s6-reasoning-context.json) | 30 / 20 | 20 | 0 | 28,561 | MATCH |
+| [S8 Snapshot](examples/s8-reasoning-context.json) | 6 / 4 | 0 | 2 | 14,966 | UNKNOWN |
+| [500 条压力测试](examples/context-stress-result.json) | 500 / 24 | 20 | 2 | 30,076 | MATCH |
 
 S6 保留 H4/H6/H6_SCHEMA CONFIRMED，H6_STALE/H8 SUPPORTED；安全 gap 为 FUND_PROTOCOL_APPLICABILITY，调查 gap 包括 DEPLOYED_CONSUMER_SCHEMA_VERSION、ASSET_CONVERGENCE。H6_STALE 的支持规则已额外要求父级同 Callback 的 Gateway/FAILED Evidence witness，rule version 为 3。
 
 S8 保留十个 POSSIBLE，无确认或排除；Payment Identity UNKNOWN；PAYMENT_FINALITY/PAYMENT_IDENTITY 均为 SAFETY_CRITICAL OPEN。三次 Fund NOT_FOUND 与三次 Payment TIMEOUT 压缩成两个 group；不产生支付 FAILED 命题。
 
-压力输入含 300 条重复 lookup、100 条旧状态、70 条无关协议字段及 30 条当前调查 Evidence。仅选 26 个 refs；298 条中间 lookup、98 条中间历史和 78 条非相关事实按原因计数，关键当前 facts、确认见证、安全 gap 与身份结果保留。测试检查结构性质和乱序重放一致，不硬编码必须选中某个条数。
+压力输入含 300 条重复 lookup、100 条旧状态、70 条无关协议字段及 30 条当前调查 Evidence。仅选 24 个 refs；298 条中间 lookup、98 条中间历史、78 条非相关事实与 2 条辅助关系按原因计数，关键当前 facts、确认见证、安全 gap 与身份结果保留。测试检查结构性质和乱序重放一致，不硬编码必须选中某个条数。
+
+Step 4.1 的 [候选交易压力输出](examples/context-hardening-result.json) 由保存的 S6 Evidence 构造 synthetic 候选，重放反序 Evidence 的 Snapshot 完全一致；这些是投影层压力 fixture，并非额外调用 Tool 获得的新观测。
+
+| 候选交易 | Identity | 全量引用 | Context 关键引用 | preview | 当前 Facts | 完整 JSON 字符 |
+|---:|---|---:|---:|---:|---:|---:|
+| 10 | UNKNOWN / TRANSACTION | 82 | 18 | 3 | 18 | 23,360 |
+| 100 | UNKNOWN / TRANSACTION | 802 | 18 | 3 | 18 | 23,366 |
+| 100，第 100 个 beneficiary 不符 | MISMATCH / BENEFICIARY | 802 | 22 | 3 | 22 | 25,774 |
+
+100 个候选中其余 784 条辅助引用被标记 IDENTITY_COMPACTED；含收款主体错误时保留该错误维度及关联见证。500 supporting 测试在 30,000 字符预算下成功；8 decisive refs 全保留，支持和反对 preview 各最多 4 条。真正超大的 decisive 证明仍抛 MandatoryContextOverflow。
 
 ## 回归验证
 
-本次新增 **38 个测试实例**，包括 H6_STALE 父级 witness 负向测试、类型/静态依赖隔离、完整 JSON 字符预算、mandatory overflow、身份 MISMATCH/UNKNOWN、关键事实删除检测、新 Timeout、历史及重复查询压缩、500 条压力输入、确定性重算与真实 Harness 路由 Demo。
+Step 4.1 新增 **73 个测试实例**，保留 Step 0–4 全部测试（包含原 Context 的 38 个实例）。覆盖 confirmed preview 与 mandatory 成员隔离、完整 decisive invariant、500 supporting 压力、开放结构化 vocabulary、注入/控制字符/PII 负向矩阵、MATCH/MISMATCH/UNKNOWN 关键见证、100 个候选交易、确定性重放、omission 审计和真正关键证明超预算。
 
-- SQLite 全量：**226 passed，1 skipped，39.14s**。跳过的是 PostgreSQL 专用测试。
-- PostgreSQL 全量：**227 passed，74.50s**。
+- SQLite 全量：**299 passed，1 skipped，65.21s**。跳过的是 PostgreSQL 专用测试。
+- PostgreSQL 全量：**300 passed，104.93s**。
 - 两套各有 2 条现有 FastAPI/Starlette 测试客户端依赖弃用警告，无失败。
-- S6/S8 的 Context 与 Graph 示例均已用各自保存的审计输入重放，JSON 逐字段一致。
+- S6/S8 Context 示例已用原有保存的审计输入重建为 schema 2；未修改 HypothesisGraph 或 PaymentIdentityResult schema/规则。
+- Context 的纯输入/静态依赖边界与原有 Simulator、dispatch correlation、Case scope、PII 隔离回归均通过。
 
 ## 留给 Step 5
 

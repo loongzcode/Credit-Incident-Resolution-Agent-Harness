@@ -60,7 +60,8 @@ def referenced_ids(payload) -> tuple[str, ...]:
             value = value.model_dump(mode="json")
         if isinstance(value, dict):
             for key, item in value.items():
-                if key in {"evidence_refs", "decisive_evidence_refs", "supporting_evidence_refs", "contradicting_evidence_refs"}:
+                if key in {"evidence_refs", "decisive_evidence_refs", "supporting_evidence_refs", "contradicting_evidence_refs",
+                           "supporting_ref_preview", "contradicting_ref_preview"}:
                     refs.update(item)
                 elif key in {"first_ref", "latest_ref"}:
                     refs.add(item)

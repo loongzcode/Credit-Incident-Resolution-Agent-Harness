@@ -1,8 +1,8 @@
 {
   "total_evidence": 500,
-  "selected_evidence": 26,
-  "fact_capsules": 22,
-  "serialized_chars": 31250,
+  "selected_evidence": 24,
+  "fact_capsules": 20,
+  "serialized_chars": 30076,
   "identity": "MATCH",
   "repeat_counts": [
     300
@@ -15,22 +15,27 @@
   ],
   "omitted": {
     "total_evidence": 500,
-    "selected": 26,
+    "selected": 24,
     "omitted": [
       {
         "reason": "HISTORICAL_SUPERSEDED",
         "count": 98,
-        "evidence_ids_digest": "5abe6b5742d4f0a92887ad08fc62a3ba1fb93caabd5dd2ca60e1fe1ca64523c7"
+        "evidence_ids_digest": "b7cb065a7205d6848e7f7e530f102dd88d14f47f71d216c6f87bf25673d950cb"
       },
       {
         "reason": "IRRELEVANT_TO_ACTIVE_HYPOTHESES",
         "count": 78,
-        "evidence_ids_digest": "4a77639253d1f23fb3c244039e413a1c59fe8195f0f2c9a7100763caf2490d12"
+        "evidence_ids_digest": "a164b7410b2fa5d3736186980e246102efbe6de38b06fe1b2e4fe97bf7e5e56a"
+      },
+      {
+        "reason": "RELATION_COMPACTED",
+        "count": 2,
+        "evidence_ids_digest": "55616140e5967244200225ea6a16b3cf6d050bcf44373d7b75ff5218db30b028"
       },
       {
         "reason": "REPEATED_LOOKUP",
         "count": 298,
-        "evidence_ids_digest": "c932da9752e9ffddcf491c7ff4077e6866aabd9d3f08e50a65f7f809b95892cb"
+        "evidence_ids_digest": "01564eccdde2c715eaf2b7c06bbf847301b537bf8a1ee8ad154889bf8b9e593b"
       }
     ]
   }

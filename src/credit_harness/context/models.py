@@ -8,11 +8,12 @@ from credit_harness.domain.enums import Completeness, Freshness, SourceKind, Too
 from credit_harness.evidence.models import ClaimType, SubjectKind
 from credit_harness.hypotheses.models import HypothesisId, HypothesisKind, HypothesisStatus, GapStatus, PriorityClass, UncollectedClaimType
 from credit_harness.identity.models import FinancialSubject, IdentityDimension, IdentityMatch
+from .structured_values import OpaqueBusinessRef
 
-CONTEXT_SCHEMA_VERSION = "1"
-ELIGIBILITY_POLICY_VERSION = "1"
-COMPACTION_POLICY_VERSION = "1"
-CONTEXT_POLICY_VERSION = "1"
+CONTEXT_SCHEMA_VERSION = "2"
+ELIGIBILITY_POLICY_VERSION = "2"
+COMPACTION_POLICY_VERSION = "2"
+CONTEXT_POLICY_VERSION = "2"
 Hash = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 Count = Annotated[StrictInt, Field(ge=0)]
 FactValue = StrictBool | StrictInt | StrictStr
@@ -39,9 +40,19 @@ class PaymentIdentityContext(Model):
     result: IdentityMatch
     mismatch_dimensions: tuple[IdentityDimension, ...]
     unknown_dimensions: tuple[IdentityDimension, ...]
-    transaction_refs: tuple[str, ...]
+    candidate_transaction_count: Count
+    transaction_ref_preview: tuple[OpaqueBusinessRef, ...]
+    transaction_refs_digest: Hash
+    evidence_ref_count: Count
+    evidence_refs_digest: Hash
+    # Only critical proof refs, not all candidate auxiliary fields.
     evidence_refs: tuple[str, ...]
     verification_version: str
+
+    @property
+    def transaction_refs(self):
+        """Legacy inspection alias; serialized context explicitly calls this a preview."""
+        return self.transaction_ref_preview
 
 
 class FactSubject(Model):
@@ -77,11 +88,12 @@ class HypothesisCapsule(Model):
     statement: str
     status: HypothesisStatus
     decisive_evidence_refs: tuple[str, ...]
-    supporting_evidence_refs: tuple[str, ...]
-    contradicting_evidence_refs: tuple[str, ...]
+    supporting_ref_preview: tuple[str, ...] = ()
+    contradicting_ref_preview: tuple[str, ...] = ()
     supporting_ref_count: Count
     contradicting_ref_count: Count
-    relation_refs_digest: Hash
+    supporting_refs_digest: Hash
+    contradicting_refs_digest: Hash
     open_gap_ids: tuple[str, ...]
     reason: str
 
@@ -200,6 +212,8 @@ class OmissionReason(StrEnum):
     HISTORICAL_SUPERSEDED = "HISTORICAL_SUPERSEDED"
     IRRELEVANT_TO_ACTIVE_HYPOTHESES = "IRRELEVANT_TO_ACTIVE_HYPOTHESES"
     SIZE_BUDGET = "SIZE_BUDGET"
+    RELATION_COMPACTED = "RELATION_COMPACTED"
+    IDENTITY_COMPACTED = "IDENTITY_COMPACTED"
 
 
 class OmissionGroup(Model):
@@ -220,6 +234,8 @@ class ContextBudget(Model):
     max_hypothesis_capsules: Count = 16
     max_gap_capsules: Count = 24
     max_history_items: Count = 20
+    max_relation_ref_preview: Annotated[StrictInt, Field(ge=0, le=32)] = 4
+    max_identity_transaction_preview: Annotated[StrictInt, Field(ge=0, le=32)] = 3
 
 
 class ContextBudgetUsage(Model):

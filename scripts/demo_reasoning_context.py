@@ -24,7 +24,7 @@ def preview(s):
              "未来 Planner 的结构化输入；本次没有 LLM 调用。", "", "TASK", s.task.goal,
              "", "SAFETY", *(v.value for v in s.safety_constraints.invariants),
              "", "FINANCIAL SUBJECT", s.financial_subject.model_dump_json() if s.financial_subject else "UNKNOWN",
-             "", "PAYMENT IDENTITY", f"{s.financial_identity.result.value}; mismatch={[d.value for d in s.financial_identity.mismatch_dimensions]}; unknown={[d.value for d in s.financial_identity.unknown_dimensions]}",
+             "", "PAYMENT IDENTITY", s.financial_identity.model_dump_json(indent=2),
              "", "CURRENT FACTS"]
     lines.extend(f"{f.claim_type.value} [{f.subject.identifier}; protocol={f.protocol_version}] = {f.value} ({f.freshness.value})" for f in s.current_facts)
     lines.extend(["", "ACTIVE HYPOTHESES"])

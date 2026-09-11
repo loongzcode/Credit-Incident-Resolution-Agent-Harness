@@ -1,5 +1,5 @@
 CASE JD202609100001
-SNAPSHOT 0deaa50051be3ecbb3bb168c893143afcae78714cce7012dc4d35d0ce4fddd7f
+SNAPSHOT 6b7bd3fd58fa753d45ad7b87922ded12b5b6924e7613f8ea2e33f30b3b8f1428
 未来 Planner 的结构化输入；本次没有 LLM 调用。
 
 TASK
@@ -18,7 +18,27 @@ FINANCIAL SUBJECT
 {"expected_principal_minor":2000000,"currency":"CNY","customer_ref":"CUS-JD-001","expected_beneficiary_ref":"BEN-JD-001","expected_account_ref":"ACC-JD-001"}
 
 PAYMENT IDENTITY
-UNKNOWN; mismatch=[]; unknown=['ACCOUNT', 'AMOUNT', 'BENEFICIARY', 'CURRENCY', 'CUSTOMER', 'FINALITY', 'REQUEST', 'TRANSACTION']
+{
+  "result": "UNKNOWN",
+  "mismatch_dimensions": [],
+  "unknown_dimensions": [
+    "ACCOUNT",
+    "AMOUNT",
+    "BENEFICIARY",
+    "CURRENCY",
+    "CUSTOMER",
+    "FINALITY",
+    "REQUEST",
+    "TRANSACTION"
+  ],
+  "candidate_transaction_count": 0,
+  "transaction_ref_preview": [],
+  "transaction_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "evidence_ref_count": 0,
+  "evidence_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "evidence_refs": [],
+  "verification_version": "1"
+}
 
 CURRENT FACTS
 
@@ -106,8 +126,8 @@ HISTORY DIGEST
 
 BUDGET USAGE
 {
-  "serialized_chars": 13725,
-  "approximate_tokens": 4575,
+  "serialized_chars": 14966,
+  "approximate_tokens": 4989,
   "fact_capsules": 0,
   "hypothesis_capsules": 10,
   "gap_capsules": 4,
@@ -117,7 +137,9 @@ BUDGET USAGE
     "max_fact_capsules": 64,
     "max_hypothesis_capsules": 16,
     "max_gap_capsules": 24,
-    "max_history_items": 20
+    "max_history_items": 20,
+    "max_relation_ref_preview": 4,
+    "max_identity_transaction_preview": 3
   },
   "estimator": "unicode_chars_div_3_ceiling_v1"
 }

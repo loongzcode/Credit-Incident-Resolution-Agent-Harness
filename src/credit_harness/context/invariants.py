@@ -3,6 +3,7 @@ from .budget import case_payload, digest, fits, referenced_ids, snapshot_digest
 from .compaction import fact
 from .eligibility import MandatoryContextFactPolicy
 from .models import ReasoningContextSnapshot, GapCapsule, SafetyInvariant
+from .identity_projection import IdentityContextProjector, identity_auxiliary_refs
 
 
 class ReasoningContextInvariantError(ValueError):
@@ -38,11 +39,23 @@ class ReasoningContextInvariantValidator:
                         and states[h.hypothesis_id].decisive_evidence_refs == h.decisive_evidence_refs,
                         "confirmed hypothesis lost its witness")
         identity = snapshot.financial_identity
-        require((identity.result, identity.mismatch_dimensions, identity.unknown_dimensions, identity.evidence_refs) == (
-            graph.payment_identity.result, graph.payment_identity.mismatch_dimensions,
-            graph.payment_identity.unknown_dimensions, graph.payment_identity.evidence_refs), "identity changed")
+        require(identity == IdentityContextProjector().project(
+            graph.payment_identity, index,
+            preview_limit=snapshot.context_budget_usage.limits.max_identity_transaction_preview), "identity changed")
+        for capsule in snapshot.active_hypotheses:
+            state = next(h for h in graph.hypotheses if h.hypothesis_id == capsule.hypothesis_id)
+            for relation in ("supporting", "contradicting"):
+                refs = getattr(state, f"{relation}_evidence_refs")
+                preview = getattr(capsule, f"{relation}_ref_preview")
+                require(getattr(capsule, f"{relation}_ref_count") == len(refs)
+                        and getattr(capsule, f"{relation}_refs_digest") == digest(sorted(refs))
+                        and set(preview) <= set(refs)
+                        and len(preview) <= snapshot.context_budget_usage.limits.max_relation_ref_preview,
+                        "relation compaction changed")
         current = {e.evidence_id: e for c in {e.claim_type for e in index.evidence} for e in index.current(c)}
-        critical_fact_ids = {ref for ref, e in current.items() if e.claim_type in MandatoryContextFactPolicy.claims}
+        auxiliary = identity_auxiliary_refs(graph.payment_identity, identity)
+        critical_fact_ids = {ref for ref, e in current.items() if e.claim_type in MandatoryContextFactPolicy.claims and ref not in auxiliary}
+        critical_fact_ids.update(ref for ref in identity.evidence_refs if ref in current)
         critical_fact_ids.update(ref for h in graph.hypotheses if h.status == S.CONFIRMED
                                  for ref in h.decisive_evidence_refs if ref in current)
         require(critical_fact_ids <= {ref for capsule in snapshot.current_facts for ref in capsule.evidence_refs}, "critical fact capsule omitted")

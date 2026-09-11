@@ -1,5 +1,5 @@
 CASE JD202609100001
-SNAPSHOT ddcbcfe9ec6acdeb2e25a45613b872966412e5b872dfc18ac90c70f0485e90e4
+SNAPSHOT 48aba780d55302fb689a86e4226f6d72e3d2c9e0dcca6ac6daa8acb2bdfae05d
 未来 Planner 的结构化输入；本次没有 LLM 调用。
 
 TASK
@@ -18,7 +18,32 @@ FINANCIAL SUBJECT
 {"expected_principal_minor":2000000,"currency":"CNY","customer_ref":"CUS-JD-001","expected_beneficiary_ref":"BEN-JD-001","expected_account_ref":"ACC-JD-001"}
 
 PAYMENT IDENTITY
-MATCH; mismatch=[]; unknown=[]
+{
+  "result": "MATCH",
+  "mismatch_dimensions": [],
+  "unknown_dimensions": [],
+  "candidate_transaction_count": 1,
+  "transaction_ref_preview": [
+    "PAY-001"
+  ],
+  "transaction_refs_digest": "497891384dc890d8ebf131f7b6f5053380c1fb332a897a8d2ad82bd4dcb909f3",
+  "evidence_ref_count": 11,
+  "evidence_refs_digest": "25b020b4ebc4550852989ce65ca37971076cf27bcba999e30c3e4fa194a85bd8",
+  "evidence_refs": [
+    "E-05a141a83af1df4a80fdba07f7bddf703aa7764abd05ecb17f8652443f714cda",
+    "E-07b37f4a4a993e2315cddacef9088dadabe03c5abf14d545afae69c2a133c8bd",
+    "E-22d941c4dec08fcee14b18523b3b08dc74603080bae57b8db4d7deaba575ad75",
+    "E-44bc85d1a226b5d41237a31b3c4ada8a53bedfc63fd752c6d3d4b1347fd3543b",
+    "E-555bfdbbdc7735338d1e93600fdbd66c348fa6232223ec2d1b180ffe72a40ebe",
+    "E-68a914f778c5f25bedc9721646bf55dddaba63965e8cfd3a2224e420b87102ab",
+    "E-70d3546dcdb75dd9e23c8c4fcd460617196fdd3a4496eb29bd8a52a56b9feaaa",
+    "E-80a666bed25022eb1e75f6a86708607220d1bedfe25f9ed86b0e437ac3cdd99f",
+    "E-9d73dc365b18b85b7b130ec8c616e303e23d3fee1211ec8bb0a80c856dd25b52",
+    "E-a469d3e843d805a059ebc258bae02a0034df6a161abe1e1ab6da055c8926912d",
+    "E-e8d272c51c554bcbd404f87d0f5d583808524a0b97cb4550aa7b846b2cd58b70"
+  ],
+  "verification_version": "1"
+}
 
 CURRENT FACTS
 TRANSACTION_FUND_REQUEST_ID [PAY-001; protocol=None] = FREQ-0910-001 (CURRENT)
@@ -41,8 +66,6 @@ PAYMENT_CURRENCY [PAY-001; protocol=None] = CNY (CURRENT)
 PROTOCOL_FIELD_TYPE [SIM-FUND@2.3; protocol=2.3] = string (CURRENT)
 PROTOCOL_BUSINESS_SEMANTICS [SIM-FUND@2.2; protocol=2.2] = LOAN_CREATED_PAYMENT_SEPARATE (CURRENT)
 PROTOCOL_BUSINESS_SEMANTICS [SIM-FUND@2.3; protocol=2.3] = LOAN_CREATED_PAYMENT_SEPARATE (CURRENT)
-PROTOCOL_FIELD_TYPE [SIM-FUND@2.2; protocol=2.2] = integer (CURRENT)
-CALLBACK_PROTOCOL_VERSION [CB-001; protocol=2.3] = 2.3 (CURRENT)
 
 ACTIVE HYPOTHESES
 H4 CONFIRMED; decisive=['E-05a141a83af1df4a80fdba07f7bddf703aa7764abd05ecb17f8652443f714cda', 'E-07b37f4a4a993e2315cddacef9088dadabe03c5abf14d545afae69c2a133c8bd', 'E-22d941c4dec08fcee14b18523b3b08dc74603080bae57b8db4d7deaba575ad75', 'E-44bc85d1a226b5d41237a31b3c4ada8a53bedfc63fd752c6d3d4b1347fd3543b', 'E-555bfdbbdc7735338d1e93600fdbd66c348fa6232223ec2d1b180ffe72a40ebe', 'E-68a914f778c5f25bedc9721646bf55dddaba63965e8cfd3a2224e420b87102ab', 'E-70d3546dcdb75dd9e23c8c4fcd460617196fdd3a4496eb29bd8a52a56b9feaaa', 'E-80a666bed25022eb1e75f6a86708607220d1bedfe25f9ed86b0e437ac3cdd99f', 'E-9d73dc365b18b85b7b130ec8c616e303e23d3fee1211ec8bb0a80c856dd25b52', 'E-a469d3e843d805a059ebc258bae02a0034df6a161abe1e1ab6da055c8926912d', 'E-e8d272c51c554bcbd404f87d0f5d583808524a0b97cb4550aa7b846b2cd58b70']
@@ -88,9 +111,9 @@ HISTORY DIGEST
 
 BUDGET USAGE
 {
-  "serialized_chars": 29735,
-  "approximate_tokens": 9912,
-  "fact_capsules": 22,
+  "serialized_chars": 28561,
+  "approximate_tokens": 9521,
+  "fact_capsules": 20,
   "hypothesis_capsules": 10,
   "gap_capsules": 3,
   "history_items": 0,
@@ -99,7 +122,9 @@ BUDGET USAGE
     "max_fact_capsules": 64,
     "max_hypothesis_capsules": 16,
     "max_gap_capsules": 24,
-    "max_history_items": 20
+    "max_history_items": 20,
+    "max_relation_ref_preview": 4,
+    "max_identity_transaction_preview": 3
   },
   "estimator": "unicode_chars_div_3_ceiling_v1"
 }
@@ -107,12 +132,17 @@ BUDGET USAGE
 SELECTED / OMITTED
 {
   "total_evidence": 30,
-  "selected": 22,
+  "selected": 20,
   "omitted": [
     {
       "reason": "IRRELEVANT_TO_ACTIVE_HYPOTHESES",
       "count": 8,
       "evidence_ids_digest": "4419e0b9c44194d53b3699e7f537b8a82caee8961b49bdd64fa73bf67cab354f"
+    },
+    {
+      "reason": "RELATION_COMPACTED",
+      "count": 2,
+      "evidence_ids_digest": "55616140e5967244200225ea6a16b3cf6d050bcf44373d7b75ff5218db30b028"
     }
   ]
 }

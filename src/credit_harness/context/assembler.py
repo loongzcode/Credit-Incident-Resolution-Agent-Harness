@@ -11,10 +11,11 @@ from .eligibility import ContextEligibilityError, ContextEligibilityPolicy, Mand
 from .models import (
     COMPACTION_POLICY_VERSION, CONTEXT_POLICY_VERSION, CONTEXT_SCHEMA_VERSION, ELIGIBILITY_POLICY_VERSION,
     ContextBudget, GapCapsule, HistoryDigest, HypothesisCapsule, OmissionGroup, OmissionReason as O,
-    OmittedEvidenceSummary, PaymentIdentityContext, ResolvedHypothesisSummary, RuntimeBudgetContext,
+    OmittedEvidenceSummary, ResolvedHypothesisSummary, RuntimeBudgetContext,
     SafetyContext, SafetyInvariant, TaskContext,
 )
 from .tool_capabilities import ToolCapabilityCatalog
+from .identity_projection import IdentityContextProjector, identity_auxiliary_refs
 
 
 class ReasoningContextAssembler:
@@ -37,22 +38,27 @@ class ReasoningContextAssembler:
         definitions = {d.hypothesis_id: d for d in graph.definitions}
         critical_gaps = {g.gap_id for g in graph.open_gaps if g.priority_class == P.SAFETY_CRITICAL}
         critical_hypotheses = {h for g in graph.open_gaps if g.gap_id in critical_gaps for h in g.hypothesis_ids}
-        identity = PaymentIdentityContext(
-            result=graph.payment_identity.result, mismatch_dimensions=graph.payment_identity.mismatch_dimensions,
-            unknown_dimensions=graph.payment_identity.unknown_dimensions,
-            transaction_refs=tuple(sorted({w.transaction_ref for w in graph.payment_identity.witnesses})),
-            evidence_refs=graph.payment_identity.evidence_refs, verification_version=graph.payment_identity.verification_version,
-        )
+        identity = IdentityContextProjector().project(
+            graph.payment_identity, index, preview_limit=self.budget.max_identity_transaction_preview)
+        identity_aux = identity_auxiliary_refs(graph.payment_identity, identity)
+        relation_aux = {ref for s in graph.hypotheses
+                        for ref in (*s.supporting_evidence_refs, *s.contradicting_evidence_refs)}
+        relation_aux -= {ref for s in graph.hypotheses for ref in s.decisive_evidence_refs}
 
-        def hypothesis(state):
+        def hypothesis(state, *, preview=True):
             definition = definitions[state.hypothesis_id]
             return HypothesisCapsule(
                 hypothesis_id=state.hypothesis_id, kind=definition.kind, statement=definition.statement, status=state.status,
                 decisive_evidence_refs=state.decisive_evidence_refs,
-                supporting_evidence_refs=compactor.relation_refs(state.supporting_evidence_refs, by_id),
-                contradicting_evidence_refs=compactor.relation_refs(state.contradicting_evidence_refs, by_id),
+                supporting_ref_preview=compactor.relation_refs(
+                    tuple(r for r in state.supporting_evidence_refs if r in eligible_ids and r not in identity_aux),
+                    by_id, limit=self.budget.max_relation_ref_preview) if preview else (),
+                contradicting_ref_preview=compactor.relation_refs(
+                    tuple(r for r in state.contradicting_evidence_refs if r in eligible_ids and r not in identity_aux),
+                    by_id, limit=self.budget.max_relation_ref_preview) if preview else (),
                 supporting_ref_count=len(state.supporting_evidence_refs), contradicting_ref_count=len(state.contradicting_evidence_refs),
-                relation_refs_digest=digest([list(state.supporting_evidence_refs), list(state.contradicting_evidence_refs)]),
+                supporting_refs_digest=digest(sorted(state.supporting_evidence_refs)),
+                contradicting_refs_digest=digest(sorted(state.contradicting_evidence_refs)),
                 open_gap_ids=state.missing_evidence, reason=state.reason,
             )
 
@@ -61,10 +67,11 @@ class ReasoningContextAssembler:
             gap_id=g.gap_id, question=g.question, required_claim_types=g.required_claim_types,
             priority=g.priority_class, status=g.status, related_hypotheses=g.hypothesis_ids, evidence_refs=g.evidence_refs,
         ) for g in graph.open_gaps)
-        mandatory_hypotheses = tuple(h for h in hypotheses if h.status == S.CONFIRMED)
+        mandatory_hypotheses = tuple(hypothesis(s, preview=False) for s in graph.hypotheses if s.status == S.CONFIRMED)
         mandatory_gaps = tuple(g for g in gaps if g.gap_id in critical_gaps)
         mandatory_refs = set(referenced_ids((identity, mandatory_hypotheses, mandatory_gaps)))
-        mandatory_refs.update(e.evidence_id for e in all_current.values() if e.claim_type in MandatoryContextFactPolicy.claims)
+        mandatory_refs.update(e.evidence_id for e in all_current.values()
+                              if e.claim_type in MandatoryContextFactPolicy.claims and e.evidence_id not in identity_aux)
         if not mandatory_refs <= eligible_ids:
             raise ContextEligibilityError("mandatory context depends on information ineligible for this boundary")
         mandatory_facts = tuple(fact(current[ref]) for ref in sorted(mandatory_refs) if ref in current)
@@ -97,6 +104,8 @@ class ReasoningContextAssembler:
         for e in index.evidence:
             reasons[e.evidence_id] = (O.ELIGIBILITY_DENIED if e.evidence_id not in eligible_ids else
                                      O.REPEATED_LOOKUP if e.claim_type == C.SOURCE_LOOKUP_STATUS else
+                                     O.IDENTITY_COMPACTED if e.evidence_id in identity_aux else
+                                     O.RELATION_COMPACTED if e.evidence_id in relation_aux else
                                      O.HISTORICAL_SUPERSEDED if e.evidence_id not in current else
                                      O.IRRELEVANT_TO_ACTIVE_HYPOTHESES)
 
@@ -123,7 +132,9 @@ class ReasoningContextAssembler:
             raise MandatoryContextOverflow("Tier 0 exceeds context budget; no snapshot produced")
         candidates = []
         for h in hypotheses:
-            if h.status != S.CONFIRMED:
+            if h.status == S.CONFIRMED:
+                candidates.append((1, 0, h.hypothesis_id.value, "hypothesis_preview", h))
+            else:
                 rank = 1 if h.status == S.SUPPORTED else 2
                 candidates.append((rank, 0 if h.hypothesis_id in critical_hypotheses else 1,
                                    h.hypothesis_id.value, "active_hypotheses", h))
@@ -132,8 +143,10 @@ class ReasoningContextAssembler:
                 candidates.append((1 if g.priority == P.DISCRIMINATING else 2, 0, g.gap_id, "open_evidence_gaps", g))
         active_claims = {c for d in graph.definitions if d.hypothesis_id not in graph.eliminated for c in d.relevant_claim_types}
         active_claims.update(c for g in graph.open_gaps for c in g.required_claim_types if isinstance(c, C))
-        support_ids = {ref for h in hypotheses for ref in h.supporting_evidence_refs}
+        support_ids = {ref for h in hypotheses for ref in (*h.supporting_ref_preview, *h.contradicting_ref_preview)}
         for e in current.values():
+            if e.evidence_id in identity_aux or (e.evidence_id in relation_aux and e.evidence_id not in support_ids):
+                continue
             if e.claim_type in (C.PROTOCOL_FIELD_TYPE, C.PROTOCOL_BUSINESS_SEMANTICS):
                 expected_field = "loanNo" if e.claim_type == C.PROTOCOL_FIELD_TYPE else "SUCCESS"
                 if e.subject.field != expected_field and e.evidence_id not in support_ids:
@@ -147,28 +160,45 @@ class ReasoningContextAssembler:
                     status=s.status, decisive_evidence_refs=s.decisive_evidence_refs)))
         for i, group in enumerate(compactor.lookup_groups(eligible)):
             candidates.append((3, 1, str(i), "lookups", group))
-        for i, group in enumerate(compactor.historical_groups(eligible, current)):
+        history_eligible = tuple(e for e in eligible if e.evidence_id not in identity_aux | relation_aux)
+        for i, group in enumerate(compactor.historical_groups(history_eligible, current)):
             candidates.append((3, 2, str(i), "states", group))
         accepted = []
+        def apply(slot, item):
+            if slot == "hypothesis_preview":
+                position = next(i for i, h in enumerate(selected["active_hypotheses"]) if h.hypothesis_id == item.hypothesis_id)
+                previous = selected["active_hypotheses"][position]
+                selected["active_hypotheses"][position] = item
+                return position, previous
+            selected[slot].append(item)
+            return None
+
+        def undo(slot, item, previous):
+            if slot == "hypothesis_preview":
+                position, capsule = previous
+                selected["active_hypotheses"][position] = capsule
+            else:
+                selected[slot].remove(item)
+
         for _, _, _, slot, item in sorted(candidates, key=lambda c: c[:4]):
             refs = set(referenced_ids(item))
             if not refs <= eligible_ids:
                 continue  # omit whole optional capsule, never emit a misleading partial interpretation
-            selected[slot].append(item)
+            previous = apply(slot, item)
             candidate = render()
             if fits(candidate):
                 snapshot = candidate
-                accepted.append((slot, item))
+                accepted.append((slot, item, previous))
             else:
-                selected[slot].pop()
+                undo(slot, item, previous)
                 for ref in refs - set(snapshot.selected_evidence_refs):
                     reasons[ref] = O.SIZE_BUDGET
         # Omission reason labels also consume space. Remove optional entries only if
         # their audit bookkeeping pushed the final envelope over the character bound.
         snapshot = render()
         while not fits(snapshot) and accepted:
-            slot, item = accepted.pop()
-            selected[slot].remove(item)
+            slot, item, previous = accepted.pop()
+            undo(slot, item, previous)
             for ref in referenced_ids(item):
                 reasons[ref] = O.SIZE_BUDGET
             snapshot = render()

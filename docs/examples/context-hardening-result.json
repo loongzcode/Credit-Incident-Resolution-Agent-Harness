@@ -1,0 +1,180 @@
+{
+  "fixture_kind": "synthetic projection stress derived from saved S6 Evidence; not newly dispatched Tool observations",
+  "context_schema_version": "2",
+  "cases": [
+    {
+      "candidate_count": 10,
+      "synthetic_beneficiary_mismatch": false,
+      "input_count": 82,
+      "current_fact_count": 18,
+      "serialized_chars": 23360,
+      "identity": {
+        "result": "UNKNOWN",
+        "mismatch_dimensions": [],
+        "unknown_dimensions": [
+          "TRANSACTION"
+        ],
+        "candidate_transaction_count": 10,
+        "transaction_ref_preview": [
+          "TXN:PARTNER:0000",
+          "TXN:PARTNER:0001",
+          "TXN:PARTNER:0002"
+        ],
+        "transaction_refs_digest": "64239f4c9060df5c36a9e835b931857a211fb3fae9cbc2e649e105e6649e691e",
+        "evidence_ref_count": 82,
+        "evidence_refs_digest": "663b231faaae021f183773b0d60c2f469f5e36d641742181726b6ca57f55af96",
+        "evidence_refs": [
+          "CAND-0000-PAYMENT_ACCOUNT_REF",
+          "CAND-0000-PAYMENT_AMOUNT",
+          "CAND-0000-PAYMENT_BENEFICIARY_REF",
+          "CAND-0000-PAYMENT_CURRENCY",
+          "CAND-0000-PAYMENT_CUSTOMER_REF",
+          "CAND-0000-PAYMENT_FINALITY",
+          "CAND-0000-PAYMENT_TRANSACTION_ID",
+          "CAND-0000-TRANSACTION_FUND_REQUEST_ID",
+          "CAND-0001-PAYMENT_ACCOUNT_REF",
+          "CAND-0001-PAYMENT_AMOUNT",
+          "CAND-0001-PAYMENT_BENEFICIARY_REF",
+          "CAND-0001-PAYMENT_CURRENCY",
+          "CAND-0001-PAYMENT_CUSTOMER_REF",
+          "CAND-0001-PAYMENT_FINALITY",
+          "CAND-0001-PAYMENT_TRANSACTION_ID",
+          "CAND-0001-TRANSACTION_FUND_REQUEST_ID",
+          "E-22d941c4dec08fcee14b18523b3b08dc74603080bae57b8db4d7deaba575ad75",
+          "E-555bfdbbdc7735338d1e93600fdbd66c348fa6232223ec2d1b180ffe72a40ebe"
+        ],
+        "verification_version": "1"
+      },
+      "omitted": {
+        "total_evidence": 82,
+        "selected": 18,
+        "omitted": [
+          {
+            "reason": "IDENTITY_COMPACTED",
+            "count": 64,
+            "evidence_ids_digest": "1c710564dcd67c40b1a40d6f1d04f7c8b7989e9c709029ad217b5348b13325b3"
+          }
+        ]
+      },
+      "snapshot_id": "71ecaca7b803187f92a11b54daa8f8820cb1fc4ef51ad726334eeabd444fc4ac"
+    },
+    {
+      "candidate_count": 100,
+      "synthetic_beneficiary_mismatch": false,
+      "input_count": 802,
+      "current_fact_count": 18,
+      "serialized_chars": 23366,
+      "identity": {
+        "result": "UNKNOWN",
+        "mismatch_dimensions": [],
+        "unknown_dimensions": [
+          "TRANSACTION"
+        ],
+        "candidate_transaction_count": 100,
+        "transaction_ref_preview": [
+          "TXN:PARTNER:0000",
+          "TXN:PARTNER:0001",
+          "TXN:PARTNER:0002"
+        ],
+        "transaction_refs_digest": "de7e400359328fa644c6645a56a05accf344a9785dcff31ead39a3e6f6e83141",
+        "evidence_ref_count": 802,
+        "evidence_refs_digest": "61abb52cc954e9138b85acd55a3ad44bba99dd676066a1ebd13c17752b29f23c",
+        "evidence_refs": [
+          "CAND-0000-PAYMENT_ACCOUNT_REF",
+          "CAND-0000-PAYMENT_AMOUNT",
+          "CAND-0000-PAYMENT_BENEFICIARY_REF",
+          "CAND-0000-PAYMENT_CURRENCY",
+          "CAND-0000-PAYMENT_CUSTOMER_REF",
+          "CAND-0000-PAYMENT_FINALITY",
+          "CAND-0000-PAYMENT_TRANSACTION_ID",
+          "CAND-0000-TRANSACTION_FUND_REQUEST_ID",
+          "CAND-0001-PAYMENT_ACCOUNT_REF",
+          "CAND-0001-PAYMENT_AMOUNT",
+          "CAND-0001-PAYMENT_BENEFICIARY_REF",
+          "CAND-0001-PAYMENT_CURRENCY",
+          "CAND-0001-PAYMENT_CUSTOMER_REF",
+          "CAND-0001-PAYMENT_FINALITY",
+          "CAND-0001-PAYMENT_TRANSACTION_ID",
+          "CAND-0001-TRANSACTION_FUND_REQUEST_ID",
+          "E-22d941c4dec08fcee14b18523b3b08dc74603080bae57b8db4d7deaba575ad75",
+          "E-555bfdbbdc7735338d1e93600fdbd66c348fa6232223ec2d1b180ffe72a40ebe"
+        ],
+        "verification_version": "1"
+      },
+      "omitted": {
+        "total_evidence": 802,
+        "selected": 18,
+        "omitted": [
+          {
+            "reason": "IDENTITY_COMPACTED",
+            "count": 784,
+            "evidence_ids_digest": "28680d396bb753fe28a88ba92c5e85be3fa77251cc0575799e1bf7def18d0367"
+          }
+        ]
+      },
+      "snapshot_id": "5da9e3787d6a43d5f0a45453ed806e44aaf5a6d42ea3e90614a19f3376dc3334"
+    },
+    {
+      "candidate_count": 100,
+      "synthetic_beneficiary_mismatch": true,
+      "input_count": 802,
+      "current_fact_count": 22,
+      "serialized_chars": 25774,
+      "identity": {
+        "result": "MISMATCH",
+        "mismatch_dimensions": [
+          "BENEFICIARY"
+        ],
+        "unknown_dimensions": [
+          "TRANSACTION"
+        ],
+        "candidate_transaction_count": 100,
+        "transaction_ref_preview": [
+          "TXN:PARTNER:0000",
+          "TXN:PARTNER:0001",
+          "TXN:PARTNER:0002"
+        ],
+        "transaction_refs_digest": "de7e400359328fa644c6645a56a05accf344a9785dcff31ead39a3e6f6e83141",
+        "evidence_ref_count": 802,
+        "evidence_refs_digest": "61abb52cc954e9138b85acd55a3ad44bba99dd676066a1ebd13c17752b29f23c",
+        "evidence_refs": [
+          "CAND-0000-PAYMENT_ACCOUNT_REF",
+          "CAND-0000-PAYMENT_AMOUNT",
+          "CAND-0000-PAYMENT_BENEFICIARY_REF",
+          "CAND-0000-PAYMENT_CURRENCY",
+          "CAND-0000-PAYMENT_CUSTOMER_REF",
+          "CAND-0000-PAYMENT_FINALITY",
+          "CAND-0000-PAYMENT_TRANSACTION_ID",
+          "CAND-0000-TRANSACTION_FUND_REQUEST_ID",
+          "CAND-0001-PAYMENT_ACCOUNT_REF",
+          "CAND-0001-PAYMENT_AMOUNT",
+          "CAND-0001-PAYMENT_BENEFICIARY_REF",
+          "CAND-0001-PAYMENT_CURRENCY",
+          "CAND-0001-PAYMENT_CUSTOMER_REF",
+          "CAND-0001-PAYMENT_FINALITY",
+          "CAND-0001-PAYMENT_TRANSACTION_ID",
+          "CAND-0001-TRANSACTION_FUND_REQUEST_ID",
+          "CAND-0099-PAYMENT_BENEFICIARY_REF",
+          "CAND-0099-PAYMENT_FINALITY",
+          "CAND-0099-PAYMENT_TRANSACTION_ID",
+          "CAND-0099-TRANSACTION_FUND_REQUEST_ID",
+          "E-22d941c4dec08fcee14b18523b3b08dc74603080bae57b8db4d7deaba575ad75",
+          "E-555bfdbbdc7735338d1e93600fdbd66c348fa6232223ec2d1b180ffe72a40ebe"
+        ],
+        "verification_version": "1"
+      },
+      "omitted": {
+        "total_evidence": 802,
+        "selected": 22,
+        "omitted": [
+          {
+            "reason": "IDENTITY_COMPACTED",
+            "count": 780,
+            "evidence_ids_digest": "f57f2cd7adfa5655e1ae26d866a2b619232b95f87b9a7ad95d95a7162b514cf4"
+          }
+        ]
+      },
+      "snapshot_id": "a436715adb163716401f8e53e31bdfb206ec0a8392ce377276321e3f205fd521"
+    }
+  ]
+}

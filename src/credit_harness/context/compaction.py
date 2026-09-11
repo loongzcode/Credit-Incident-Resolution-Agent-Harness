@@ -57,10 +57,10 @@ class ContextCompactor:
             ))
         return tuple(result)
 
-    def relation_refs(self, refs, by_id):
-        # Preserve all non-lookup refs; repeated absences retain only group boundaries.
+    def relation_refs(self, refs, by_id, *, limit=4):
+        # Every auxiliary relation preview is bounded, including non-lookup refs.
         items = [by_id[ref] for ref in refs]
         kept = {e.evidence_id for e in items if e.claim_type != C.SOURCE_LOOKUP_STATUS}
         for group in self.lookup_groups(items):
             kept.update((group.references.first_ref, group.references.latest_ref))
-        return tuple(sorted(kept))
+        return tuple(sorted(kept))[:limit]
