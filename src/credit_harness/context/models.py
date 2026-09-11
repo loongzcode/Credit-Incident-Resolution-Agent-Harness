@@ -11,10 +11,10 @@ from credit_harness.identity.models import FinancialSubject, IdentityDimension, 
 from .structured_values import OpaqueBusinessRef, OpaqueSubjectRef, ContextReference, StructuredVersion, StructuredFieldPath
 from .value_contracts import validate_claim_value, validate_subject_field
 
-CONTEXT_SCHEMA_VERSION = "3"
+CONTEXT_SCHEMA_VERSION = "4"
 ELIGIBILITY_POLICY_VERSION = "3"
-COMPACTION_POLICY_VERSION = "2"
-CONTEXT_POLICY_VERSION = "3"
+COMPACTION_POLICY_VERSION = "3"
+CONTEXT_POLICY_VERSION = "4"
 Hash = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 Count = Annotated[StrictInt, Field(ge=0)]
 FactValue = StrictBool | StrictInt | StrictStr
@@ -153,6 +153,8 @@ class RepeatedLookupGroup(Model):
     latest_freshness: Freshness
     latest_completeness: Completeness
     references: ReferenceRange
+    # Trailing run for this tool AND exact query scope, considering successes too.
+    latest_consecutive_count: Count = 0
 
 
 class HistoricalStateGroup(Model):
@@ -180,6 +182,7 @@ class HistoryDigest(Model):
     latest_observation_time: AwareDatetime | None
     repeated_lookup_groups: tuple[RepeatedLookupGroup, ...]
     state_transitions: tuple[HistoricalStateGroup, ...]
+    lookup_history_complete: StrictBool = False
 
 
 class SafetyInvariant(StrEnum):
@@ -223,6 +226,7 @@ class ToolCapability(Model):
     tool_name: ToolName
     description: str
     produces_claim_types: tuple[ClaimType, ...]
+    contributes_requirements: tuple[UncollectedClaimType, ...] = ()
     risk_class: ToolRisk = ToolRisk.READ_ONLY
     data_classification: ToolDataClass
     estimated_cost_class: EstimateClass = EstimateClass.LOW

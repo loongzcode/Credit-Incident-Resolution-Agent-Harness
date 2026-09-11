@@ -1,10 +1,22 @@
 from credit_harness.domain.enums import ToolName as T
 from credit_harness.evidence.models import ClaimType as C
 from .models import ToolCapability, ToolDataClass as D
+from credit_harness.hypotheses.models import UncollectedClaimType as U
+
+
+REQUIREMENTS = {
+    T.GUARANTEE: (U.REQUEST_ASSOCIATION, U.FUND_REQUEST_PROTOCOL_APPLICABILITY),
+    T.TRACE: (U.REQUEST_ASSOCIATION,), T.FUND: (U.REQUEST_ASSOCIATION,),
+    T.PAYMENT: (U.REQUEST_ASSOCIATION,),
+    T.CALLBACK: (U.CALLBACK_EVENT_ASSOCIATION,),
+    T.CALLBACK_RAW: (U.CALLBACK_EVENT_ASSOCIATION,),
+    T.MESSAGES: (U.CALLBACK_EVENT_ASSOCIATION,),
+}
 
 
 def capability(tool, description, claims, classification=D.BUSINESS):
     return ToolCapability(tool_name=tool, description=description,
+                          contributes_requirements=REQUIREMENTS.get(tool, ()),
                           produces_claim_types=(*claims, C.SOURCE_LOOKUP_STATUS), data_classification=classification)
 
 

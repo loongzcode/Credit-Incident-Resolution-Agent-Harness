@@ -1,6 +1,6 @@
 # Step 4.2 — Full Context Envelope Eligibility / Model Trust Boundary
 
-本阶段的边界是 `Case + Evidence → Immutable Snapshot`。没有 LLM、Prompt、Planner、Agent Loop、Next Best Action、Write Tool、Repair、embedding、Vector DB 或聊天记忆。Step 5 才消费这一结构化边界；当前 Demo 只做人工查询与确定性计算。
+本组件的边界是 `Case + Evidence → Immutable Snapshot`，只做确定性计算。Step 5 的 [Planner](planner.md) 已消费此结构化边界，但仍未执行建议或实现 Agent Loop、Write Tool、Repair。Context Demo 仍只做人工查询与确定性投影。
 
 ## 为什么独立于 diagnostic view
 
@@ -18,7 +18,7 @@ durable Case + Evidence
   → Invariant Validation
   → ReasoningContextSnapshot
 ---------------- LLM boundary ----------------
-  → future Planner（本阶段未实现）
+  → Step 5 Planner（验证、过滤、排序后 STOP）
 ```
 
 原则是 Correctness > Eligibility > Safety > Freshness > Relevance > Compactness。Eligibility 和 Safety 无法同时满足时拒绝生成 Snapshot，不能降低证明标准。
@@ -30,7 +30,7 @@ durable Case + Evidence
 | 部分 | 主要内容 |
 |---|---|
 | 标识与 provenance | snapshot_id、case/order ID、Case/Evidence/Graph 指纹、hypothesis_input_fingerprint、policy_fingerprint |
-| 版本 | context schema 3、eligibility 3、compaction 2、context policy 3、hypothesis rule 3 |
+| 版本 | context schema 4、eligibility 3、compaction 3、context policy 4、hypothesis rule 3 |
 | task | Goal、Success Criteria、Stop/Escalation Conditions、Forbidden Outcomes |
 | section_trust | 固定分区信任等级，不能把外部事实提升成控制指令 |
 | financial_subject | 预期金额分、币种、客户/收款主体/账户 opaque refs；旧 Case 可为 null |
@@ -197,7 +197,7 @@ ReasoningContextInvariantValidator 检查 input/graph 指纹、模型类型、Ti
 
 ## Tool Capability ≠ Tool Selection
 
-ToolCapabilityCatalog 静态描述全部 12 个现有只读 Tool：名称、描述、produces claim types、READ_ONLY 风险、数据分类、成本与延迟档位。档位仅是当前静态估计，不是测量 SLA，也不用于行动排名。
+ToolCapabilityCatalog 静态描述全部 12 个现有只读 Tool：名称、描述、produces claim types、contributes_requirements、READ_ONLY 风险、数据分类、成本与延迟档位。档位是静态估计，不是测量 SLA；Context 不做选择，Step 5 在硬过滤后用于确定性排名。GUARANTEE 可贡献资金请求协议适用性，TRACE/FUND/PAYMENT/GUARANTEE 可贡献请求关联，CALLBACK/MESSAGES 可贡献事件关联；无 Tool 声称可取得实际部署 schema 版本。
 
 Snapshot 仅显示 Case.allowed_tools 与 catalog 的交集，并排除明确 forbidden action 对应的 Tool 名；列表按名称排列，不推荐调用顺序。预算/生命周期还保留 investigation_allowed 标记，真正 dispatch 仍由 CaseToolExecutor 再校验。没有 PAYMENT 权限时不显示该能力，PAYMENT_FINALITY Gap 仍可 OPEN。Assembler 不替 Planner 选择工具或决定升级人工。
 
@@ -212,8 +212,8 @@ Snapshot 仅显示 Case.allowed_tools 与 catalog 的交集，并排除明确 fo
 
 | 实际样例 | Evidence 输入/选中 | 当前 Facts | History items | 字符数 | Identity |
 |---|---:|---:|---:|---:|---|
-| [S6 Snapshot](examples/s6-reasoning-context.json) | 30 / 20 | 20 | 0 | 29,017 | MATCH |
-| [S8 Snapshot](examples/s8-reasoning-context.json) | 6 / 4 | 0 | 2 | 15,422 | UNKNOWN |
+| [S6 Snapshot，schema 4](examples/s6-reasoning-context.json) | 30 / 20 | 20 | 0 | 29,614 | MATCH |
+| [S8 Snapshot，schema 4](examples/s8-reasoning-context.json) | 6 / 4 | 0 | 2 | 16,077 | UNKNOWN |
 | [500 条压力测试](examples/context-stress-result.json) | 500 / 24 | 20 | 2 | 30,532 | MATCH |
 
 S6 保留 H4/H6/H6_SCHEMA CONFIRMED，H6_STALE/H8 SUPPORTED；安全 gap 为 FUND_PROTOCOL_APPLICABILITY，调查 gap 包括 DEPLOYED_CONSUMER_SCHEMA_VERSION、ASSET_CONVERGENCE。H6_STALE 的支持规则已额外要求父级同 Callback 的 Gateway/FAILED Evidence witness，rule version 为 3。
@@ -222,7 +222,7 @@ S8 保留十个 POSSIBLE，无确认或排除；Payment Identity UNKNOWN；PAYME
 
 压力输入含 300 条重复 lookup、100 条旧状态、70 条无关协议字段及 30 条当前调查 Evidence。仅选 24 个 refs；298 条中间 lookup、98 条中间历史、78 条非相关事实与 2 条辅助关系按原因计数，关键当前 facts、确认见证、安全 gap 与身份结果保留。测试检查结构性质和乱序重放一致，不硬编码必须选中某个条数。
 
-沿用 Step 4.1 fixture、以当前 schema 重建的 [候选交易压力输出](examples/context-hardening-result.json) 由保存的 S6 Evidence 构造 synthetic 候选，重放反序 Evidence 的 Snapshot 完全一致；这些是投影层压力 fixture，并非额外调用 Tool 获得的新观测。
+以下压力表和 [候选交易压力输出](examples/context-hardening-result.json) 保留 Step 4.2 的 schema 3 基线，由保存的 S6 Evidence 构造 synthetic 候选，重放反序 Evidence 的 Snapshot 完全一致；这些是投影层压力 fixture，并非额外调用 Tool 获得的新观测。对应性质测试在 Step 5 schema 4 上仍全量执行。
 
 | 候选交易 | Identity | 全量引用 | Context 关键引用 | preview | 当前 Facts | 完整 JSON 字符 |
 |---:|---|---:|---:|---:|---:|---:|
@@ -243,6 +243,8 @@ Step 4.2 新增 **93 个测试实例**，Step 0–4.1 的 300 个既有测试实
 - 未修改 Case、Simulator、HypothesisGraph 或 PaymentIdentityResult 的 domain contract。既有 dispatch correlation、Case scope、PII 隔离、500 supporting 和 100 candidate 压力测试继续通过。
 - `git diff --check` 通过。本阶段未实现 Step 5。
 
-## 留给 Step 5
+## Step 5 接入补充
 
-不接 OpenAI/Claude/Gemini，不写 Agent Prompt、不实现 Planner、Agent Loop、Tool Selection/Ranking、Repair 或 Write Tool。本版也不实现自然语言 sanitization、真实 PII/IAM/Capability、向量库、embedding、聊天 Summary 或长期记忆。下一阶段必须消费经过此边界的 Snapshot，不能改为直接序列化 diagnostic view。
+上文回归数字和压力样例记录 Step 4.2 的历史基线。Step 5 新增只读 capability requirement 描述、RepeatedLookupGroup.latest_consecutive_count、HistoryDigest.lookup_history_complete，因此 schema/context policy 升至 4、compaction 升至 3。连续计数考虑相同 Tool/scope 中间的成功观测；预算/资格省略历史，或 Evidence 去重导致 Observation 来源不足以覆盖 Case.used_tool_calls 时，Planner 保守禁止 CALL_TOOL。既有累计 range/count 及事实、证明和隔离语义保留。
+
+ModelInputRenderer 按 section_trust 输出独立分区，外部引用映射稳定 alias，私有反向映射不传模型。diagnostic view 仍不能作为 Planner 输入。详细错误语义、运行命令、测试与 Step 6 的停止边界见 [Planner 文档](planner.md)。Context 本身没有 SDK、Prompt、Provider 或执行器依赖。

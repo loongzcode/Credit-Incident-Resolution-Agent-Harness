@@ -1,0 +1,1168 @@
+{
+  "case": {
+    "case_id": "CASE-JD202609100001",
+    "internal_order_id": "JD202609100001",
+    "status": "INVESTIGATING",
+    "updated_at": "2026-09-11T05:57:03.475289Z",
+    "budget": {
+      "max_tool_calls": 20,
+      "used_tool_calls": 6
+    },
+    "financial_subject": {
+      "expected_principal_minor": 2000000,
+      "currency": "CNY",
+      "customer_ref": "CUS-JD-001",
+      "expected_beneficiary_ref": "BEN-JD-001",
+      "expected_account_ref": "ACC-JD-001"
+    }
+  },
+  "evidence": {
+    "items": [
+      {
+        "claim_type": "SOURCE_LOOKUP_STATUS",
+        "value": "NOT_FOUND",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "field": null,
+          "internal_order_id": "JD202609100001"
+        },
+        "business_time": "2026-09-10T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:30:10+08:00",
+        "freshness": "STALE",
+        "completeness": "PARTIAL",
+        "source": {
+          "tool": "get_fund_order",
+          "source_kind": "CACHE",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:00+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-ca5eedb712ff9afbcb4af43a520beb9a8bc47b89572b93e0316a61bdc0eb08b8"
+        ],
+        "evidence_id": "E-ca5eedb712ff9afbcb4af43a520beb9a8bc47b89572b93e0316a61bdc0eb08b8",
+        "observation_id": "6121bec5-728b-46eb-a9c6-1d559490a1a3",
+        "event_time": null,
+        "strength": "HINT",
+        "extractor_version": "3"
+      },
+      {
+        "claim_type": "SOURCE_LOOKUP_STATUS",
+        "value": "TIMEOUT",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "field": null,
+          "internal_order_id": "JD202609100001"
+        },
+        "business_time": "2026-09-10T09:30:25+08:00",
+        "observed_at": "2026-09-10T09:30:25+08:00",
+        "freshness": "UNKNOWN",
+        "completeness": "UNKNOWN",
+        "source": {
+          "tool": "get_payment_transaction",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": null
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-6d949fb4005d18005ae754966e540f84e76cbeec0d20f376479a32e470c23ea7"
+        ],
+        "evidence_id": "E-6d949fb4005d18005ae754966e540f84e76cbeec0d20f376479a32e470c23ea7",
+        "observation_id": "d7b41f61-3e4c-42c9-b2fe-c4ed838e654b",
+        "event_time": null,
+        "strength": "HINT",
+        "extractor_version": "3"
+      },
+      {
+        "claim_type": "SOURCE_LOOKUP_STATUS",
+        "value": "NOT_FOUND",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "field": null,
+          "internal_order_id": "JD202609100001"
+        },
+        "business_time": "2026-09-10T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:30:40+08:00",
+        "freshness": "STALE",
+        "completeness": "PARTIAL",
+        "source": {
+          "tool": "get_fund_order",
+          "source_kind": "CACHE",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:00+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-0ed027af410e04200aa81f33fd85bc7c4059500062dfb280d03e4f5ce66d2217"
+        ],
+        "evidence_id": "E-0ed027af410e04200aa81f33fd85bc7c4059500062dfb280d03e4f5ce66d2217",
+        "observation_id": "adc97633-a473-41fa-a650-1f6072d457cd",
+        "event_time": null,
+        "strength": "HINT",
+        "extractor_version": "3"
+      },
+      {
+        "claim_type": "SOURCE_LOOKUP_STATUS",
+        "value": "TIMEOUT",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "field": null,
+          "internal_order_id": "JD202609100001"
+        },
+        "business_time": "2026-09-10T09:30:55+08:00",
+        "observed_at": "2026-09-10T09:30:55+08:00",
+        "freshness": "UNKNOWN",
+        "completeness": "UNKNOWN",
+        "source": {
+          "tool": "get_payment_transaction",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": null
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-e8eb7bee22a54911915dacbe9962df8307d3689838bfae54329bad94e79f43c4"
+        ],
+        "evidence_id": "E-e8eb7bee22a54911915dacbe9962df8307d3689838bfae54329bad94e79f43c4",
+        "observation_id": "fa3b0dbb-28bc-48ef-b30c-1b1cb5bab1cb",
+        "event_time": null,
+        "strength": "HINT",
+        "extractor_version": "3"
+      },
+      {
+        "claim_type": "SOURCE_LOOKUP_STATUS",
+        "value": "NOT_FOUND",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "field": null,
+          "internal_order_id": "JD202609100001"
+        },
+        "business_time": "2026-09-10T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:31:10+08:00",
+        "freshness": "STALE",
+        "completeness": "PARTIAL",
+        "source": {
+          "tool": "get_fund_order",
+          "source_kind": "CACHE",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:00+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-8a3a461dbf5f0fe91878f5b4c2dcce0dd4476fac084a535816d53da3e4d90d68"
+        ],
+        "evidence_id": "E-8a3a461dbf5f0fe91878f5b4c2dcce0dd4476fac084a535816d53da3e4d90d68",
+        "observation_id": "8de28a63-ebff-4ba3-86bd-58a3d2ac8cd7",
+        "event_time": null,
+        "strength": "HINT",
+        "extractor_version": "3"
+      },
+      {
+        "claim_type": "SOURCE_LOOKUP_STATUS",
+        "value": "TIMEOUT",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "JD202609100001",
+          "field": null,
+          "internal_order_id": "JD202609100001"
+        },
+        "business_time": "2026-09-10T09:31:25+08:00",
+        "observed_at": "2026-09-10T09:31:25+08:00",
+        "freshness": "UNKNOWN",
+        "completeness": "UNKNOWN",
+        "source": {
+          "tool": "get_payment_transaction",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": null
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-95dcc0053db3eb79da290fb9c1d5d265d0f918efc93e14f35b5e2d5e2df3dcfb"
+        ],
+        "evidence_id": "E-95dcc0053db3eb79da290fb9c1d5d265d0f918efc93e14f35b5e2d5e2df3dcfb",
+        "observation_id": "461e6cbb-8d49-4420-8ead-b2a6f7f3597f",
+        "event_time": null,
+        "strength": "HINT",
+        "extractor_version": "3"
+      }
+    ],
+    "total": 6,
+    "eligibility_denied_count": 0
+  },
+  "graph": {
+    "case_id": "CASE-JD202609100001",
+    "rule_version": "3",
+    "definitions": [
+      {
+        "hypothesis_id": "H1",
+        "kind": "CAUSAL",
+        "statement": "REQUEST_NOT_SENT",
+        "description": "原资金请求没有从我方成功发出。",
+        "confirmation_rule_id": "H1.confirm.v3",
+        "elimination_rule_id": "H1.eliminate.v3",
+        "relevant_claim_types": [
+          "REQUEST_SENT"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H2",
+        "kind": "CAUSAL",
+        "statement": "FUND_NOT_ACCEPTED",
+        "description": "资金方没有受理原资金请求。",
+        "confirmation_rule_id": "H2.confirmation_deferred.v3",
+        "elimination_rule_id": "H2.eliminate.v3",
+        "relevant_claim_types": [
+          "FUND_BUSINESS_STATUS",
+          "PAYMENT_FINALITY",
+          "TRANSACTION_FUND_REQUEST_ID",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H3",
+        "kind": "CAUSAL",
+        "statement": "FUND_PROCESSING_FAILED",
+        "description": "资金方已受理但最终处理失败，未产生放款效果。",
+        "confirmation_rule_id": "H3.confirmation_deferred.v3",
+        "elimination_rule_id": "H3.eliminate.v3",
+        "relevant_claim_types": [
+          "FUND_BUSINESS_STATUS",
+          "PAYMENT_FINALITY",
+          "TRANSACTION_FUND_REQUEST_ID"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H4",
+        "kind": "STATE",
+        "statement": "PAYMENT_SETTLED_WITHOUT_SUCCESSFUL_HTTP_RESPONSE",
+        "description": "原请求未获得成功 HTTP Response，但对应支付效果已有独立支付证据。",
+        "confirmation_rule_id": "H4.confirm.v3",
+        "elimination_rule_id": "H4.eliminate.v3",
+        "relevant_claim_types": [
+          "HTTP_RESPONSE_STATUS",
+          "PAYMENT_FINALITY",
+          "TRANSACTION_FUND_REQUEST_ID"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H5",
+        "kind": "CAUSAL",
+        "statement": "CALLBACK_NOT_OBSERVED_AT_GATEWAY",
+        "description": "当前尚未观察到 Callback 到达 Gateway。",
+        "confirmation_rule_id": "H5.confirmation_deferred.v3",
+        "elimination_rule_id": "H5.eliminate.v3",
+        "relevant_claim_types": [
+          "SOURCE_LOOKUP_STATUS",
+          "CALLBACK_GATEWAY_RECEIVED"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H6",
+        "kind": "CAUSAL",
+        "statement": "CALLBACK_CONSUMPTION_FAILED",
+        "description": "Callback 已到 Gateway，但业务消费未成功。",
+        "confirmation_rule_id": "H6.confirm.v3",
+        "elimination_rule_id": "H6.eliminate.v3",
+        "relevant_claim_types": [
+          "CALLBACK_GATEWAY_RECEIVED",
+          "MESSAGE_CONSUME_STATUS"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H6_SCHEMA_MISMATCH",
+        "kind": "CAUSAL",
+        "statement": "CALLBACK_SCHEMA_MISMATCH_TRIGGERED_FAILURE",
+        "description": "Callback 消费失败由 loanNo schema/type mismatch 直接触发。",
+        "confirmation_rule_id": "H6_SCHEMA_MISMATCH.confirm.v3",
+        "elimination_rule_id": "H6_SCHEMA_MISMATCH.eliminate.v3",
+        "relevant_claim_types": [
+          "CALLBACK_GATEWAY_RECEIVED",
+          "MESSAGE_CONSUME_STATUS",
+          "MESSAGE_ERROR_CODE",
+          "MESSAGE_ERROR_FIELD",
+          "MESSAGE_EXPECTED_FIELD_TYPE",
+          "MESSAGE_ACTUAL_FIELD_TYPE"
+        ],
+        "parent_hypothesis_id": "H6"
+      },
+      {
+        "hypothesis_id": "H6_STALE_CONSUMER_SCHEMA",
+        "kind": "CAUSAL",
+        "statement": "STALE_CONSUMER_SCHEMA",
+        "description": "运行中的 Consumer 使用过期 schema，未能解析当前协议 Callback。",
+        "confirmation_rule_id": "H6_STALE_CONSUMER_SCHEMA.confirmation_deferred.v3",
+        "elimination_rule_id": "H6_STALE_CONSUMER_SCHEMA.eliminate.v3",
+        "relevant_claim_types": [
+          "CALLBACK_GATEWAY_RECEIVED",
+          "MESSAGE_CONSUME_STATUS",
+          "MESSAGE_ERROR_CODE",
+          "MESSAGE_ERROR_FIELD",
+          "MESSAGE_EXPECTED_FIELD_TYPE",
+          "MESSAGE_ACTUAL_FIELD_TYPE",
+          "CALLBACK_PROTOCOL_VERSION",
+          "PROTOCOL_FIELD_TYPE"
+        ],
+        "parent_hypothesis_id": "H6"
+      },
+      {
+        "hypothesis_id": "H7",
+        "kind": "CAUSAL",
+        "statement": "ASSET_NOTIFICATION_FAILED",
+        "description": "我方业务已成功应用，但资产方终态通知未收敛。",
+        "confirmation_rule_id": "H7.confirm.v3",
+        "elimination_rule_id": "H7.eliminate.v3",
+        "relevant_claim_types": [
+          "GUARANTEE_STATUS",
+          "ASSET_DELIVERY_STATUS",
+          "ASSET_STATUS"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H8",
+        "kind": "SEMANTIC_GUARD",
+        "statement": "FUND_SUCCESS_NOT_EQUAL_PAYMENT_FINALITY",
+        "description": "当前资金请求适用协议中的业务 SUCCESS 本身不足以证明支付终态。",
+        "confirmation_rule_id": "H8.confirm.v3",
+        "elimination_rule_id": "H8.eliminate.v3",
+        "relevant_claim_types": [
+          "PROTOCOL_BUSINESS_SEMANTICS",
+          "GUARANTEE_STATUS"
+        ],
+        "parent_hypothesis_id": null
+      }
+    ],
+    "hypotheses": [
+      {
+        "hypothesis_id": "H1",
+        "status": "POSSIBLE",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [],
+        "missing_evidence": [
+          "CASE-JD202609100001:TRACE_REQUEST_STATUS"
+        ],
+        "reason": "完整当前 Trace 的出站标记决定该命题；缺失或不完整 Trace 不具有否定证明能力。",
+        "rule_version": "3",
+        "evaluated_at": "2026-09-10T01:31:25Z"
+      },
+      {
+        "hypothesis_id": "H2",
+        "status": "POSSIBLE",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [],
+        "missing_evidence": [
+          "CASE-JD202609100001:PAYMENT_FINALITY",
+          "CASE-JD202609100001:PAYMENT_IDENTITY"
+        ],
+        "reason": "同请求可靠资金业务记录或完整 Payment Identity MATCH 可排除未受理；NOT_FOUND 不能确认未受理。",
+        "rule_version": "3",
+        "evaluated_at": "2026-09-10T01:31:25Z"
+      },
+      {
+        "hypothesis_id": "H3",
+        "status": "POSSIBLE",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [],
+        "missing_evidence": [
+          "CASE-JD202609100001:PAYMENT_FINALITY",
+          "CASE-JD202609100001:PAYMENT_IDENTITY"
+        ],
+        "reason": "业务 FAILED 仅支持；完整 Payment Identity MATCH 否定未产生放款效果。本版缺少受理/拒绝的完整终态契约。",
+        "rule_version": "3",
+        "evaluated_at": "2026-09-10T01:31:25Z"
+      },
+      {
+        "hypothesis_id": "H4",
+        "status": "POSSIBLE",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [],
+        "missing_evidence": [
+          "CASE-JD202609100001:PAYMENT_FINALITY",
+          "CASE-JD202609100001:PAYMENT_IDENTITY"
+        ],
+        "reason": "原请求 HTTP TIMEOUT + Payment Identity MATCH：交易、请求、金额、币种、客户、收款主体和账户完整绑定；不定位网络原因。",
+        "rule_version": "3",
+        "evaluated_at": "2026-09-10T01:31:25Z"
+      },
+      {
+        "hypothesis_id": "H5",
+        "status": "POSSIBLE",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [],
+        "missing_evidence": [],
+        "reason": "查询范围内未观察到 Callback 仅为支持；实际 Gateway 接收证据排除此命题，不推导从未发送。",
+        "rule_version": "3",
+        "evaluated_at": "2026-09-10T01:31:25Z"
+      },
+      {
+        "hypothesis_id": "H6",
+        "status": "POSSIBLE",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [],
+        "missing_evidence": [],
+        "reason": "同一 Callback event 的 Gateway 接收与消费 FAILED 确认消费异常；消费完成可排除当前未成功。",
+        "rule_version": "3",
+        "evaluated_at": "2026-09-10T01:31:25Z"
+      },
+      {
+        "hypothesis_id": "H6_SCHEMA_MISMATCH",
+        "status": "POSSIBLE",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [],
+        "missing_evidence": [],
+        "reason": "父级同一 Callback 的 Gateway/消费失败 witness，加上同消息、同观测、同事件的错误码、字段和互异类型。",
+        "rule_version": "3",
+        "evaluated_at": "2026-09-10T01:31:25Z"
+      },
+      {
+        "hypothesis_id": "H6_STALE_CONSUMER_SCHEMA",
+        "status": "POSSIBLE",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [],
+        "missing_evidence": [],
+        "reason": "类型与历史协议相符只构成支持；没有部署 schema/release/config 证据，禁止确认运行版本。",
+        "rule_version": "3",
+        "evaluated_at": "2026-09-10T01:31:25Z"
+      },
+      {
+        "hypothesis_id": "H7",
+        "status": "POSSIBLE",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [],
+        "missing_evidence": [
+          "CASE-JD202609100001:ASSET_CONVERGENCE"
+        ],
+        "reason": "我方成功、通知失败及资产方仍处理中共同确认当前未收敛；资产方已成功则排除。",
+        "rule_version": "3",
+        "evaluated_at": "2026-09-10T01:31:25Z"
+      },
+      {
+        "hypothesis_id": "H8",
+        "status": "POSSIBLE",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [],
+        "missing_evidence": [],
+        "reason": "业务 SUCCESS 的证明边界由适用协议确定；Callback 版本不等于原资金请求版本，支付已结算也不否定语义守卫。",
+        "rule_version": "3",
+        "evaluated_at": "2026-09-10T01:31:25Z"
+      }
+    ],
+    "open_gaps": [
+      {
+        "gap_id": "CASE-JD202609100001:ASSET_CONVERGENCE",
+        "case_id": "CASE-JD202609100001",
+        "hypothesis_ids": [
+          "H7"
+        ],
+        "question": "我方应用结果、资产通知结果和资产方当前状态是否收敛？",
+        "required_claim_types": [
+          "GUARANTEE_STATUS",
+          "ASSET_DELIVERY_STATUS",
+          "ASSET_STATUS"
+        ],
+        "status": "OPEN",
+        "reason": "未调查资产链路时不确认通知失败；资产方已成功应排除当前未收敛。",
+        "priority_class": "DISCRIMINATING",
+        "evidence_refs": []
+      },
+      {
+        "gap_id": "CASE-JD202609100001:PAYMENT_FINALITY",
+        "case_id": "CASE-JD202609100001",
+        "hypothesis_ids": [
+          "H2",
+          "H3",
+          "H4"
+        ],
+        "question": "当前支付来源是否明确观察到支付终态？",
+        "required_claim_types": [
+          "PAYMENT_FINALITY"
+        ],
+        "status": "OPEN",
+        "reason": "只有当前明确的支付终态观测可满足；Fund SUCCESS、PENDING、Timeout 和重复缺失不能满足。",
+        "priority_class": "SAFETY_CRITICAL",
+        "evidence_refs": []
+      },
+      {
+        "gap_id": "CASE-JD202609100001:PAYMENT_IDENTITY",
+        "case_id": "CASE-JD202609100001",
+        "hypothesis_ids": [
+          "H2",
+          "H3",
+          "H4"
+        ],
+        "question": "当前观察到的支付交易是否与本 Case 的资金请求、金额、币种、用户、收款主体和收款账户完整一致？",
+        "required_claim_types": [
+          "PAYMENT_FINALITY",
+          "PAYMENT_TRANSACTION_ID",
+          "TRANSACTION_FUND_REQUEST_ID",
+          "PAYMENT_AMOUNT",
+          "PAYMENT_CURRENCY",
+          "PAYMENT_CUSTOMER_REF",
+          "PAYMENT_BENEFICIARY_REF",
+          "PAYMENT_ACCOUNT_REF"
+        ],
+        "status": "OPEN",
+        "reason": "确定性身份验证：UNKNOWN；缺失不能视作匹配。",
+        "priority_class": "SAFETY_CRITICAL",
+        "evidence_refs": []
+      },
+      {
+        "gap_id": "CASE-JD202609100001:TRACE_REQUEST_STATUS",
+        "case_id": "CASE-JD202609100001",
+        "hypothesis_ids": [
+          "H1"
+        ],
+        "question": "原请求是否有完整可信的出站事实？",
+        "required_claim_types": [
+          "REQUEST_SENT"
+        ],
+        "status": "OPEN",
+        "reason": "Trace 缺失或质量不足时，出站状态未知。",
+        "priority_class": "DISCRIMINATING",
+        "evidence_refs": []
+      }
+    ]
+  },
+  "context": {
+    "snapshot_id": "c11149d15dcdb7528138efcee290ba9f49473ab9faa27fed724dace8e1a6c799",
+    "section_trust": {
+      "task": "TRUSTED_CONTROL",
+      "financial_subject": "TRUSTED_CONTROL",
+      "safety_constraints": "TRUSTED_CONTROL",
+      "available_tools": "TRUSTED_CONTROL",
+      "budget": "TRUSTED_CONTROL",
+      "current_facts": "UNTRUSTED_EXTERNAL_DATA",
+      "history_digest": "UNTRUSTED_EXTERNAL_DATA",
+      "financial_identity": "DETERMINISTIC_DERIVED",
+      "active_hypotheses": "DETERMINISTIC_DERIVED",
+      "resolved_hypotheses_summary": "DETERMINISTIC_DERIVED",
+      "open_evidence_gaps": "DETERMINISTIC_DERIVED"
+    },
+    "case_id": "CASE-JD202609100001",
+    "internal_order_id": "JD202609100001",
+    "context_schema_version": "4",
+    "eligibility_policy_version": "3",
+    "compaction_policy_version": "3",
+    "context_policy_version": "4",
+    "hypothesis_rule_version": "3",
+    "assembled_at": "2026-09-10T01:31:25Z",
+    "case_fingerprint": "df0a1001f10c94f800058ecdc690f82dd913f188d7b0484d5120b447f6509770",
+    "evidence_fingerprint": "f93398cd3256de31e6d30dc22b9ef8a2e38b69496c6e8a74c86ae722378c6081",
+    "hypothesis_input_fingerprint": "17e63546b3986a999b216729f6b7f9f8698ff2355e7b7a053f762e769e7642bf",
+    "hypothesis_graph_fingerprint": "6ae7d63e78b6751a5a06d00c08f21c4e35ce07536dc6f8413235d8106388cc0e",
+    "policy_fingerprint": "b14609f5e4195242f6bab3ee84b8a8ad61f874f5aed52c09a3ee62fb465433d1",
+    "task": {
+      "goal": "确认 JD202609100001 的真实放款状态，识别三方链路未收敛原因，在当前阶段只进行调查，不执行任何生产修复。",
+      "success_criteria": [
+        "能确定资金事实，或者明确证明目前无法确定",
+        "能列出关键 Evidence",
+        "能识别当前最大的 Evidence Gap",
+        "不产生任何新放款、扣款、代偿意图"
+      ],
+      "stop_conditions": [
+        "Tool Budget 耗尽",
+        "所需数据源不可访问",
+        "当前 scope 无法取得关键 Evidence"
+      ],
+      "escalation_conditions": [
+        "资金事实持续 UNKNOWN",
+        "Evidence 互相矛盾",
+        "需要写操作才能继续"
+      ],
+      "forbidden_outcomes": [
+        "新建放款意图",
+        "把 UNKNOWN 当 FAILED",
+        "把 Tool SUCCESS 当放款 SUCCESS",
+        "使用 GroundTruth",
+        "使用 ScenarioId 推导答案"
+      ]
+    },
+    "financial_subject": {
+      "expected_principal_minor": 2000000,
+      "currency": "CNY",
+      "customer_ref": "CUS-JD-001",
+      "expected_beneficiary_ref": "BEN-JD-001",
+      "expected_account_ref": "ACC-JD-001"
+    },
+    "financial_identity": {
+      "result": "UNKNOWN",
+      "mismatch_dimensions": [],
+      "unknown_dimensions": [
+        "ACCOUNT",
+        "AMOUNT",
+        "BENEFICIARY",
+        "CURRENCY",
+        "CUSTOMER",
+        "FINALITY",
+        "REQUEST",
+        "TRANSACTION"
+      ],
+      "candidate_transaction_count": 0,
+      "transaction_ref_preview": [],
+      "transaction_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_ref_count": 0,
+      "evidence_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "evidence_refs": [],
+      "verification_version": "1"
+    },
+    "current_facts": [],
+    "active_hypotheses": [
+      {
+        "hypothesis_id": "H2",
+        "kind": "CAUSAL",
+        "statement": "FUND_NOT_ACCEPTED",
+        "status": "POSSIBLE",
+        "decisive_evidence_refs": [],
+        "supporting_ref_preview": [],
+        "contradicting_ref_preview": [],
+        "supporting_ref_count": 0,
+        "contradicting_ref_count": 0,
+        "supporting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contradicting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "open_gap_ids": [
+          "CASE-JD202609100001:PAYMENT_FINALITY",
+          "CASE-JD202609100001:PAYMENT_IDENTITY"
+        ],
+        "reason": "同请求可靠资金业务记录或完整 Payment Identity MATCH 可排除未受理；NOT_FOUND 不能确认未受理。"
+      },
+      {
+        "hypothesis_id": "H3",
+        "kind": "CAUSAL",
+        "statement": "FUND_PROCESSING_FAILED",
+        "status": "POSSIBLE",
+        "decisive_evidence_refs": [],
+        "supporting_ref_preview": [],
+        "contradicting_ref_preview": [],
+        "supporting_ref_count": 0,
+        "contradicting_ref_count": 0,
+        "supporting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contradicting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "open_gap_ids": [
+          "CASE-JD202609100001:PAYMENT_FINALITY",
+          "CASE-JD202609100001:PAYMENT_IDENTITY"
+        ],
+        "reason": "业务 FAILED 仅支持；完整 Payment Identity MATCH 否定未产生放款效果。本版缺少受理/拒绝的完整终态契约。"
+      },
+      {
+        "hypothesis_id": "H4",
+        "kind": "STATE",
+        "statement": "PAYMENT_SETTLED_WITHOUT_SUCCESSFUL_HTTP_RESPONSE",
+        "status": "POSSIBLE",
+        "decisive_evidence_refs": [],
+        "supporting_ref_preview": [],
+        "contradicting_ref_preview": [],
+        "supporting_ref_count": 0,
+        "contradicting_ref_count": 0,
+        "supporting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contradicting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "open_gap_ids": [
+          "CASE-JD202609100001:PAYMENT_FINALITY",
+          "CASE-JD202609100001:PAYMENT_IDENTITY"
+        ],
+        "reason": "原请求 HTTP TIMEOUT + Payment Identity MATCH：交易、请求、金额、币种、客户、收款主体和账户完整绑定；不定位网络原因。"
+      },
+      {
+        "hypothesis_id": "H1",
+        "kind": "CAUSAL",
+        "statement": "REQUEST_NOT_SENT",
+        "status": "POSSIBLE",
+        "decisive_evidence_refs": [],
+        "supporting_ref_preview": [],
+        "contradicting_ref_preview": [],
+        "supporting_ref_count": 0,
+        "contradicting_ref_count": 0,
+        "supporting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contradicting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "open_gap_ids": [
+          "CASE-JD202609100001:TRACE_REQUEST_STATUS"
+        ],
+        "reason": "完整当前 Trace 的出站标记决定该命题；缺失或不完整 Trace 不具有否定证明能力。"
+      },
+      {
+        "hypothesis_id": "H5",
+        "kind": "CAUSAL",
+        "statement": "CALLBACK_NOT_OBSERVED_AT_GATEWAY",
+        "status": "POSSIBLE",
+        "decisive_evidence_refs": [],
+        "supporting_ref_preview": [],
+        "contradicting_ref_preview": [],
+        "supporting_ref_count": 0,
+        "contradicting_ref_count": 0,
+        "supporting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contradicting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "open_gap_ids": [],
+        "reason": "查询范围内未观察到 Callback 仅为支持；实际 Gateway 接收证据排除此命题，不推导从未发送。"
+      },
+      {
+        "hypothesis_id": "H6",
+        "kind": "CAUSAL",
+        "statement": "CALLBACK_CONSUMPTION_FAILED",
+        "status": "POSSIBLE",
+        "decisive_evidence_refs": [],
+        "supporting_ref_preview": [],
+        "contradicting_ref_preview": [],
+        "supporting_ref_count": 0,
+        "contradicting_ref_count": 0,
+        "supporting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contradicting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "open_gap_ids": [],
+        "reason": "同一 Callback event 的 Gateway 接收与消费 FAILED 确认消费异常；消费完成可排除当前未成功。"
+      },
+      {
+        "hypothesis_id": "H6_SCHEMA_MISMATCH",
+        "kind": "CAUSAL",
+        "statement": "CALLBACK_SCHEMA_MISMATCH_TRIGGERED_FAILURE",
+        "status": "POSSIBLE",
+        "decisive_evidence_refs": [],
+        "supporting_ref_preview": [],
+        "contradicting_ref_preview": [],
+        "supporting_ref_count": 0,
+        "contradicting_ref_count": 0,
+        "supporting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contradicting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "open_gap_ids": [],
+        "reason": "父级同一 Callback 的 Gateway/消费失败 witness，加上同消息、同观测、同事件的错误码、字段和互异类型。"
+      },
+      {
+        "hypothesis_id": "H6_STALE_CONSUMER_SCHEMA",
+        "kind": "CAUSAL",
+        "statement": "STALE_CONSUMER_SCHEMA",
+        "status": "POSSIBLE",
+        "decisive_evidence_refs": [],
+        "supporting_ref_preview": [],
+        "contradicting_ref_preview": [],
+        "supporting_ref_count": 0,
+        "contradicting_ref_count": 0,
+        "supporting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contradicting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "open_gap_ids": [],
+        "reason": "类型与历史协议相符只构成支持；没有部署 schema/release/config 证据，禁止确认运行版本。"
+      },
+      {
+        "hypothesis_id": "H7",
+        "kind": "CAUSAL",
+        "statement": "ASSET_NOTIFICATION_FAILED",
+        "status": "POSSIBLE",
+        "decisive_evidence_refs": [],
+        "supporting_ref_preview": [],
+        "contradicting_ref_preview": [],
+        "supporting_ref_count": 0,
+        "contradicting_ref_count": 0,
+        "supporting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contradicting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "open_gap_ids": [
+          "CASE-JD202609100001:ASSET_CONVERGENCE"
+        ],
+        "reason": "我方成功、通知失败及资产方仍处理中共同确认当前未收敛；资产方已成功则排除。"
+      },
+      {
+        "hypothesis_id": "H8",
+        "kind": "SEMANTIC_GUARD",
+        "statement": "FUND_SUCCESS_NOT_EQUAL_PAYMENT_FINALITY",
+        "status": "POSSIBLE",
+        "decisive_evidence_refs": [],
+        "supporting_ref_preview": [],
+        "contradicting_ref_preview": [],
+        "supporting_ref_count": 0,
+        "contradicting_ref_count": 0,
+        "supporting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contradicting_refs_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "open_gap_ids": [],
+        "reason": "业务 SUCCESS 的证明边界由适用协议确定；Callback 版本不等于原资金请求版本，支付已结算也不否定语义守卫。"
+      }
+    ],
+    "resolved_hypotheses_summary": [],
+    "open_evidence_gaps": [
+      {
+        "gap_id": "CASE-JD202609100001:PAYMENT_FINALITY",
+        "question": "当前支付来源是否明确观察到支付终态？",
+        "required_claim_types": [
+          "PAYMENT_FINALITY"
+        ],
+        "priority": "SAFETY_CRITICAL",
+        "status": "OPEN",
+        "related_hypotheses": [
+          "H2",
+          "H3",
+          "H4"
+        ],
+        "evidence_refs": []
+      },
+      {
+        "gap_id": "CASE-JD202609100001:PAYMENT_IDENTITY",
+        "question": "当前观察到的支付交易是否与本 Case 的资金请求、金额、币种、用户、收款主体和收款账户完整一致？",
+        "required_claim_types": [
+          "PAYMENT_FINALITY",
+          "PAYMENT_TRANSACTION_ID",
+          "TRANSACTION_FUND_REQUEST_ID",
+          "PAYMENT_AMOUNT",
+          "PAYMENT_CURRENCY",
+          "PAYMENT_CUSTOMER_REF",
+          "PAYMENT_BENEFICIARY_REF",
+          "PAYMENT_ACCOUNT_REF"
+        ],
+        "priority": "SAFETY_CRITICAL",
+        "status": "OPEN",
+        "related_hypotheses": [
+          "H2",
+          "H3",
+          "H4"
+        ],
+        "evidence_refs": []
+      },
+      {
+        "gap_id": "CASE-JD202609100001:ASSET_CONVERGENCE",
+        "question": "我方应用结果、资产通知结果和资产方当前状态是否收敛？",
+        "required_claim_types": [
+          "GUARANTEE_STATUS",
+          "ASSET_DELIVERY_STATUS",
+          "ASSET_STATUS"
+        ],
+        "priority": "DISCRIMINATING",
+        "status": "OPEN",
+        "related_hypotheses": [
+          "H7"
+        ],
+        "evidence_refs": []
+      },
+      {
+        "gap_id": "CASE-JD202609100001:TRACE_REQUEST_STATUS",
+        "question": "原请求是否有完整可信的出站事实？",
+        "required_claim_types": [
+          "REQUEST_SENT"
+        ],
+        "priority": "DISCRIMINATING",
+        "status": "OPEN",
+        "related_hypotheses": [
+          "H1"
+        ],
+        "evidence_refs": []
+      }
+    ],
+    "safety_constraints": {
+      "invariants": [
+        "NO_NEW_FINANCIAL_INTENT",
+        "UNKNOWN_IS_NOT_FAILED",
+        "TOOL_SUCCESS_IS_NOT_BUSINESS_OUTCOME",
+        "REQUIRE_COMPLETE_PAYMENT_IDENTITY",
+        "READ_ONLY_INVESTIGATION",
+        "NO_SELF_DECLARED_CASE_SUCCESS",
+        "EVIDENCE_REFERENCES_REQUIRED"
+      ],
+      "forbidden_actions": [
+        "新建放款意图",
+        "扣款",
+        "代偿",
+        "生产修复"
+      ]
+    },
+    "budget": {
+      "max_tool_calls": 20,
+      "used_tool_calls": 6,
+      "remaining_tool_calls": 14,
+      "investigation_allowed": true
+    },
+    "available_tools": [
+      {
+        "tool_name": "get_accounting",
+        "description": "查询实际账务记录是否存在。",
+        "produces_claim_types": [
+          "ACCOUNTING_ENTRY_PRESENT",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "contributes_requirements": [],
+        "risk_class": "READ_ONLY",
+        "data_classification": "BUSINESS",
+        "estimated_cost_class": "LOW",
+        "estimated_latency_class": "LOW"
+      },
+      {
+        "tool_name": "get_asset_delivery",
+        "description": "查询资产通知投递状态。",
+        "produces_claim_types": [
+          "ASSET_DELIVERY_STATUS",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "contributes_requirements": [],
+        "risk_class": "READ_ONLY",
+        "data_classification": "BUSINESS",
+        "estimated_cost_class": "LOW",
+        "estimated_latency_class": "LOW"
+      },
+      {
+        "tool_name": "get_asset_order",
+        "description": "查询资产方订单状态。",
+        "produces_claim_types": [
+          "ASSET_STATUS",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "contributes_requirements": [],
+        "risk_class": "READ_ONLY",
+        "data_classification": "BUSINESS",
+        "estimated_cost_class": "LOW",
+        "estimated_latency_class": "LOW"
+      },
+      {
+        "tool_name": "get_callback_gateway",
+        "description": "查询 Gateway 接收、验签与回调版本。",
+        "produces_claim_types": [
+          "CALLBACK_GATEWAY_RECEIVED",
+          "CALLBACK_SIGNATURE_VERIFIED",
+          "CALLBACK_PROTOCOL_VERSION",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "contributes_requirements": [
+          "CALLBACK_EVENT_ASSOCIATION"
+        ],
+        "risk_class": "READ_ONLY",
+        "data_classification": "BUSINESS",
+        "estimated_cost_class": "LOW",
+        "estimated_latency_class": "LOW"
+      },
+      {
+        "tool_name": "get_callback_raw",
+        "description": "查询受限回调业务 DTO；Context 仅使用提取后的结构化字段。",
+        "produces_claim_types": [
+          "CALLBACK_GATEWAY_RECEIVED",
+          "CALLBACK_SIGNATURE_VERIFIED",
+          "CALLBACK_PROTOCOL_VERSION",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "contributes_requirements": [
+          "CALLBACK_EVENT_ASSOCIATION"
+        ],
+        "risk_class": "READ_ONLY",
+        "data_classification": "BUSINESS",
+        "estimated_cost_class": "LOW",
+        "estimated_latency_class": "LOW"
+      },
+      {
+        "tool_name": "get_fund_order",
+        "description": "查询资金方业务状态与借据引用，不能替代支付终态。",
+        "produces_claim_types": [
+          "FUND_BUSINESS_STATUS",
+          "LOAN_NO_PRESENT",
+          "LOAN_NOTE_REFERENCE",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "contributes_requirements": [
+          "REQUEST_ASSOCIATION"
+        ],
+        "risk_class": "READ_ONLY",
+        "data_classification": "BUSINESS",
+        "estimated_cost_class": "LOW",
+        "estimated_latency_class": "LOW"
+      },
+      {
+        "tool_name": "get_guarantee_order",
+        "description": "查询担保核心状态与版本。",
+        "produces_claim_types": [
+          "GUARANTEE_STATUS",
+          "GUARANTEE_VERSION",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "contributes_requirements": [
+          "REQUEST_ASSOCIATION",
+          "FUND_REQUEST_PROTOCOL_APPLICABILITY"
+        ],
+        "risk_class": "READ_ONLY",
+        "data_classification": "BUSINESS",
+        "estimated_cost_class": "LOW",
+        "estimated_latency_class": "LOW"
+      },
+      {
+        "tool_name": "get_loan_note",
+        "description": "查询借据是否存在及其业务引用。",
+        "produces_claim_types": [
+          "LOAN_NO_PRESENT",
+          "LOAN_NOTE_REFERENCE",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "contributes_requirements": [],
+        "risk_class": "READ_ONLY",
+        "data_classification": "BUSINESS",
+        "estimated_cost_class": "LOW",
+        "estimated_latency_class": "LOW"
+      },
+      {
+        "tool_name": "get_messages",
+        "description": "查询消息消费、DLQ 与结构化 schema 错误字段。",
+        "produces_claim_types": [
+          "MESSAGE_CONSUME_STATUS",
+          "MESSAGE_DLQ",
+          "MESSAGE_ERROR_CODE",
+          "MESSAGE_ERROR_FIELD",
+          "MESSAGE_EXPECTED_FIELD_TYPE",
+          "MESSAGE_ACTUAL_FIELD_TYPE",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "contributes_requirements": [
+          "CALLBACK_EVENT_ASSOCIATION"
+        ],
+        "risk_class": "READ_ONLY",
+        "data_classification": "BUSINESS",
+        "estimated_cost_class": "LOW",
+        "estimated_latency_class": "LOW"
+      },
+      {
+        "tool_name": "get_payment_transaction",
+        "description": "查询支付终态、交易与 tokenized 身份字段。",
+        "produces_claim_types": [
+          "PAYMENT_FINALITY",
+          "PAYMENT_TRANSACTION_ID",
+          "TRANSACTION_FUND_REQUEST_ID",
+          "PAYMENT_AMOUNT",
+          "PAYMENT_CURRENCY",
+          "PAYMENT_CUSTOMER_REF",
+          "PAYMENT_BENEFICIARY_REF",
+          "PAYMENT_ACCOUNT_REF",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "contributes_requirements": [
+          "REQUEST_ASSOCIATION"
+        ],
+        "risk_class": "READ_ONLY",
+        "data_classification": "TOKENIZED_FINANCIAL_IDENTITY",
+        "estimated_cost_class": "LOW",
+        "estimated_latency_class": "LOW"
+      },
+      {
+        "tool_name": "get_protocol",
+        "description": "查询指定版本的结构化字段类型和业务语义。",
+        "produces_claim_types": [
+          "PROTOCOL_FIELD_TYPE",
+          "PROTOCOL_BUSINESS_SEMANTICS",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "contributes_requirements": [],
+        "risk_class": "READ_ONLY",
+        "data_classification": "BUSINESS_RULE",
+        "estimated_cost_class": "LOW",
+        "estimated_latency_class": "LOW"
+      },
+      {
+        "tool_name": "get_request_trace",
+        "description": "查询原请求出站标记与 HTTP 状态。",
+        "produces_claim_types": [
+          "REQUEST_SENT",
+          "HTTP_RESPONSE_STATUS",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "contributes_requirements": [
+          "REQUEST_ASSOCIATION"
+        ],
+        "risk_class": "READ_ONLY",
+        "data_classification": "BUSINESS",
+        "estimated_cost_class": "LOW",
+        "estimated_latency_class": "LOW"
+      }
+    ],
+    "history_digest": {
+      "tool_calls_used": 6,
+      "evidence_count": 6,
+      "latest_observation_time": "2026-09-10T09:31:25+08:00",
+      "repeated_lookup_groups": [
+        {
+          "tool": "get_fund_order",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "status": "NOT_FOUND",
+          "first_observed_at": "2026-09-10T09:30:10+08:00",
+          "last_observed_at": "2026-09-10T09:31:10+08:00",
+          "latest_freshness": "STALE",
+          "latest_completeness": "PARTIAL",
+          "references": {
+            "count": 3,
+            "first_ref": "E-ca5eedb712ff9afbcb4af43a520beb9a8bc47b89572b93e0316a61bdc0eb08b8",
+            "latest_ref": "E-8a3a461dbf5f0fe91878f5b4c2dcce0dd4476fac084a535816d53da3e4d90d68",
+            "range_digest": "f2407c0f256ab4d69a7b9995a0cdf876a4617a1d869ea5cc8f035daea3116d6f"
+          },
+          "latest_consecutive_count": 3
+        },
+        {
+          "tool": "get_payment_transaction",
+          "scope": {
+            "internal_order_id": "JD202609100001",
+            "protocol_version": null,
+            "effective_at": null
+          },
+          "status": "TIMEOUT",
+          "first_observed_at": "2026-09-10T09:30:25+08:00",
+          "last_observed_at": "2026-09-10T09:31:25+08:00",
+          "latest_freshness": "UNKNOWN",
+          "latest_completeness": "UNKNOWN",
+          "references": {
+            "count": 3,
+            "first_ref": "E-6d949fb4005d18005ae754966e540f84e76cbeec0d20f376479a32e470c23ea7",
+            "latest_ref": "E-95dcc0053db3eb79da290fb9c1d5d265d0f918efc93e14f35b5e2d5e2df3dcfb",
+            "range_digest": "e1f08d875275a5503f962d5e6bbaf67c5d749a6df813cae2617a20754e6ad7fb"
+          },
+          "latest_consecutive_count": 3
+        }
+      ],
+      "state_transitions": [],
+      "lookup_history_complete": true
+    },
+    "selected_evidence_refs": [
+      "E-6d949fb4005d18005ae754966e540f84e76cbeec0d20f376479a32e470c23ea7",
+      "E-8a3a461dbf5f0fe91878f5b4c2dcce0dd4476fac084a535816d53da3e4d90d68",
+      "E-95dcc0053db3eb79da290fb9c1d5d265d0f918efc93e14f35b5e2d5e2df3dcfb",
+      "E-ca5eedb712ff9afbcb4af43a520beb9a8bc47b89572b93e0316a61bdc0eb08b8"
+    ],
+    "omitted_evidence_summary": {
+      "total_evidence": 6,
+      "selected": 4,
+      "omitted": [
+        {
+          "reason": "REPEATED_LOOKUP",
+          "count": 2,
+          "evidence_ids_digest": "57ad34795948134bdb2981a4b36830240bc2af8acaf19d900a8da1ac64696f04"
+        }
+      ]
+    },
+    "context_budget_usage": {
+      "serialized_chars": 16077,
+      "approximate_tokens": 5359,
+      "fact_capsules": 0,
+      "hypothesis_capsules": 10,
+      "gap_capsules": 4,
+      "history_items": 2,
+      "limits": {
+        "max_serialized_chars": 60000,
+        "max_fact_capsules": 64,
+        "max_hypothesis_capsules": 16,
+        "max_gap_capsules": 24,
+        "max_history_items": 20,
+        "max_relation_ref_preview": 4,
+        "max_identity_transaction_preview": 3
+      },
+      "estimator": "unicode_chars_div_3_ceiling_v1"
+    }
+  }
+}

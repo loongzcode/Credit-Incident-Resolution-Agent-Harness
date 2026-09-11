@@ -1,0 +1,2354 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Incident Investigation Console API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/ui/cases/{case_id}": {
+      "get": {
+        "summary": "Get Case",
+        "operationId": "get_case_ui_cases__case_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UICase"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/evidence": {
+      "get": {
+        "summary": "Get Evidence",
+        "operationId": "get_evidence_ui_cases__case_id__evidence_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UIEvidenceList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/hypotheses": {
+      "get": {
+        "summary": "Get Hypotheses",
+        "operationId": "get_hypotheses_ui_cases__case_id__hypotheses_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UIHypothesisGraph"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/reasoning-context": {
+      "get": {
+        "summary": "Get Context",
+        "operationId": "get_context_ui_cases__case_id__reasoning_context_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReasoningContextSnapshot"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CaseBudget": {
+        "properties": {
+          "max_tool_calls": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Max Tool Calls"
+          },
+          "used_tool_calls": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Used Tool Calls",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "max_tool_calls"
+        ],
+        "title": "CaseBudget"
+      },
+      "CaseStatus": {
+        "type": "string",
+        "enum": [
+          "NEW",
+          "INVESTIGATING",
+          "WAITING",
+          "ESCALATED",
+          "CLOSED"
+        ],
+        "title": "CaseStatus"
+      },
+      "ClaimType": {
+        "type": "string",
+        "enum": [
+          "REQUEST_SENT",
+          "HTTP_RESPONSE_STATUS",
+          "FUND_BUSINESS_STATUS",
+          "LOAN_NO_PRESENT",
+          "LOAN_NOTE_REFERENCE",
+          "PAYMENT_FINALITY",
+          "PAYMENT_TRANSACTION_ID",
+          "PAYMENT_AMOUNT",
+          "PAYMENT_CURRENCY",
+          "PAYMENT_CUSTOMER_REF",
+          "PAYMENT_BENEFICIARY_REF",
+          "PAYMENT_ACCOUNT_REF",
+          "TRANSACTION_FUND_REQUEST_ID",
+          "CALLBACK_GATEWAY_RECEIVED",
+          "CALLBACK_SIGNATURE_VERIFIED",
+          "CALLBACK_PROTOCOL_VERSION",
+          "MESSAGE_CONSUME_STATUS",
+          "MESSAGE_DLQ",
+          "MESSAGE_ERROR_CODE",
+          "MESSAGE_ERROR_FIELD",
+          "MESSAGE_EXPECTED_FIELD_TYPE",
+          "MESSAGE_ACTUAL_FIELD_TYPE",
+          "ACCOUNTING_ENTRY_PRESENT",
+          "ASSET_STATUS",
+          "GUARANTEE_STATUS",
+          "GUARANTEE_VERSION",
+          "ASSET_DELIVERY_STATUS",
+          "PROTOCOL_FIELD_TYPE",
+          "PROTOCOL_BUSINESS_SEMANTICS",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "title": "ClaimType"
+      },
+      "Completeness": {
+        "type": "string",
+        "enum": [
+          "COMPLETE",
+          "PARTIAL",
+          "UNKNOWN"
+        ],
+        "title": "Completeness"
+      },
+      "ContextBudget": {
+        "properties": {
+          "max_serialized_chars": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Max Serialized Chars",
+            "default": 60000
+          },
+          "max_fact_capsules": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Max Fact Capsules",
+            "default": 64
+          },
+          "max_hypothesis_capsules": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Max Hypothesis Capsules",
+            "default": 16
+          },
+          "max_gap_capsules": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Max Gap Capsules",
+            "default": 24
+          },
+          "max_history_items": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Max History Items",
+            "default": 20
+          },
+          "max_relation_ref_preview": {
+            "type": "integer",
+            "maximum": 32.0,
+            "minimum": 0.0,
+            "title": "Max Relation Ref Preview",
+            "default": 4
+          },
+          "max_identity_transaction_preview": {
+            "type": "integer",
+            "maximum": 32.0,
+            "minimum": 0.0,
+            "title": "Max Identity Transaction Preview",
+            "default": 3
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ContextBudget"
+      },
+      "ContextBudgetUsage": {
+        "properties": {
+          "serialized_chars": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Serialized Chars"
+          },
+          "approximate_tokens": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Approximate Tokens"
+          },
+          "fact_capsules": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Fact Capsules"
+          },
+          "hypothesis_capsules": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Hypothesis Capsules"
+          },
+          "gap_capsules": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Gap Capsules"
+          },
+          "history_items": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "History Items"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/ContextBudget"
+          },
+          "estimator": {
+            "type": "string",
+            "title": "Estimator",
+            "default": "unicode_chars_div_3_ceiling_v1"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "serialized_chars",
+          "approximate_tokens",
+          "fact_capsules",
+          "hypothesis_capsules",
+          "gap_capsules",
+          "history_items",
+          "limits"
+        ],
+        "title": "ContextBudgetUsage"
+      },
+      "ContextSectionTrust": {
+        "properties": {
+          "task": {
+            "type": "string",
+            "const": "TRUSTED_CONTROL",
+            "title": "Task",
+            "default": "TRUSTED_CONTROL"
+          },
+          "financial_subject": {
+            "type": "string",
+            "const": "TRUSTED_CONTROL",
+            "title": "Financial Subject",
+            "default": "TRUSTED_CONTROL"
+          },
+          "safety_constraints": {
+            "type": "string",
+            "const": "TRUSTED_CONTROL",
+            "title": "Safety Constraints",
+            "default": "TRUSTED_CONTROL"
+          },
+          "available_tools": {
+            "type": "string",
+            "const": "TRUSTED_CONTROL",
+            "title": "Available Tools",
+            "default": "TRUSTED_CONTROL"
+          },
+          "budget": {
+            "type": "string",
+            "const": "TRUSTED_CONTROL",
+            "title": "Budget",
+            "default": "TRUSTED_CONTROL"
+          },
+          "current_facts": {
+            "type": "string",
+            "const": "UNTRUSTED_EXTERNAL_DATA",
+            "title": "Current Facts",
+            "default": "UNTRUSTED_EXTERNAL_DATA"
+          },
+          "history_digest": {
+            "type": "string",
+            "const": "UNTRUSTED_EXTERNAL_DATA",
+            "title": "History Digest",
+            "default": "UNTRUSTED_EXTERNAL_DATA"
+          },
+          "financial_identity": {
+            "type": "string",
+            "const": "DETERMINISTIC_DERIVED",
+            "title": "Financial Identity",
+            "default": "DETERMINISTIC_DERIVED"
+          },
+          "active_hypotheses": {
+            "type": "string",
+            "const": "DETERMINISTIC_DERIVED",
+            "title": "Active Hypotheses",
+            "default": "DETERMINISTIC_DERIVED"
+          },
+          "resolved_hypotheses_summary": {
+            "type": "string",
+            "const": "DETERMINISTIC_DERIVED",
+            "title": "Resolved Hypotheses Summary",
+            "default": "DETERMINISTIC_DERIVED"
+          },
+          "open_evidence_gaps": {
+            "type": "string",
+            "const": "DETERMINISTIC_DERIVED",
+            "title": "Open Evidence Gaps",
+            "default": "DETERMINISTIC_DERIVED"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ContextSectionTrust"
+      },
+      "Currency": {
+        "type": "string",
+        "enum": [
+          "CNY",
+          "USD"
+        ],
+        "title": "Currency"
+      },
+      "EstimateClass": {
+        "type": "string",
+        "enum": [
+          "LOW",
+          "MEDIUM"
+        ],
+        "title": "EstimateClass"
+      },
+      "EvidenceStrength": {
+        "type": "string",
+        "enum": [
+          "AUTHORITATIVE",
+          "STRONG",
+          "SUPPORTING",
+          "WEAK",
+          "HINT"
+        ],
+        "title": "EvidenceStrength"
+      },
+      "FactCapsule": {
+        "properties": {
+          "claim_type": {
+            "$ref": "#/components/schemas/ClaimType"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Value"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/FactSubject"
+          },
+          "business_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Business Time"
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Observed At"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          },
+          "completeness": {
+            "$ref": "#/components/schemas/Completeness"
+          },
+          "source": {
+            "$ref": "#/components/schemas/FactSource"
+          },
+          "protocol_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protocol Version"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Evidence Refs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "claim_type",
+          "value",
+          "subject",
+          "business_time",
+          "observed_at",
+          "freshness",
+          "completeness",
+          "source",
+          "protocol_version",
+          "evidence_refs"
+        ],
+        "title": "FactCapsule"
+      },
+      "FactSource": {
+        "properties": {
+          "tool": {
+            "$ref": "#/components/schemas/ToolName"
+          },
+          "source_kind": {
+            "$ref": "#/components/schemas/SourceKind"
+          },
+          "source_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version"
+          },
+          "source_as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source As Of"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "tool",
+          "source_kind",
+          "source_version",
+          "source_as_of"
+        ],
+        "title": "FactSource"
+      },
+      "FactSubject": {
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/SubjectKind"
+          },
+          "identifier": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Identifier"
+          },
+          "field": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\[[0-9]{1,6}\\])*(\\.[A-Za-z_][A-Za-z0-9_]*(\\[[0-9]{1,6}\\])*)*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field"
+          },
+          "internal_order_id": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Internal Order Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "identifier",
+          "field",
+          "internal_order_id"
+        ],
+        "title": "FactSubject"
+      },
+      "FinancialSubject": {
+        "properties": {
+          "expected_principal_minor": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Expected Principal Minor"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/Currency"
+          },
+          "customer_ref": {
+            "type": "string",
+            "pattern": "^CUS-[A-Za-z0-9-]{1,64}$",
+            "title": "Customer Ref"
+          },
+          "expected_beneficiary_ref": {
+            "type": "string",
+            "pattern": "^BEN-[A-Za-z0-9-]{1,64}$",
+            "title": "Expected Beneficiary Ref"
+          },
+          "expected_account_ref": {
+            "type": "string",
+            "pattern": "^ACC-[A-Za-z0-9-]{1,64}$",
+            "title": "Expected Account Ref"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_principal_minor",
+          "currency",
+          "customer_ref",
+          "expected_beneficiary_ref",
+          "expected_account_ref"
+        ],
+        "title": "FinancialSubject"
+      },
+      "Freshness": {
+        "type": "string",
+        "enum": [
+          "CURRENT",
+          "STALE",
+          "UNKNOWN"
+        ],
+        "title": "Freshness"
+      },
+      "GapCapsule": {
+        "properties": {
+          "gap_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Gap Id"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "required_claim_types": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ClaimType"
+                },
+                {
+                  "$ref": "#/components/schemas/UncollectedClaimType"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Required Claim Types"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/PriorityClass"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GapStatus"
+          },
+          "related_hypotheses": {
+            "items": {
+              "$ref": "#/components/schemas/HypothesisId"
+            },
+            "type": "array",
+            "title": "Related Hypotheses"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Evidence Refs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "gap_id",
+          "question",
+          "required_claim_types",
+          "priority",
+          "status",
+          "related_hypotheses",
+          "evidence_refs"
+        ],
+        "title": "GapCapsule"
+      },
+      "GapStatus": {
+        "type": "string",
+        "enum": [
+          "OPEN",
+          "SATISFIED",
+          "UNAVAILABLE"
+        ],
+        "title": "GapStatus"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HistoricalStateGroup": {
+        "properties": {
+          "claim_type": {
+            "$ref": "#/components/schemas/ClaimType"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/FactSubject"
+          },
+          "protocol_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protocol Version"
+          },
+          "first_observed_value": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "First Observed Value"
+          },
+          "last_observed_value": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Last Observed Value"
+          },
+          "first_business_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "First Business Time"
+          },
+          "last_business_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Business Time"
+          },
+          "last_freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          },
+          "references": {
+            "$ref": "#/components/schemas/ReferenceRange"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "claim_type",
+          "subject",
+          "protocol_version",
+          "first_observed_value",
+          "last_observed_value",
+          "first_business_time",
+          "last_business_time",
+          "last_freshness",
+          "references"
+        ],
+        "title": "HistoricalStateGroup"
+      },
+      "HistoryDigest": {
+        "properties": {
+          "tool_calls_used": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Tool Calls Used"
+          },
+          "evidence_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Evidence Count"
+          },
+          "latest_observation_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Observation Time"
+          },
+          "repeated_lookup_groups": {
+            "items": {
+              "$ref": "#/components/schemas/RepeatedLookupGroup"
+            },
+            "type": "array",
+            "title": "Repeated Lookup Groups"
+          },
+          "state_transitions": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalStateGroup"
+            },
+            "type": "array",
+            "title": "State Transitions"
+          },
+          "lookup_history_complete": {
+            "type": "boolean",
+            "title": "Lookup History Complete",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "tool_calls_used",
+          "evidence_count",
+          "latest_observation_time",
+          "repeated_lookup_groups",
+          "state_transitions"
+        ],
+        "title": "HistoryDigest"
+      },
+      "HypothesisCapsule": {
+        "properties": {
+          "hypothesis_id": {
+            "$ref": "#/components/schemas/HypothesisId"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/HypothesisKind"
+          },
+          "statement": {
+            "type": "string",
+            "title": "Statement"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HypothesisStatus"
+          },
+          "decisive_evidence_refs": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Decisive Evidence Refs"
+          },
+          "supporting_ref_preview": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Supporting Ref Preview",
+            "default": []
+          },
+          "contradicting_ref_preview": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Contradicting Ref Preview",
+            "default": []
+          },
+          "supporting_ref_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Supporting Ref Count"
+          },
+          "contradicting_ref_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Contradicting Ref Count"
+          },
+          "supporting_refs_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Supporting Refs Digest"
+          },
+          "contradicting_refs_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Contradicting Refs Digest"
+          },
+          "open_gap_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Open Gap Ids"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "hypothesis_id",
+          "kind",
+          "statement",
+          "status",
+          "decisive_evidence_refs",
+          "supporting_ref_count",
+          "contradicting_ref_count",
+          "supporting_refs_digest",
+          "contradicting_refs_digest",
+          "open_gap_ids",
+          "reason"
+        ],
+        "title": "HypothesisCapsule"
+      },
+      "HypothesisDefinition": {
+        "properties": {
+          "hypothesis_id": {
+            "$ref": "#/components/schemas/HypothesisId"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/HypothesisKind"
+          },
+          "statement": {
+            "type": "string",
+            "title": "Statement"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "confirmation_rule_id": {
+            "type": "string",
+            "title": "Confirmation Rule Id"
+          },
+          "elimination_rule_id": {
+            "type": "string",
+            "title": "Elimination Rule Id"
+          },
+          "relevant_claim_types": {
+            "items": {
+              "$ref": "#/components/schemas/ClaimType"
+            },
+            "type": "array",
+            "title": "Relevant Claim Types"
+          },
+          "parent_hypothesis_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HypothesisId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "hypothesis_id",
+          "kind",
+          "statement",
+          "description",
+          "confirmation_rule_id",
+          "elimination_rule_id",
+          "relevant_claim_types"
+        ],
+        "title": "HypothesisDefinition"
+      },
+      "HypothesisId": {
+        "type": "string",
+        "enum": [
+          "H1",
+          "H2",
+          "H3",
+          "H4",
+          "H5",
+          "H6",
+          "H6_SCHEMA_MISMATCH",
+          "H6_STALE_CONSUMER_SCHEMA",
+          "H7",
+          "H8"
+        ],
+        "title": "HypothesisId"
+      },
+      "HypothesisKind": {
+        "type": "string",
+        "enum": [
+          "CAUSAL",
+          "STATE",
+          "SEMANTIC_GUARD"
+        ],
+        "title": "HypothesisKind"
+      },
+      "HypothesisStatus": {
+        "type": "string",
+        "enum": [
+          "UNKNOWN",
+          "POSSIBLE",
+          "SUPPORTED",
+          "CONFIRMED",
+          "ELIMINATED"
+        ],
+        "title": "HypothesisStatus"
+      },
+      "IdentityDimension": {
+        "type": "string",
+        "enum": [
+          "FINALITY",
+          "TRANSACTION",
+          "REQUEST",
+          "AMOUNT",
+          "CURRENCY",
+          "CUSTOMER",
+          "BENEFICIARY",
+          "ACCOUNT"
+        ],
+        "title": "IdentityDimension"
+      },
+      "IdentityMatch": {
+        "type": "string",
+        "enum": [
+          "MATCH",
+          "MISMATCH",
+          "UNKNOWN"
+        ],
+        "title": "IdentityMatch"
+      },
+      "LookupScope": {
+        "properties": {
+          "internal_order_id": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Internal Order Id"
+          },
+          "protocol_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protocol Version"
+          },
+          "effective_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "internal_order_id",
+          "protocol_version",
+          "effective_at"
+        ],
+        "title": "LookupScope"
+      },
+      "ObservationStatus": {
+        "type": "string",
+        "enum": [
+          "OK",
+          "TIMEOUT",
+          "NOT_FOUND"
+        ],
+        "title": "ObservationStatus"
+      },
+      "OmissionGroup": {
+        "properties": {
+          "reason": {
+            "$ref": "#/components/schemas/OmissionReason"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Count"
+          },
+          "evidence_ids_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Evidence Ids Digest"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "reason",
+          "count",
+          "evidence_ids_digest"
+        ],
+        "title": "OmissionGroup"
+      },
+      "OmissionReason": {
+        "type": "string",
+        "enum": [
+          "ELIGIBILITY_DENIED",
+          "REPEATED_LOOKUP",
+          "HISTORICAL_SUPERSEDED",
+          "IRRELEVANT_TO_ACTIVE_HYPOTHESES",
+          "SIZE_BUDGET",
+          "RELATION_COMPACTED",
+          "IDENTITY_COMPACTED"
+        ],
+        "title": "OmissionReason"
+      },
+      "OmittedEvidenceSummary": {
+        "properties": {
+          "total_evidence": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total Evidence"
+          },
+          "selected": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Selected"
+          },
+          "omitted": {
+            "items": {
+              "$ref": "#/components/schemas/OmissionGroup"
+            },
+            "type": "array",
+            "title": "Omitted"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "total_evidence",
+          "selected",
+          "omitted"
+        ],
+        "title": "OmittedEvidenceSummary"
+      },
+      "PaymentIdentityContext": {
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/IdentityMatch"
+          },
+          "mismatch_dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/IdentityDimension"
+            },
+            "type": "array",
+            "title": "Mismatch Dimensions"
+          },
+          "unknown_dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/IdentityDimension"
+            },
+            "type": "array",
+            "title": "Unknown Dimensions"
+          },
+          "candidate_transaction_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Candidate Transaction Count"
+          },
+          "transaction_ref_preview": {
+            "items": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_:/.-]+$"
+            },
+            "type": "array",
+            "title": "Transaction Ref Preview"
+          },
+          "transaction_refs_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Transaction Refs Digest"
+          },
+          "evidence_ref_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Evidence Ref Count"
+          },
+          "evidence_refs_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Evidence Refs Digest"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Evidence Refs"
+          },
+          "verification_version": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$",
+            "title": "Verification Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "result",
+          "mismatch_dimensions",
+          "unknown_dimensions",
+          "candidate_transaction_count",
+          "transaction_ref_preview",
+          "transaction_refs_digest",
+          "evidence_ref_count",
+          "evidence_refs_digest",
+          "evidence_refs",
+          "verification_version"
+        ],
+        "title": "PaymentIdentityContext"
+      },
+      "PriorityClass": {
+        "type": "string",
+        "enum": [
+          "SAFETY_CRITICAL",
+          "DISCRIMINATING",
+          "SUPPORTING"
+        ],
+        "title": "PriorityClass"
+      },
+      "ReasoningContextSnapshot": {
+        "properties": {
+          "snapshot_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Snapshot Id"
+          },
+          "section_trust": {
+            "$ref": "#/components/schemas/ContextSectionTrust",
+            "default": {
+              "task": "TRUSTED_CONTROL",
+              "financial_subject": "TRUSTED_CONTROL",
+              "safety_constraints": "TRUSTED_CONTROL",
+              "available_tools": "TRUSTED_CONTROL",
+              "budget": "TRUSTED_CONTROL",
+              "current_facts": "UNTRUSTED_EXTERNAL_DATA",
+              "history_digest": "UNTRUSTED_EXTERNAL_DATA",
+              "financial_identity": "DETERMINISTIC_DERIVED",
+              "active_hypotheses": "DETERMINISTIC_DERIVED",
+              "resolved_hypotheses_summary": "DETERMINISTIC_DERIVED",
+              "open_evidence_gaps": "DETERMINISTIC_DERIVED"
+            }
+          },
+          "case_id": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Case Id"
+          },
+          "internal_order_id": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Internal Order Id"
+          },
+          "context_schema_version": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$",
+            "title": "Context Schema Version"
+          },
+          "eligibility_policy_version": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$",
+            "title": "Eligibility Policy Version"
+          },
+          "compaction_policy_version": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$",
+            "title": "Compaction Policy Version"
+          },
+          "context_policy_version": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$",
+            "title": "Context Policy Version"
+          },
+          "hypothesis_rule_version": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$",
+            "title": "Hypothesis Rule Version"
+          },
+          "assembled_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Assembled At"
+          },
+          "case_fingerprint": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Case Fingerprint"
+          },
+          "evidence_fingerprint": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Evidence Fingerprint"
+          },
+          "hypothesis_input_fingerprint": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Hypothesis Input Fingerprint"
+          },
+          "hypothesis_graph_fingerprint": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Hypothesis Graph Fingerprint"
+          },
+          "policy_fingerprint": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Policy Fingerprint"
+          },
+          "task": {
+            "$ref": "#/components/schemas/TaskContext"
+          },
+          "financial_subject": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FinancialSubject"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "financial_identity": {
+            "$ref": "#/components/schemas/PaymentIdentityContext"
+          },
+          "current_facts": {
+            "items": {
+              "$ref": "#/components/schemas/FactCapsule"
+            },
+            "type": "array",
+            "title": "Current Facts"
+          },
+          "active_hypotheses": {
+            "items": {
+              "$ref": "#/components/schemas/HypothesisCapsule"
+            },
+            "type": "array",
+            "title": "Active Hypotheses"
+          },
+          "resolved_hypotheses_summary": {
+            "items": {
+              "$ref": "#/components/schemas/ResolvedHypothesisSummary"
+            },
+            "type": "array",
+            "title": "Resolved Hypotheses Summary"
+          },
+          "open_evidence_gaps": {
+            "items": {
+              "$ref": "#/components/schemas/GapCapsule"
+            },
+            "type": "array",
+            "title": "Open Evidence Gaps"
+          },
+          "safety_constraints": {
+            "$ref": "#/components/schemas/SafetyContext"
+          },
+          "budget": {
+            "$ref": "#/components/schemas/RuntimeBudgetContext"
+          },
+          "available_tools": {
+            "items": {
+              "$ref": "#/components/schemas/ToolCapability"
+            },
+            "type": "array",
+            "title": "Available Tools"
+          },
+          "history_digest": {
+            "$ref": "#/components/schemas/HistoryDigest"
+          },
+          "selected_evidence_refs": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Selected Evidence Refs"
+          },
+          "omitted_evidence_summary": {
+            "$ref": "#/components/schemas/OmittedEvidenceSummary"
+          },
+          "context_budget_usage": {
+            "$ref": "#/components/schemas/ContextBudgetUsage"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "snapshot_id",
+          "case_id",
+          "internal_order_id",
+          "context_schema_version",
+          "eligibility_policy_version",
+          "compaction_policy_version",
+          "context_policy_version",
+          "hypothesis_rule_version",
+          "assembled_at",
+          "case_fingerprint",
+          "evidence_fingerprint",
+          "hypothesis_input_fingerprint",
+          "hypothesis_graph_fingerprint",
+          "policy_fingerprint",
+          "task",
+          "financial_subject",
+          "financial_identity",
+          "current_facts",
+          "active_hypotheses",
+          "resolved_hypotheses_summary",
+          "open_evidence_gaps",
+          "safety_constraints",
+          "budget",
+          "available_tools",
+          "history_digest",
+          "selected_evidence_refs",
+          "omitted_evidence_summary",
+          "context_budget_usage"
+        ],
+        "title": "ReasoningContextSnapshot"
+      },
+      "ReferenceRange": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Count"
+          },
+          "first_ref": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "First Ref"
+          },
+          "latest_ref": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Latest Ref"
+          },
+          "range_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Range Digest"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "count",
+          "first_ref",
+          "latest_ref",
+          "range_digest"
+        ],
+        "title": "ReferenceRange"
+      },
+      "RepeatedLookupGroup": {
+        "properties": {
+          "tool": {
+            "$ref": "#/components/schemas/ToolName"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/LookupScope"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ObservationStatus"
+          },
+          "first_observed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "First Observed At"
+          },
+          "last_observed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Observed At"
+          },
+          "latest_freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          },
+          "latest_completeness": {
+            "$ref": "#/components/schemas/Completeness"
+          },
+          "references": {
+            "$ref": "#/components/schemas/ReferenceRange"
+          },
+          "latest_consecutive_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Latest Consecutive Count",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "tool",
+          "scope",
+          "status",
+          "first_observed_at",
+          "last_observed_at",
+          "latest_freshness",
+          "latest_completeness",
+          "references"
+        ],
+        "title": "RepeatedLookupGroup"
+      },
+      "ResolvedHypothesisSummary": {
+        "properties": {
+          "hypothesis_id": {
+            "$ref": "#/components/schemas/HypothesisId"
+          },
+          "statement": {
+            "type": "string",
+            "title": "Statement"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HypothesisStatus"
+          },
+          "decisive_evidence_refs": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Decisive Evidence Refs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "hypothesis_id",
+          "statement",
+          "status",
+          "decisive_evidence_refs"
+        ],
+        "title": "ResolvedHypothesisSummary"
+      },
+      "RuntimeBudgetContext": {
+        "properties": {
+          "max_tool_calls": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Max Tool Calls"
+          },
+          "used_tool_calls": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Used Tool Calls"
+          },
+          "remaining_tool_calls": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Remaining Tool Calls"
+          },
+          "investigation_allowed": {
+            "type": "boolean",
+            "title": "Investigation Allowed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "max_tool_calls",
+          "used_tool_calls",
+          "remaining_tool_calls",
+          "investigation_allowed"
+        ],
+        "title": "RuntimeBudgetContext"
+      },
+      "SafetyContext": {
+        "properties": {
+          "invariants": {
+            "items": {
+              "$ref": "#/components/schemas/SafetyInvariant"
+            },
+            "type": "array",
+            "title": "Invariants"
+          },
+          "forbidden_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Forbidden Actions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "invariants",
+          "forbidden_actions"
+        ],
+        "title": "SafetyContext"
+      },
+      "SafetyInvariant": {
+        "type": "string",
+        "enum": [
+          "NO_NEW_FINANCIAL_INTENT",
+          "UNKNOWN_IS_NOT_FAILED",
+          "TOOL_SUCCESS_IS_NOT_BUSINESS_OUTCOME",
+          "REQUIRE_COMPLETE_PAYMENT_IDENTITY",
+          "READ_ONLY_INVESTIGATION",
+          "NO_SELF_DECLARED_CASE_SUCCESS",
+          "EVIDENCE_REFERENCES_REQUIRED"
+        ],
+        "title": "SafetyInvariant"
+      },
+      "SourceKind": {
+        "type": "string",
+        "enum": [
+          "PRIMARY",
+          "REPLICA",
+          "CACHE",
+          "INDEX"
+        ],
+        "title": "SourceKind"
+      },
+      "SubjectKind": {
+        "type": "string",
+        "enum": [
+          "ORDER",
+          "FUND_REQUEST",
+          "TRANSACTION",
+          "CALLBACK",
+          "MESSAGE",
+          "PROTOCOL"
+        ],
+        "title": "SubjectKind"
+      },
+      "TaskContext": {
+        "properties": {
+          "goal": {
+            "type": "string",
+            "title": "Goal"
+          },
+          "success_criteria": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Success Criteria"
+          },
+          "stop_conditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Stop Conditions"
+          },
+          "escalation_conditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Escalation Conditions"
+          },
+          "forbidden_outcomes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Forbidden Outcomes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "goal",
+          "success_criteria",
+          "stop_conditions",
+          "escalation_conditions",
+          "forbidden_outcomes"
+        ],
+        "title": "TaskContext"
+      },
+      "ToolCapability": {
+        "properties": {
+          "tool_name": {
+            "$ref": "#/components/schemas/ToolName"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "produces_claim_types": {
+            "items": {
+              "$ref": "#/components/schemas/ClaimType"
+            },
+            "type": "array",
+            "title": "Produces Claim Types"
+          },
+          "contributes_requirements": {
+            "items": {
+              "$ref": "#/components/schemas/UncollectedClaimType"
+            },
+            "type": "array",
+            "title": "Contributes Requirements",
+            "default": []
+          },
+          "risk_class": {
+            "$ref": "#/components/schemas/ToolRisk",
+            "default": "READ_ONLY"
+          },
+          "data_classification": {
+            "$ref": "#/components/schemas/ToolDataClass"
+          },
+          "estimated_cost_class": {
+            "$ref": "#/components/schemas/EstimateClass",
+            "default": "LOW"
+          },
+          "estimated_latency_class": {
+            "$ref": "#/components/schemas/EstimateClass",
+            "default": "LOW"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "tool_name",
+          "description",
+          "produces_claim_types",
+          "data_classification"
+        ],
+        "title": "ToolCapability"
+      },
+      "ToolDataClass": {
+        "type": "string",
+        "enum": [
+          "BUSINESS",
+          "BUSINESS_RULE",
+          "TOKENIZED_FINANCIAL_IDENTITY"
+        ],
+        "title": "ToolDataClass"
+      },
+      "ToolName": {
+        "type": "string",
+        "enum": [
+          "get_asset_order",
+          "get_guarantee_order",
+          "get_fund_order",
+          "get_payment_transaction",
+          "get_loan_note",
+          "get_callback_gateway",
+          "get_callback_raw",
+          "get_messages",
+          "get_accounting",
+          "get_request_trace",
+          "get_asset_delivery",
+          "get_protocol"
+        ],
+        "title": "ToolName"
+      },
+      "ToolRisk": {
+        "type": "string",
+        "enum": [
+          "READ_ONLY"
+        ],
+        "title": "ToolRisk"
+      },
+      "UICase": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Case Id"
+          },
+          "internal_order_id": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Internal Order Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CaseStatus"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "budget": {
+            "$ref": "#/components/schemas/CaseBudget"
+          },
+          "financial_subject": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FinancialSubject"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "case_id",
+          "internal_order_id",
+          "status",
+          "updated_at",
+          "budget",
+          "financial_subject"
+        ],
+        "title": "UICase"
+      },
+      "UIEvidence": {
+        "properties": {
+          "claim_type": {
+            "$ref": "#/components/schemas/ClaimType"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Value"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/FactSubject"
+          },
+          "business_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Business Time"
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Observed At"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          },
+          "completeness": {
+            "$ref": "#/components/schemas/Completeness"
+          },
+          "source": {
+            "$ref": "#/components/schemas/FactSource"
+          },
+          "protocol_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protocol Version"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Evidence Refs"
+          },
+          "evidence_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Evidence Id"
+          },
+          "observation_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Observation Id"
+          },
+          "event_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Time"
+          },
+          "strength": {
+            "$ref": "#/components/schemas/EvidenceStrength"
+          },
+          "extractor_version": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$",
+            "title": "Extractor Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "claim_type",
+          "value",
+          "subject",
+          "business_time",
+          "observed_at",
+          "freshness",
+          "completeness",
+          "source",
+          "protocol_version",
+          "evidence_refs",
+          "evidence_id",
+          "observation_id",
+          "event_time",
+          "strength",
+          "extractor_version"
+        ],
+        "title": "UIEvidence"
+      },
+      "UIEvidenceList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/UIEvidence"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "eligibility_denied_count": {
+            "type": "integer",
+            "title": "Eligibility Denied Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "eligibility_denied_count"
+        ],
+        "title": "UIEvidenceList"
+      },
+      "UIGap": {
+        "properties": {
+          "gap_id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Gap Id"
+          },
+          "case_id": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Case Id"
+          },
+          "hypothesis_ids": {
+            "items": {
+              "$ref": "#/components/schemas/HypothesisId"
+            },
+            "type": "array",
+            "title": "Hypothesis Ids"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "required_claim_types": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ClaimType"
+                },
+                {
+                  "$ref": "#/components/schemas/UncollectedClaimType"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Required Claim Types"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GapStatus"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "priority_class": {
+            "$ref": "#/components/schemas/PriorityClass"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Evidence Refs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "gap_id",
+          "case_id",
+          "hypothesis_ids",
+          "question",
+          "required_claim_types",
+          "status",
+          "reason",
+          "priority_class",
+          "evidence_refs"
+        ],
+        "title": "UIGap"
+      },
+      "UIHypothesisGraph": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$",
+            "title": "Case Id"
+          },
+          "rule_version": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9]+([._+-][A-Za-z0-9]+)*$",
+            "title": "Rule Version"
+          },
+          "definitions": {
+            "items": {
+              "$ref": "#/components/schemas/HypothesisDefinition"
+            },
+            "type": "array",
+            "title": "Definitions"
+          },
+          "hypotheses": {
+            "items": {
+              "$ref": "#/components/schemas/UIHypothesisState"
+            },
+            "type": "array",
+            "title": "Hypotheses"
+          },
+          "open_gaps": {
+            "items": {
+              "$ref": "#/components/schemas/UIGap"
+            },
+            "type": "array",
+            "title": "Open Gaps"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "case_id",
+          "rule_version",
+          "definitions",
+          "hypotheses",
+          "open_gaps"
+        ],
+        "title": "UIHypothesisGraph"
+      },
+      "UIHypothesisState": {
+        "properties": {
+          "hypothesis_id": {
+            "$ref": "#/components/schemas/HypothesisId"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HypothesisStatus"
+          },
+          "supporting_evidence_refs": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Supporting Evidence Refs"
+          },
+          "contradicting_evidence_refs": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Contradicting Evidence Refs"
+          },
+          "decisive_evidence_refs": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Decisive Evidence Refs"
+          },
+          "missing_evidence": {
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:@/.-]*$"
+            },
+            "type": "array",
+            "title": "Missing Evidence"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "rule_version": {
+            "type": "string",
+            "title": "Rule Version"
+          },
+          "evaluated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Evaluated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "hypothesis_id",
+          "status",
+          "supporting_evidence_refs",
+          "contradicting_evidence_refs",
+          "decisive_evidence_refs",
+          "missing_evidence",
+          "reason",
+          "rule_version",
+          "evaluated_at"
+        ],
+        "title": "UIHypothesisState"
+      },
+      "UncollectedClaimType": {
+        "type": "string",
+        "enum": [
+          "DEPLOYED_CONSUMER_SCHEMA_VERSION",
+          "FUND_REQUEST_PROTOCOL_APPLICABILITY",
+          "REQUEST_ASSOCIATION",
+          "CALLBACK_EVENT_ASSOCIATION",
+          "FUND_REJECTION_WITHOUT_DISBURSEMENT"
+        ],
+        "title": "UncollectedClaimType",
+        "description": "Required facts that current extractors cannot yet supply; not Evidence."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

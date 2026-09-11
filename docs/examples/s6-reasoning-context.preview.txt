@@ -1,5 +1,5 @@
 CASE JD202609100001
-SNAPSHOT 09f0d485fbedbfec4969ce2bc6123d55d4f5635883ee63f7d9488cfe44fcf6d9
+SNAPSHOT b354f8a7bdda7be3a8cb186c0663e7e632599a13001a33b2d182985f0c5de0f1
 未来 Planner 的结构化输入；本次没有 LLM 调用。
 
 TASK
@@ -106,13 +106,14 @@ HISTORY DIGEST
   "evidence_count": 30,
   "latest_observation_time": "2026-09-10T09:30:10+08:00",
   "repeated_lookup_groups": [],
-  "state_transitions": []
+  "state_transitions": [],
+  "lookup_history_complete": true
 }
 
 BUDGET USAGE
 {
-  "serialized_chars": 29017,
-  "approximate_tokens": 9673,
+  "serialized_chars": 29614,
+  "approximate_tokens": 9872,
   "fact_capsules": 20,
   "hypothesis_capsules": 10,
   "gap_capsules": 3,

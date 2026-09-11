@@ -27,16 +27,30 @@ def reference_range(items):
 class ContextCompactor:
     def lookup_groups(self, evidence):
         groups = defaultdict(list)
+        observations = defaultdict(dict)
         for e in evidence:
+            observations[(e.tool, e.metadata.scope.model_dump_json())].setdefault(e.observation_id, []).append(e)
             if e.claim_type == C.SOURCE_LOOKUP_STATUS:
                 groups[(e.tool, e.metadata.scope.model_dump_json(), e.value)].append(e)
         result = []
         for _, items in sorted(groups.items()):
             first, last = min(items, key=lambda e: (e.observed_at, e.evidence_id)), max(items, key=lambda e: (e.observed_at, e.evidence_id))
+            calls = observations[(last.tool, last.metadata.scope.model_dump_json())].values()
+            # Equal-time mixed outcomes have no defensible ordering: break the run.
+            by_time = defaultdict(list)
+            for call in calls:
+                statuses = {e.value for e in call if e.claim_type == C.SOURCE_LOOKUP_STATUS}
+                by_time[max(e.observed_at for e in call)].append(next(iter(statuses)) if len(statuses) == 1 else None)
+            consecutive = 0
+            for _, statuses in sorted(by_time.items(), reverse=True):
+                if any(status != last.value for status in statuses):
+                    break
+                consecutive += len(statuses)
             result.append(RepeatedLookupGroup(
                 tool=last.tool, scope=LookupScope(**last.metadata.scope.model_dump()), status=last.value,
                 first_observed_at=first.observed_at, last_observed_at=last.observed_at,
                 latest_freshness=last.freshness, latest_completeness=last.completeness, references=reference_range(items),
+                latest_consecutive_count=consecutive,
             ))
         return tuple(result)
 

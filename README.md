@@ -2,17 +2,19 @@
 
 接管资深信贷生产支持工程师对“三方放款状态异常订单”的调查、受控修复、故障恢复和独立验收工作。
 
-**当前状态：已实现 Simulator、Case Runtime、Evidence Store，以及 Step 4.2 Full Context Envelope Eligibility / Model Trust Boundary。** 包含七个业务组件、S1–S8 场景、受限只读 Tool API、可失真的 Observation、Case 权限与预算、确定性 Evidence 提取、来源回溯和 pytest。Hypothesis Engine 只根据 Case 与 Evidence 重算，不调用工具。Agent、修复 Runtime、审批及在线 Evaluator 尚未实现；下文的整体项目契约仍是后续建设目标。
+**当前状态：已实现 Simulator、Case Runtime、Evidence Store、Hypothesis、Context Boundary，以及 Step 5 LLM Next Best Action Planner。** 模型只提出候选，Harness 独立验证、硬过滤、确定性排序后返回 ValidatedActionProposal 并停止。默认 Fake 离线运行，可选 OpenAI 结构化输出适配器。Agent Loop、修复 Runtime、审批及在线 Evaluator 尚未实现；下文的整体项目契约仍是后续建设目标。
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。
 
 新增调查链路与运行命令见 [Case / Evidence 实现文档](docs/case-evidence.md)。本阶段只实现 `Case → Tool → Observation → Evidence → Provenance`，不调用 LLM、不修复、不结案。运行 `python scripts/demo_case_evidence.py --output .local/s6-case-evidence.json` 可以通过两个 FastAPI 应用的实际路由复现七次人工调查并导出完整 Case Evidence View。
 
-Step 3/3.1 的解释层见 [Hypothesis Engine 文档](docs/hypothesis-engine.md)。运行 `python scripts/demo_hypothesis_graph.py --output .local/s6-graph.json` 可查看规则版本、多个假设状态、实际 Evidence IDs 与事实缺口。S6 的 schema mismatch 可以确认，但部署旧 schema 仅受支持；Step 4 已增加独立 Context Assembly；仍不实现 Planner 或 LLM。
+Step 3/3.1 的解释层见 [Hypothesis Engine 文档](docs/hypothesis-engine.md)。运行 `python scripts/demo_hypothesis_graph.py --output .local/s6-graph.json` 可查看规则版本、多个假设状态、实际 Evidence IDs 与事实缺口。S6 的 schema mismatch 可以确认，但部署旧 schema 仅受支持。Hypothesis Engine 仍是确定性服务，不依赖 LLM。
 
 Step 4–4.2 的上下文边界见 [Reasoning Context 文档](docs/reasoning-context.md)。运行 `python scripts/demo_reasoning_context.py --scenario S6 --output .local/s6-context.json` 导出冻结 Snapshot、可读 Preview 和审计输入。Context 每轮从 Case + Evidence 重建，安全关键内容超预算时拒绝生成；辅助关系和候选交易使用有界投影，完整 Graph 与 Identity Result 保持不变。当前事实、历史、标识和版本均经过完整类型化检查；外部数据与可信控制分区标记，不调用 LLM。
 
 身份数据均为 synthetic test fixtures。Case 与 Evidence 使用 opaque refs；完整支付身份契约核对金额、币种、请求、客户、收款主体和账户。Raw PII fixture 位于独立内部边界，不进入 Tool DTO、Evidence 或 Graph。
+
+Step 5 见 [Planner 文档](docs/planner.md)。运行 `python scripts/demo_planner.py --provider fake --stage all` 查看六个实际调查阶段的模型候选、Harness 拒绝、排序与选择。模型只消费分区且已 alias 的 Snapshot 投影，没有 Tool 权限。可选 Provider 使用环境变量 PLANNER_MODEL / OPENAI_API_KEY；在线测试默认跳过。Step 6 尚未实现。
 
 第一阶段全部使用 Simulator。目标是以可本地运行的系统证明生产关键约束：真实状态与工具返回分离、证据驱动调查、权限控制、幂等执行、崩溃恢复和独立验收。
 
@@ -405,3 +407,34 @@ Credit Incident Resolution Agent Harness/
 依赖边界：`agent` 只通过类型化工具接口与 Runtime 协作，不直接依赖数据库、Simulator 内部状态或 Evaluator 结案能力；`tools` 调用受控的 Simulator 接口；`evaluator` 使用独立观测与确定性检查，不调用 Agent 自评；测试隐藏真值仅由测试代码使用。
 
 实现顺序：先完成 Simulator、领域不变量与独立 Evaluator，再接入工具和持久化 Runtime，最后接入真实模型调查循环与演示。这样可以先证明执行边界正确，再评估模型是否真正改善调查路径。
+
+## Frontend — UI-0 Investigation Console
+
+`frontend/` 提供 React + TypeScript + Vite、Ant Design、React Flow 和 TanStack Query 实现的只读调查控制台。主页面为 `/cases/:caseId`，显示当前事实、支付身份、假设及证据关系、Evidence Timeline、Safety Gap 和 Context Inspector。Planner Trace 仅保留占位；没有聊天、工具执行、审批或修复入口。
+
+沿用现有 Python 虚拟环境，另开两个终端启动本地 S6 演示：
+
+```powershell
+# 终端 1：仓库根目录；通过现有真实 HTTP 调查流程创建独立 SQLite demo
+.\.venv\Scripts\python scripts/serve_ui_demo.py --scenario S6
+
+# 终端 2
+cd frontend
+npm install
+npm run dev
+```
+
+打开 `http://127.0.0.1:5173/cases/CASE-JD202609100001`。测试 S8 时停止第一个终端，然后用 `--scenario S8` 重新启动并刷新页面。默认只手动刷新，可打开每 5 秒轮询。
+
+Vite 将 `/ui` 代理到 `127.0.0.1:8001`。Demo 仅绑定 loopback，使用公开的本地只读 demo grant；上游工具凭据不进入浏览器。`UI_API_TARGET` 和 `UI_API_TOKEN` 是 Vite 服务端配置，不使用 `VITE_*` 注入凭据。该启动脚本是 synthetic 本地演示，不是生产认证部署。
+
+```powershell
+cd frontend
+npm test
+npm run build
+# 回到仓库根目录
+cd ..
+.\.venv\Scripts\python -m pytest tests/test_ui_api.py -q
+```
+
+API 边界、目录、类型生成、S6/S8 截图和验收说明见 [UI-0 控制台文档](docs/ui-console.md)。现有 Python 开发、Simulator 和 Harness 启动流程保持不变。

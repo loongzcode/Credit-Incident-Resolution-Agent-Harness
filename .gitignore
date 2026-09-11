@@ -9,3 +9,7 @@ pytest-cache-files-*/
 work/
 .coverage
 htmlcov/
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+frontend/.env.local

@@ -45,6 +45,7 @@ class ReasoningContextAssembler:
         all_current = {e.evidence_id: e for c in C for e in index.current(c)}
         current = {ref: e for ref, e in all_current.items() if ref in eligible_ids}
         compactor = ContextCompactor()
+        lookup_groups = compactor.lookup_groups(eligible)
         definitions = {d.hypothesis_id: d for d in graph.definitions}
         critical_gaps = {g.gap_id for g in graph.open_gaps if g.priority_class == P.SAFETY_CRITICAL}
         critical_hypotheses = {h for g in graph.open_gaps if g.gap_id in critical_gaps for h in g.hypothesis_ids}
@@ -124,7 +125,10 @@ class ReasoningContextAssembler:
                        "history_digest": HistoryDigest(
                            tool_calls_used=case.budget.used_tool_calls, evidence_count=len(index.evidence),
                            latest_observation_time=max((e.observed_at for e in index.evidence), default=None),
-                           repeated_lookup_groups=tuple(selected["lookups"]), state_transitions=tuple(selected["states"])),
+                           repeated_lookup_groups=tuple(selected["lookups"]), state_transitions=tuple(selected["states"]),
+                           lookup_history_complete=len(selected["lookups"]) == len(lookup_groups)
+                           and len({e.observation_id for e in eligible}) >= case.budget.used_tool_calls
+                           and all(e.claim_type != C.SOURCE_LOOKUP_STATUS or e.evidence_id in eligible_ids for e in index.evidence)),
                        }
             refs = referenced_ids(payload)
             omitted = defaultdict(list)
@@ -168,7 +172,7 @@ class ReasoningContextAssembler:
                 candidates.append((3, 0, s.hypothesis_id.value, "resolved_hypotheses_summary", ResolvedHypothesisSummary(
                     hypothesis_id=s.hypothesis_id, statement=definitions[s.hypothesis_id].statement,
                     status=s.status, decisive_evidence_refs=s.decisive_evidence_refs)))
-        for i, group in enumerate(compactor.lookup_groups(eligible)):
+        for i, group in enumerate(lookup_groups):
             candidates.append((3, 1, str(i), "lookups", group))
         history_eligible = tuple(e for e in eligible if e.evidence_id not in identity_aux | relation_aux)
         for i, group in enumerate(compactor.historical_groups(history_eligible, current)):

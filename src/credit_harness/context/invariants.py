@@ -1,6 +1,6 @@
 from credit_harness.hypotheses.models import HypothesisStatus as S, PriorityClass as P
 from .budget import case_payload, digest, fits, referenced_ids, snapshot_digest
-from .compaction import fact
+from .compaction import fact, ContextCompactor
 from .eligibility import MandatoryContextFactPolicy
 from .models import ReasoningContextSnapshot, GapCapsule, SafetyInvariant
 from .identity_projection import IdentityContextProjector, identity_auxiliary_refs
@@ -84,3 +84,12 @@ class ReasoningContextInvariantValidator:
         require(snapshot.snapshot_id == snapshot_digest(snapshot), "snapshot fingerprint mismatch")
         require(snapshot.context_budget_usage.serialized_chars == len(snapshot.model_dump_json())
                 and fits(snapshot), "budget mismatch")
+        eligible = tuple(e for e in index.evidence if eligibility.allows(e))
+        lookup_groups = ContextCompactor().lookup_groups(eligible)
+        retained = snapshot.history_digest.repeated_lookup_groups
+        require(all(g in lookup_groups for g in retained), "lookup history projection changed")
+        from credit_harness.evidence.models import ClaimType
+        expected_complete = (len(retained) == len(lookup_groups)
+                             and len({e.observation_id for e in eligible}) >= index.case.budget.used_tool_calls and all(
+            e.claim_type != ClaimType.SOURCE_LOOKUP_STATUS or eligibility.allows(e) for e in index.evidence))
+        require(snapshot.history_digest.lookup_history_complete == expected_complete, "lookup history completeness changed")

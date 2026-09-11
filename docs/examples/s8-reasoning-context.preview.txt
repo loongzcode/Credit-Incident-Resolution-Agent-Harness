@@ -1,5 +1,5 @@
 CASE JD202609100001
-SNAPSHOT 02a9651d278e9a1e247c835da0f0fedb661a72fb0cacd7a246f4a64e47324959
+SNAPSHOT be13dc1f47fb2478dda531b8165fa8b7133d37866d3880602c697f73f471ec0f
 未来 Planner 的结构化输入；本次没有 LLM 调用。
 
 TASK
@@ -99,7 +99,8 @@ HISTORY DIGEST
         "first_ref": "E-ca5eedb712ff9afbcb4af43a520beb9a8bc47b89572b93e0316a61bdc0eb08b8",
         "latest_ref": "E-8a3a461dbf5f0fe91878f5b4c2dcce0dd4476fac084a535816d53da3e4d90d68",
         "range_digest": "f2407c0f256ab4d69a7b9995a0cdf876a4617a1d869ea5cc8f035daea3116d6f"
-      }
+      },
+      "latest_consecutive_count": 3
     },
     {
       "tool": "get_payment_transaction",
@@ -118,16 +119,18 @@ HISTORY DIGEST
         "first_ref": "E-6d949fb4005d18005ae754966e540f84e76cbeec0d20f376479a32e470c23ea7",
         "latest_ref": "E-95dcc0053db3eb79da290fb9c1d5d265d0f918efc93e14f35b5e2d5e2df3dcfb",
         "range_digest": "e1f08d875275a5503f962d5e6bbaf67c5d749a6df813cae2617a20754e6ad7fb"
-      }
+      },
+      "latest_consecutive_count": 3
     }
   ],
-  "state_transitions": []
+  "state_transitions": [],
+  "lookup_history_complete": true
 }
 
 BUDGET USAGE
 {
-  "serialized_chars": 15422,
-  "approximate_tokens": 5141,
+  "serialized_chars": 16077,
+  "approximate_tokens": 5359,
   "fact_capsules": 0,
   "hypothesis_capsules": 10,
   "gap_capsules": 4,

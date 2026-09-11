@@ -18,6 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest>=8,<10"]
+llm = ["openai>=3.11,<4"]
 
 [project.scripts]
 credit-sim = "credit_harness.cli:main"
@@ -29,5 +30,7 @@ where = ["src"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-ra"
-markers = ["postgres: requires TEST_POSTGRES_URL pointing to a dedicated test database"]
-
+markers = [
+    "postgres: requires TEST_POSTGRES_URL pointing to a dedicated test database",
+    "llm: optional live provider test; RUN_LLM_TESTS=1, OPENAI_API_KEY and PLANNER_MODEL required",
+]

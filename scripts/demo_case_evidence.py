@@ -37,7 +37,7 @@ class LocalHTTPClient:
         return Observation.model_validate(response.json())
 
 
-def run_demo(engine, scenario: ScenarioId = ScenarioId.S6) -> CaseEvidenceView:
+def run_demo(engine, scenario: ScenarioId = ScenarioId.S6, *, manual_steps=None) -> CaseEvidenceView:
     create_schema(engine)
     create_harness_schema(engine)
     # Only this trusted provisioning section knows the scenario; runtime receives a
@@ -60,6 +60,8 @@ def run_demo(engine, scenario: ScenarioId = ScenarioId.S6) -> CaseEvidenceView:
             )] + [(ToolName.PROTOCOL, "2.3"), (ToolName.PROTOCOL, "2.2")]
             if scenario == ScenarioId.S8:
                 steps = [(tool, None) for _ in range(3) for tool in (ToolName.FUND, ToolName.PAYMENT)]
+            if manual_steps is not None:
+                steps = manual_steps
             for tool, version in steps:
                 response = harness.post(f"/cases/{case.case_id}/tools/{tool.value}", headers=headers,
                                         json=ToolQuery(internal_order_id=case.internal_order_id,

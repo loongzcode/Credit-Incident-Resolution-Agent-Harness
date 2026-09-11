@@ -1,0 +1,11 @@
+import type { components } from './generated';
+type Schema = components['schemas'];
+export type Case = Schema['UICase'];
+export type Evidence = Schema['UIEvidence'];
+export type EvidenceList = Schema['UIEvidenceList'];
+export type Fact = Schema['FactCapsule'];
+export type Context = Schema['ReasoningContextSnapshot'];
+export type Identity = Schema['PaymentIdentityContext'];
+export type Graph = Schema['UIHypothesisGraph'];
+export type Hypothesis = Schema['UIHypothesisState'];
+export type Gap = Schema['UIGap'];
