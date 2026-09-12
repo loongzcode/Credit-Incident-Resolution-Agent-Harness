@@ -6,6 +6,8 @@
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。
 
+Step 12 的故障矩阵、四组对照、Memory seed/held-out 隔离、双 Track 与指标定义见 [Benchmark 文档](docs/benchmark.md)。运行 `python scripts/run_benchmark.py --mode offline --seed 20260912 --output benchmark` 生成真实 raw runs 与可重算汇总。默认离线，Live 必须显式开启；不使用单一总分，也不以离线 fake 结果宣称 LLM 收益。
+
 新增调查链路与运行命令见 [Case / Evidence 实现文档](docs/case-evidence.md)。本阶段只实现 `Case → Tool → Observation → Evidence → Provenance`，不调用 LLM、不修复、不结案。运行 `python scripts/demo_case_evidence.py --output .local/s6-case-evidence.json` 可以通过两个 FastAPI 应用的实际路由复现七次人工调查并导出完整 Case Evidence View。
 
 Step 3/3.1 的解释层见 [Hypothesis Engine 文档](docs/hypothesis-engine.md)。运行 `python scripts/demo_hypothesis_graph.py --output .local/s6-graph.json` 可查看规则版本、多个假设状态、实际 Evidence IDs 与事实缺口。S6 的 schema mismatch 可以确认，但部署旧 schema 仅受支持。Hypothesis Engine 仍是确定性服务，不依赖 LLM。

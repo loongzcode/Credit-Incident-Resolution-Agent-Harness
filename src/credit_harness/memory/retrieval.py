@@ -65,7 +65,7 @@ class VerifiedExperienceRetriever:
                 "funding_partner": None, "asset_partner": None, "product_code": None})
             result.append(ExperienceCapsule(experience_id=experience.experience_id, verified_outcome_path=experience.outcome_path,
                 similarity_features=features, retrieval_score=score, observed_pattern=pattern,
-                useful_evidence_claim_types=experience.useful_evidence_types,
+                observed_evidence_claim_types=experience.observed_evidence_types,
                 observed_tool_sequence=tuple(s.tool for s in experience.investigation_sequence[:24]),
                 verified_safety_lessons=tuple(s.lesson for s in experience.safety_lessons),
                 historical_error_codes=experience.observed_symptoms.error_codes[:4]))

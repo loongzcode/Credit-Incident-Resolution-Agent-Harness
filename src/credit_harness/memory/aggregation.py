@@ -30,8 +30,12 @@ class PatternStatistics(Model):
     sample_size: int
     experience_ids: tuple[Hash, ...]
     outcome_counts: tuple[OutcomeCount, ...]
-    first_useful_evidence: tuple[FirstUsefulCount, ...]
+    first_evidence_yield: tuple[FirstUsefulCount, ...]
     tool_yield: tuple[ToolYield, ...]
+
+    @property
+    def first_useful_evidence(self):
+        return self.first_evidence_yield
 
 
 class ExperiencePatternAggregator:
@@ -50,7 +54,7 @@ class ExperiencePatternAggregator:
                 calls[s.tool].append(s)
         return PatternStatistics(sample_size=len(experiences), experience_ids=tuple(e.experience_id for e in experiences),
             outcome_counts=tuple(OutcomeCount(outcome=k, count=outcomes[k]) for k in sorted(outcomes)),
-            first_useful_evidence=tuple(FirstUsefulCount(tool=k, count=first[k]) for k in sorted(first)),
+            first_evidence_yield=tuple(FirstUsefulCount(tool=k, count=first[k]) for k in sorted(first)),
             tool_yield=tuple(ToolYield(tool=k, calls=len(calls[k]), calls_with_new_evidence=sum(s.new_evidence_count > 0 for s in calls[k]),
                 new_evidence_count=sum(s.new_evidence_count for s in calls[k]),
                 median_position=median(s.sequence for s in calls[k])) for k in sorted(calls)))

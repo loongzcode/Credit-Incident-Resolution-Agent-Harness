@@ -1,6 +1,6 @@
 from enum import StrEnum
 from typing import Annotated, Literal
-from pydantic import AwareDatetime, Field, StrictBool, model_validator
+from pydantic import AwareDatetime, Field, StrictBool, model_validator, model_serializer, AliasChoices
 from credit_harness.domain.models import Model
 from credit_harness.domain.enums import (ToolName, TransportStatus, FundBusinessStatus,
     PaymentFinality, ConsumeStatus, LoanStatus, FieldType)
@@ -13,7 +13,7 @@ from credit_harness.identity.models import IdentityMatch
 from credit_harness.remediation.models import RemediationActionType
 from credit_harness.authorization.models import EffectStatus
 
-EXPERIENCE_SCHEMA_VERSION = "1"
+EXPERIENCE_SCHEMA_VERSION = "2"
 GUIDANCE_SCHEMA_VERSION = "1"
 SkillId = Annotated[str, Field(pattern=r"^[a-z][a-z0-9-]{1,79}$")]
 
@@ -31,6 +31,14 @@ class SkillStatus(StrEnum):
 class ExperienceStatus(StrEnum):
     ACTIVE = "ACTIVE"
     REVOKED = "REVOKED"
+
+
+class GuidanceBuildStatus(StrEnum):
+    AVAILABLE = "AVAILABLE"
+    EMPTY = "EMPTY"
+    RETRIEVAL_FAILED = "RETRIEVAL_FAILED"
+    INVALID_SKILL = "INVALID_SKILL"
+    BUDGET_DROPPED = "BUDGET_DROPPED"
 
 
 class GuidanceTrustClass(StrEnum):
@@ -205,7 +213,7 @@ class VerifiedIncidentExperience(Model):
     observed_symptoms: HistoricalSymptom
     confirmed_hypotheses: tuple[HistoricalHypothesis, ...]
     investigation_sequence: tuple[InvestigationStep, ...]
-    useful_evidence_types: tuple[ClaimType, ...]
+    observed_evidence_types: tuple[ClaimType, ...] = Field(validation_alias=AliasChoices("observed_evidence_types", "useful_evidence_types"))
     remediation_actions: tuple[RemediationActionType, ...]
     side_effect_outcomes: tuple[HistoricalEffect, ...]
     recovery_patterns: tuple[RecoveryPattern, ...]
@@ -214,7 +222,19 @@ class VerifiedIncidentExperience(Model):
     created_at: AwareDatetime
     applicable_since: AwareDatetime
     applicable_until: AwareDatetime | None = None
-    experience_schema_version: Literal["1"] = EXPERIENCE_SCHEMA_VERSION
+    experience_schema_version: Literal["1", "2"] = EXPERIENCE_SCHEMA_VERSION
+
+    @property
+    def useful_evidence_types(self):
+        """Legacy Python alias; not a claim of usefulness."""
+        return self.observed_evidence_types
+
+    @model_serializer(mode="wrap")
+    def preserve_v1_content_identity(self, handler):
+        result = handler(self)
+        if self.experience_schema_version == "1" and "observed_evidence_types" in result:
+            result["useful_evidence_types"] = result.pop("observed_evidence_types")
+        return result
 
 
 class SimilarityFeature(StrEnum):
@@ -237,7 +257,8 @@ class ExperienceCapsule(Model):
     similarity_features: tuple[SimilarityFeature, ...]
     retrieval_score: int = Field(ge=0)
     observed_pattern: IncidentSignature
-    useful_evidence_claim_types: Annotated[tuple[ClaimType, ...], Field(max_length=48)]
+    observed_evidence_claim_types: Annotated[tuple[ClaimType, ...], Field(max_length=48)] = Field(
+        validation_alias=AliasChoices("observed_evidence_claim_types", "useful_evidence_claim_types"))
     observed_tool_sequence: Annotated[tuple[ToolName, ...], Field(max_length=24)]
     verified_safety_lessons: tuple[SafetyLesson, ...]
     historical_error_codes: Annotated[tuple[StructuredErrorCode, ...], Field(max_length=4)] = ()

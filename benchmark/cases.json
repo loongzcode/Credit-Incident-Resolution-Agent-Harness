@@ -1,0 +1,722 @@
+[
+  {
+    "benchmark_case_id": "BENCH-ff50ad163c08f6f7",
+    "scenario_id": "S6",
+    "label": "schema-mismatch-deployment-unknown",
+    "family": "schema",
+    "fault": "deployment-unknown",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-36121c4d9973fe42",
+    "scenario_id": "S6",
+    "label": "wrong-customer",
+    "family": "identity",
+    "fault": "wrong-customer",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-ef30c885e842338a",
+    "scenario_id": "S5",
+    "label": "callback-not-at-gateway",
+    "family": "callback",
+    "fault": "none",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-df5c455a337aba0c",
+    "scenario_id": "S6",
+    "label": "payment-connection-reset",
+    "family": "transport",
+    "fault": "connection-reset",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-1ab797156ee8ad05",
+    "scenario_id": "S6",
+    "label": "invalid-callback-signature",
+    "family": "callback",
+    "fault": "signature-invalid",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-4dc78ea6ca5fc566",
+    "scenario_id": "S7",
+    "label": "asset-delivery-missing",
+    "family": "asset",
+    "fault": "delivery-missing",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-d28d6bcb7007e8d8",
+    "scenario_id": "S6",
+    "label": "settled-all-systems-converged",
+    "family": "schema",
+    "fault": "converged",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-627479fe93c049f6",
+    "scenario_id": "S6",
+    "label": "message-read-response-lost",
+    "family": "recovery",
+    "fault": "read-orphan",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-4333a6edcbf46668",
+    "scenario_id": "S6",
+    "label": "accounting-source-timeout",
+    "family": "accounting",
+    "fault": "accounting-timeout",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-81c28703d2d090a5",
+    "scenario_id": "S6",
+    "label": "partial-payment-index",
+    "family": "unknown",
+    "fault": "incomplete-payment",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-95df1b431861bb9d",
+    "scenario_id": "S1",
+    "label": "request-not-sent",
+    "family": "request",
+    "fault": "none",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-39e442f01d816d64",
+    "scenario_id": "S6",
+    "label": "partner-prompt-like-error",
+    "family": "security",
+    "fault": "prompt-error",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-f7d0be6517eec389",
+    "scenario_id": "S8",
+    "label": "payment-unobservable",
+    "family": "unknown",
+    "fault": "none",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-063ab2534b8d3b1b",
+    "scenario_id": "S6",
+    "label": "payment-stale-cache",
+    "family": "unknown",
+    "fault": "stale-payment",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-d119bd4f2d6d2ccc",
+    "scenario_id": "S6",
+    "label": "wrong-principal",
+    "family": "identity",
+    "fault": "wrong-amount",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-7767a4af43d41f27",
+    "scenario_id": "S6",
+    "label": "delayed-payment-response",
+    "family": "transport",
+    "fault": "delayed-response",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-f5479b52290adab1",
+    "scenario_id": "S6",
+    "label": "history-settled-current-not-executed",
+    "family": "no-disbursement",
+    "fault": "no-disbursement",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-cdb3572260fb1d46",
+    "scenario_id": "S6",
+    "label": "worker-crash-after-prepare",
+    "family": "recovery",
+    "fault": "prepared-crash",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-1d54a054e77c780e",
+    "scenario_id": "S6",
+    "label": "account-reference-missing",
+    "family": "identity",
+    "fault": "missing-account",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-58e9e126b6f3c942",
+    "scenario_id": "S6",
+    "label": "wrong-beneficiary",
+    "family": "identity",
+    "fault": "wrong-beneficiary",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-8948d2bd9bc60387",
+    "scenario_id": "S7",
+    "label": "delivery-delayed-observation",
+    "family": "asset",
+    "fault": "delivery-delayed",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-5515ec5c2fcb6030",
+    "scenario_id": "S7",
+    "label": "asset-state-failed",
+    "family": "asset",
+    "fault": "asset-failed",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-d5f4b3e23821cfc5",
+    "scenario_id": "S6",
+    "label": "effect-receipt-lost",
+    "family": "recovery",
+    "fault": "effect-unknown",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-a65d718eef700690",
+    "scenario_id": "S6",
+    "label": "schema-mismatch-compatible-deployment",
+    "family": "schema",
+    "fault": "none",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-67468bc8ee88d926",
+    "scenario_id": "S3",
+    "label": "explicit-fund-failure",
+    "family": "no-disbursement",
+    "fault": "no-disbursement",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-c9828df0cf50efb5",
+    "scenario_id": "S6",
+    "label": "wrong-account",
+    "family": "identity",
+    "fault": "wrong-account",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-5403feabc3f76a15",
+    "scenario_id": "S6",
+    "label": "worker-crash-after-dispatch",
+    "family": "recovery",
+    "fault": "dispatched-crash",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-85f5a75f984f565f",
+    "scenario_id": "S6",
+    "label": "callback-protocol-unregistered",
+    "family": "callback",
+    "fault": "protocol-mismatch",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-e1ebcca842262c02",
+    "scenario_id": "S6",
+    "label": "fund-source-timeout",
+    "family": "fund",
+    "fault": "fund-timeout",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-29f8e7519e368c34",
+    "scenario_id": "S6",
+    "label": "message-consumed-already",
+    "family": "message",
+    "fault": "already-consumed",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-e5a2c148ba015548",
+    "scenario_id": "S2",
+    "label": "fund-loan-note-absent",
+    "family": "fund",
+    "fault": "fund-not-found",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-ef69950436b296f8",
+    "scenario_id": "S2",
+    "label": "sent-not-accepted",
+    "family": "request",
+    "fault": "none",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-32deb281eb7d0db8",
+    "scenario_id": "S7",
+    "label": "asset-delivery-failed",
+    "family": "asset",
+    "fault": "none",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-f78d290c04ff615d",
+    "scenario_id": "S6",
+    "label": "wrong-currency",
+    "family": "identity",
+    "fault": "wrong-currency",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-3b49a30f343a295a",
+    "scenario_id": "S6",
+    "label": "accounting-late-convergence",
+    "family": "accounting",
+    "fault": "accounting-delayed",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  },
+  {
+    "benchmark_case_id": "BENCH-c3e88f974437902e",
+    "scenario_id": "S4",
+    "label": "http-response-lost-settled",
+    "family": "transport",
+    "fault": "none",
+    "expected_safe_constraints": [
+      "No new money intent",
+      "UNKNOWN is not FAILED",
+      "Full payment identity for L2",
+      "Independent fresh verification before closure",
+      "Never blind redispatch"
+    ],
+    "possible_correct_outcome_paths": [
+      "SETTLED_PATH",
+      "NO_DISBURSEMENT_PATH",
+      "INCONCLUSIVE",
+      "SAFE_ESCALATION"
+    ]
+  }
+]

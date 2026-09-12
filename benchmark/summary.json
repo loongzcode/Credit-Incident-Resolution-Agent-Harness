@@ -1,0 +1,1582 @@
+{
+  "benchmark_status": "SAFETY_PASS",
+  "run_count": 288,
+  "groups": {
+    "agent-cold/end-to-end": {
+      "count": 36,
+      "success_count": 2,
+      "failure_count": 7,
+      "inconclusive_count": 27,
+      "infrastructure_or_policy_error_count": 0,
+      "policy_blocked_verification_count": 22,
+      "safety": {
+        "false_verified_closure_count": 0,
+        "unsafe_money_action_count": 0,
+        "foreign_order_attempt_count": 0,
+        "blind_retry_count": 0,
+        "identity_unsafe_remediation_count": 0,
+        "unresolved_effect_closed_count": 0,
+        "historical_memory_used_as_truth_count": 0
+      },
+      "investigation": {
+        "verified_closure_rate": {
+          "numerator": 2,
+          "denominator": 36,
+          "value": 0.05555555555555555,
+          "wilson_95": [
+            0.015369663767066846,
+            0.18144974107611211
+          ]
+        },
+        "correct_safe_stop_rate": {
+          "numerator": 21,
+          "denominator": 21,
+          "value": 1.0,
+          "wilson_95": [
+            0.8453561767357979,
+            0.9999999999999999
+          ]
+        },
+        "inconclusive_rate": {
+          "numerator": 27,
+          "denominator": 36,
+          "value": 0.75,
+          "wilson_95": [
+            0.5892923231679656,
+            0.8624967616077461
+          ]
+        },
+        "escalation_rate": {
+          "numerator": 14,
+          "denominator": 36,
+          "value": 0.3888888888888889,
+          "wilson_95": [
+            0.24784655417822943,
+            0.5513582970325652
+          ]
+        },
+        "tool_calls": {
+          "count": 36,
+          "mean": 8.333333333333334,
+          "median": 8.0,
+          "p95": 11
+        },
+        "total_tool_calls": {
+          "count": 36,
+          "mean": 11.833333333333334,
+          "median": 8.0,
+          "p95": 20
+        },
+        "tool_budget_exhaustion_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "time_to_first_safety_critical_evidence": {
+          "count": 29,
+          "mean": 2.0689655172413794,
+          "median": 2,
+          "p95": 2
+        },
+        "missing_first_safety_evidence_count": 7,
+        "safety_gap_resolution_rate": {
+          "numerator": 79,
+          "denominator": 108,
+          "value": 0.7314814814814815,
+          "wilson_95": [
+            0.6410086613886575,
+            0.8060521818038576
+          ]
+        },
+        "evidence_yield_per_tool_call": 3.5258215962441315
+      },
+      "remediation": {
+        "remediation_proposal_rate": {
+          "numerator": 36,
+          "denominator": 36,
+          "value": 1.0,
+          "wilson_95": [
+            0.9035781695514236,
+            1
+          ]
+        },
+        "safe_remediation_ready_rate": {
+          "numerator": 34,
+          "denominator": 36,
+          "value": 0.9444444444444444,
+          "wilson_95": [
+            0.8185502589238878,
+            0.9846303362329332
+          ]
+        },
+        "blocked_unsafe_remediation_rate": {
+          "numerator": 36,
+          "denominator": 36,
+          "value": 1.0,
+          "wilson_95": [
+            0.9035781695514236,
+            1
+          ]
+        },
+        "unnecessary_remediation_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "post_effect_verification_rate": {
+          "numerator": 13,
+          "denominator": 34,
+          "value": 0.38235294117647056,
+          "wilson_95": [
+            0.23899964851608782,
+            0.5495928000061734
+          ]
+        }
+      },
+      "recovery": {
+        "unknown_effect_rate": {
+          "numerator": 1,
+          "denominator": 34,
+          "value": 0.029411764705882353,
+          "wilson_95": [
+            0.00521077192559663,
+            0.1491590221634482
+          ]
+        },
+        "unknown_correctly_reconciled_rate": {
+          "numerator": 1,
+          "denominator": 1,
+          "value": 1.0,
+          "wilson_95": [
+            0.20654329147389294,
+            1
+          ]
+        },
+        "blind_redispatch_count": 0,
+        "orphan_read_recovery_rate": {
+          "numerator": 1,
+          "denominator": 1,
+          "value": 1.0,
+          "wilson_95": [
+            0.20654329147389294,
+            1
+          ]
+        },
+        "recovery_escalation_rate": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.5615060804490177
+          ]
+        }
+      },
+      "memory": {
+        "experience_retrieval_hit_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "mean_retrieval_count": null,
+        "relevant_experience_recall_at_k": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "first_safety_evidence_position_delta": null,
+        "tool_call_delta_vs_cold": null,
+        "closure_delta_vs_cold": null
+      }
+    },
+    "agent-cold/investigation": {
+      "count": 36,
+      "success_count": 0,
+      "failure_count": 9,
+      "inconclusive_count": 27,
+      "infrastructure_or_policy_error_count": 0,
+      "policy_blocked_verification_count": 0,
+      "safety": {
+        "false_verified_closure_count": 0,
+        "unsafe_money_action_count": 0,
+        "foreign_order_attempt_count": 0,
+        "blind_retry_count": 0,
+        "identity_unsafe_remediation_count": 0,
+        "unresolved_effect_closed_count": 0,
+        "historical_memory_used_as_truth_count": 0
+      },
+      "investigation": {
+        "verified_closure_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "correct_safe_stop_rate": {
+          "numerator": 32,
+          "denominator": 32,
+          "value": 1.0,
+          "wilson_95": [
+            0.8928172849426366,
+            1
+          ]
+        },
+        "inconclusive_rate": {
+          "numerator": 27,
+          "denominator": 36,
+          "value": 0.75,
+          "wilson_95": [
+            0.5892923231679656,
+            0.8624967616077461
+          ]
+        },
+        "escalation_rate": {
+          "numerator": 14,
+          "denominator": 36,
+          "value": 0.3888888888888889,
+          "wilson_95": [
+            0.24784655417822943,
+            0.5513582970325652
+          ]
+        },
+        "tool_calls": {
+          "count": 36,
+          "mean": 8.333333333333334,
+          "median": 8.0,
+          "p95": 11
+        },
+        "total_tool_calls": {
+          "count": 36,
+          "mean": 8.333333333333334,
+          "median": 8.0,
+          "p95": 11
+        },
+        "tool_budget_exhaustion_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "time_to_first_safety_critical_evidence": {
+          "count": 29,
+          "mean": 2.0689655172413794,
+          "median": 2,
+          "p95": 2
+        },
+        "missing_first_safety_evidence_count": 7,
+        "safety_gap_resolution_rate": {
+          "numerator": 79,
+          "denominator": 108,
+          "value": 0.7314814814814815,
+          "wilson_95": [
+            0.6410086613886575,
+            0.8060521818038576
+          ]
+        },
+        "evidence_yield_per_tool_call": 3.7533333333333334
+      },
+      "remediation": {
+        "remediation_proposal_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "safe_remediation_ready_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "blocked_unsafe_remediation_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "unnecessary_remediation_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "post_effect_verification_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        }
+      },
+      "recovery": {
+        "unknown_effect_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "unknown_correctly_reconciled_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "blind_redispatch_count": 0,
+        "orphan_read_recovery_rate": {
+          "numerator": 1,
+          "denominator": 1,
+          "value": 1.0,
+          "wilson_95": [
+            0.20654329147389294,
+            1
+          ]
+        },
+        "recovery_escalation_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        }
+      },
+      "memory": {
+        "experience_retrieval_hit_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "mean_retrieval_count": null,
+        "relevant_experience_recall_at_k": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "first_safety_evidence_position_delta": null,
+        "tool_call_delta_vs_cold": null,
+        "closure_delta_vs_cold": null
+      }
+    },
+    "agent-memory/end-to-end": {
+      "count": 36,
+      "success_count": 2,
+      "failure_count": 7,
+      "inconclusive_count": 27,
+      "infrastructure_or_policy_error_count": 0,
+      "policy_blocked_verification_count": 22,
+      "safety": {
+        "false_verified_closure_count": 0,
+        "unsafe_money_action_count": 0,
+        "foreign_order_attempt_count": 0,
+        "blind_retry_count": 0,
+        "identity_unsafe_remediation_count": 0,
+        "unresolved_effect_closed_count": 0,
+        "historical_memory_used_as_truth_count": 0
+      },
+      "investigation": {
+        "verified_closure_rate": {
+          "numerator": 2,
+          "denominator": 36,
+          "value": 0.05555555555555555,
+          "wilson_95": [
+            0.015369663767066846,
+            0.18144974107611211
+          ]
+        },
+        "correct_safe_stop_rate": {
+          "numerator": 21,
+          "denominator": 21,
+          "value": 1.0,
+          "wilson_95": [
+            0.8453561767357979,
+            0.9999999999999999
+          ]
+        },
+        "inconclusive_rate": {
+          "numerator": 27,
+          "denominator": 36,
+          "value": 0.75,
+          "wilson_95": [
+            0.5892923231679656,
+            0.8624967616077461
+          ]
+        },
+        "escalation_rate": {
+          "numerator": 14,
+          "denominator": 36,
+          "value": 0.3888888888888889,
+          "wilson_95": [
+            0.24784655417822943,
+            0.5513582970325652
+          ]
+        },
+        "tool_calls": {
+          "count": 36,
+          "mean": 8.333333333333334,
+          "median": 8.0,
+          "p95": 11
+        },
+        "total_tool_calls": {
+          "count": 36,
+          "mean": 11.833333333333334,
+          "median": 8.0,
+          "p95": 20
+        },
+        "tool_budget_exhaustion_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "time_to_first_safety_critical_evidence": {
+          "count": 29,
+          "mean": 2.0689655172413794,
+          "median": 2,
+          "p95": 2
+        },
+        "missing_first_safety_evidence_count": 7,
+        "safety_gap_resolution_rate": {
+          "numerator": 79,
+          "denominator": 108,
+          "value": 0.7314814814814815,
+          "wilson_95": [
+            0.6410086613886575,
+            0.8060521818038576
+          ]
+        },
+        "evidence_yield_per_tool_call": 3.5258215962441315
+      },
+      "remediation": {
+        "remediation_proposal_rate": {
+          "numerator": 36,
+          "denominator": 36,
+          "value": 1.0,
+          "wilson_95": [
+            0.9035781695514236,
+            1
+          ]
+        },
+        "safe_remediation_ready_rate": {
+          "numerator": 34,
+          "denominator": 36,
+          "value": 0.9444444444444444,
+          "wilson_95": [
+            0.8185502589238878,
+            0.9846303362329332
+          ]
+        },
+        "blocked_unsafe_remediation_rate": {
+          "numerator": 36,
+          "denominator": 36,
+          "value": 1.0,
+          "wilson_95": [
+            0.9035781695514236,
+            1
+          ]
+        },
+        "unnecessary_remediation_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "post_effect_verification_rate": {
+          "numerator": 13,
+          "denominator": 34,
+          "value": 0.38235294117647056,
+          "wilson_95": [
+            0.23899964851608782,
+            0.5495928000061734
+          ]
+        }
+      },
+      "recovery": {
+        "unknown_effect_rate": {
+          "numerator": 1,
+          "denominator": 34,
+          "value": 0.029411764705882353,
+          "wilson_95": [
+            0.00521077192559663,
+            0.1491590221634482
+          ]
+        },
+        "unknown_correctly_reconciled_rate": {
+          "numerator": 1,
+          "denominator": 1,
+          "value": 1.0,
+          "wilson_95": [
+            0.20654329147389294,
+            1
+          ]
+        },
+        "blind_redispatch_count": 0,
+        "orphan_read_recovery_rate": {
+          "numerator": 1,
+          "denominator": 1,
+          "value": 1.0,
+          "wilson_95": [
+            0.20654329147389294,
+            1
+          ]
+        },
+        "recovery_escalation_rate": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.5615060804490177
+          ]
+        }
+      },
+      "memory": {
+        "experience_retrieval_hit_rate": {
+          "numerator": 261,
+          "denominator": 286,
+          "value": 0.9125874125874126,
+          "wilson_95": [
+            0.8741460798705087,
+            0.9400917659045629
+          ]
+        },
+        "mean_retrieval_count": 2.737762237762238,
+        "relevant_experience_recall_at_k": {
+          "numerator": 63,
+          "denominator": 210,
+          "value": 0.3,
+          "wilson_95": [
+            0.24206655500527888,
+            0.3651193246364748
+          ]
+        },
+        "first_safety_evidence_position_delta": {
+          "count": 29,
+          "mean": 0,
+          "median": 0,
+          "p95": 0
+        },
+        "tool_call_delta_vs_cold": {
+          "count": 36,
+          "mean": 0,
+          "median": 0.0,
+          "p95": 0
+        },
+        "closure_delta_vs_cold": {
+          "count": 36,
+          "mean": 0,
+          "median": 0.0,
+          "p95": 0
+        }
+      }
+    },
+    "agent-memory/investigation": {
+      "count": 36,
+      "success_count": 0,
+      "failure_count": 9,
+      "inconclusive_count": 27,
+      "infrastructure_or_policy_error_count": 0,
+      "policy_blocked_verification_count": 0,
+      "safety": {
+        "false_verified_closure_count": 0,
+        "unsafe_money_action_count": 0,
+        "foreign_order_attempt_count": 0,
+        "blind_retry_count": 0,
+        "identity_unsafe_remediation_count": 0,
+        "unresolved_effect_closed_count": 0,
+        "historical_memory_used_as_truth_count": 0
+      },
+      "investigation": {
+        "verified_closure_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "correct_safe_stop_rate": {
+          "numerator": 32,
+          "denominator": 32,
+          "value": 1.0,
+          "wilson_95": [
+            0.8928172849426366,
+            1
+          ]
+        },
+        "inconclusive_rate": {
+          "numerator": 27,
+          "denominator": 36,
+          "value": 0.75,
+          "wilson_95": [
+            0.5892923231679656,
+            0.8624967616077461
+          ]
+        },
+        "escalation_rate": {
+          "numerator": 14,
+          "denominator": 36,
+          "value": 0.3888888888888889,
+          "wilson_95": [
+            0.24784655417822943,
+            0.5513582970325652
+          ]
+        },
+        "tool_calls": {
+          "count": 36,
+          "mean": 8.333333333333334,
+          "median": 8.0,
+          "p95": 11
+        },
+        "total_tool_calls": {
+          "count": 36,
+          "mean": 8.333333333333334,
+          "median": 8.0,
+          "p95": 11
+        },
+        "tool_budget_exhaustion_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "time_to_first_safety_critical_evidence": {
+          "count": 29,
+          "mean": 2.0689655172413794,
+          "median": 2,
+          "p95": 2
+        },
+        "missing_first_safety_evidence_count": 7,
+        "safety_gap_resolution_rate": {
+          "numerator": 79,
+          "denominator": 108,
+          "value": 0.7314814814814815,
+          "wilson_95": [
+            0.6410086613886575,
+            0.8060521818038576
+          ]
+        },
+        "evidence_yield_per_tool_call": 3.7533333333333334
+      },
+      "remediation": {
+        "remediation_proposal_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "safe_remediation_ready_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "blocked_unsafe_remediation_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "unnecessary_remediation_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "post_effect_verification_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        }
+      },
+      "recovery": {
+        "unknown_effect_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "unknown_correctly_reconciled_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "blind_redispatch_count": 0,
+        "orphan_read_recovery_rate": {
+          "numerator": 1,
+          "denominator": 1,
+          "value": 1.0,
+          "wilson_95": [
+            0.20654329147389294,
+            1
+          ]
+        },
+        "recovery_escalation_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        }
+      },
+      "memory": {
+        "experience_retrieval_hit_rate": {
+          "numerator": 261,
+          "denominator": 286,
+          "value": 0.9125874125874126,
+          "wilson_95": [
+            0.8741460798705087,
+            0.9400917659045629
+          ]
+        },
+        "mean_retrieval_count": 2.737762237762238,
+        "relevant_experience_recall_at_k": {
+          "numerator": 63,
+          "denominator": 210,
+          "value": 0.3,
+          "wilson_95": [
+            0.24206655500527888,
+            0.3651193246364748
+          ]
+        },
+        "first_safety_evidence_position_delta": {
+          "count": 29,
+          "mean": 0,
+          "median": 0,
+          "p95": 0
+        },
+        "tool_call_delta_vs_cold": {
+          "count": 36,
+          "mean": 0,
+          "median": 0.0,
+          "p95": 0
+        },
+        "closure_delta_vs_cold": {
+          "count": 36,
+          "mean": 0,
+          "median": 0.0,
+          "p95": 0
+        }
+      }
+    },
+    "checklist/end-to-end": {
+      "count": 36,
+      "success_count": 2,
+      "failure_count": 8,
+      "inconclusive_count": 26,
+      "infrastructure_or_policy_error_count": 2,
+      "policy_blocked_verification_count": 0,
+      "safety": {
+        "false_verified_closure_count": 0,
+        "unsafe_money_action_count": 0,
+        "foreign_order_attempt_count": 0,
+        "blind_retry_count": 0,
+        "identity_unsafe_remediation_count": 0,
+        "unresolved_effect_closed_count": 0,
+        "historical_memory_used_as_truth_count": 0
+      },
+      "investigation": {
+        "verified_closure_rate": {
+          "numerator": 2,
+          "denominator": 36,
+          "value": 0.05555555555555555,
+          "wilson_95": [
+            0.015369663767066846,
+            0.18144974107611211
+          ]
+        },
+        "correct_safe_stop_rate": {
+          "numerator": 29,
+          "denominator": 31,
+          "value": 0.9354838709677419,
+          "wilson_95": [
+            0.7928101168125354,
+            0.9821255922249368
+          ]
+        },
+        "inconclusive_rate": {
+          "numerator": 26,
+          "denominator": 36,
+          "value": 0.7222222222222222,
+          "wilson_95": [
+            0.5600719978365485,
+            0.841518299741862
+          ]
+        },
+        "escalation_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "tool_calls": {
+          "count": 36,
+          "mean": 8.777777777777779,
+          "median": 9.0,
+          "p95": 9
+        },
+        "total_tool_calls": {
+          "count": 36,
+          "mean": 17.77777777777778,
+          "median": 18.0,
+          "p95": 18
+        },
+        "tool_budget_exhaustion_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "time_to_first_safety_critical_evidence": {
+          "count": 28,
+          "mean": 2,
+          "median": 2.0,
+          "p95": 2
+        },
+        "missing_first_safety_evidence_count": 8,
+        "safety_gap_resolution_rate": {
+          "numerator": 76,
+          "denominator": 108,
+          "value": 0.7037037037037037,
+          "wilson_95": [
+            0.6117903377430295,
+            0.7816232042663839
+          ]
+        },
+        "evidence_yield_per_tool_call": 2.79375
+      },
+      "remediation": {
+        "remediation_proposal_rate": {
+          "numerator": 36,
+          "denominator": 36,
+          "value": 1.0,
+          "wilson_95": [
+            0.9035781695514236,
+            1
+          ]
+        },
+        "safe_remediation_ready_rate": {
+          "numerator": 34,
+          "denominator": 36,
+          "value": 0.9444444444444444,
+          "wilson_95": [
+            0.8185502589238878,
+            0.9846303362329332
+          ]
+        },
+        "blocked_unsafe_remediation_rate": {
+          "numerator": 36,
+          "denominator": 36,
+          "value": 1.0,
+          "wilson_95": [
+            0.9035781695514236,
+            1
+          ]
+        },
+        "unnecessary_remediation_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "post_effect_verification_rate": {
+          "numerator": 34,
+          "denominator": 34,
+          "value": 1.0,
+          "wilson_95": [
+            0.8984820937803899,
+            1
+          ]
+        }
+      },
+      "recovery": {
+        "unknown_effect_rate": {
+          "numerator": 1,
+          "denominator": 34,
+          "value": 0.029411764705882353,
+          "wilson_95": [
+            0.00521077192559663,
+            0.1491590221634482
+          ]
+        },
+        "unknown_correctly_reconciled_rate": {
+          "numerator": 1,
+          "denominator": 1,
+          "value": 1.0,
+          "wilson_95": [
+            0.20654329147389294,
+            1
+          ]
+        },
+        "blind_redispatch_count": 0,
+        "orphan_read_recovery_rate": {
+          "numerator": 1,
+          "denominator": 1,
+          "value": 1.0,
+          "wilson_95": [
+            0.20654329147389294,
+            1
+          ]
+        },
+        "recovery_escalation_rate": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.5615060804490177
+          ]
+        }
+      },
+      "memory": {
+        "experience_retrieval_hit_rate": {
+          "numerator": 34,
+          "denominator": 36,
+          "value": 0.9444444444444444,
+          "wilson_95": [
+            0.8185502589238878,
+            0.9846303362329332
+          ]
+        },
+        "mean_retrieval_count": 2.8333333333333335,
+        "relevant_experience_recall_at_k": {
+          "numerator": 9,
+          "denominator": 30,
+          "value": 0.3,
+          "wilson_95": [
+            0.16664562643958933,
+            0.4787612101166018
+          ]
+        },
+        "first_safety_evidence_position_delta": null,
+        "tool_call_delta_vs_cold": null,
+        "closure_delta_vs_cold": null
+      }
+    },
+    "checklist/investigation": {
+      "count": 36,
+      "success_count": 0,
+      "failure_count": 9,
+      "inconclusive_count": 25,
+      "infrastructure_or_policy_error_count": 2,
+      "policy_blocked_verification_count": 0,
+      "safety": {
+        "false_verified_closure_count": 0,
+        "unsafe_money_action_count": 0,
+        "foreign_order_attempt_count": 0,
+        "blind_retry_count": 0,
+        "identity_unsafe_remediation_count": 0,
+        "unresolved_effect_closed_count": 0,
+        "historical_memory_used_as_truth_count": 0
+      },
+      "investigation": {
+        "verified_closure_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "correct_safe_stop_rate": {
+          "numerator": 30,
+          "denominator": 32,
+          "value": 0.9375,
+          "wilson_95": [
+            0.7985253275199642,
+            0.9826897968048427
+          ]
+        },
+        "inconclusive_rate": {
+          "numerator": 25,
+          "denominator": 36,
+          "value": 0.6944444444444444,
+          "wilson_95": [
+            0.5314342132091627,
+            0.8199572971719464
+          ]
+        },
+        "escalation_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "tool_calls": {
+          "count": 36,
+          "mean": 8.777777777777779,
+          "median": 9.0,
+          "p95": 9
+        },
+        "total_tool_calls": {
+          "count": 36,
+          "mean": 8.777777777777779,
+          "median": 9.0,
+          "p95": 9
+        },
+        "tool_budget_exhaustion_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "time_to_first_safety_critical_evidence": {
+          "count": 28,
+          "mean": 2,
+          "median": 2.0,
+          "p95": 2
+        },
+        "missing_first_safety_evidence_count": 8,
+        "safety_gap_resolution_rate": {
+          "numerator": 76,
+          "denominator": 108,
+          "value": 0.7037037037037037,
+          "wilson_95": [
+            0.6117903377430295,
+            0.7816232042663839
+          ]
+        },
+        "evidence_yield_per_tool_call": 2.768987341772152
+      },
+      "remediation": {
+        "remediation_proposal_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "safe_remediation_ready_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "blocked_unsafe_remediation_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "unnecessary_remediation_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "post_effect_verification_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        }
+      },
+      "recovery": {
+        "unknown_effect_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "unknown_correctly_reconciled_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "blind_redispatch_count": 0,
+        "orphan_read_recovery_rate": {
+          "numerator": 1,
+          "denominator": 1,
+          "value": 1.0,
+          "wilson_95": [
+            0.20654329147389294,
+            1
+          ]
+        },
+        "recovery_escalation_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        }
+      },
+      "memory": {
+        "experience_retrieval_hit_rate": {
+          "numerator": 34,
+          "denominator": 36,
+          "value": 0.9444444444444444,
+          "wilson_95": [
+            0.8185502589238878,
+            0.9846303362329332
+          ]
+        },
+        "mean_retrieval_count": 2.8333333333333335,
+        "relevant_experience_recall_at_k": {
+          "numerator": 9,
+          "denominator": 30,
+          "value": 0.3,
+          "wilson_95": [
+            0.16664562643958933,
+            0.4787612101166018
+          ]
+        },
+        "first_safety_evidence_position_delta": null,
+        "tool_call_delta_vs_cold": null,
+        "closure_delta_vs_cold": null
+      }
+    },
+    "sop/end-to-end": {
+      "count": 36,
+      "success_count": 8,
+      "failure_count": 8,
+      "inconclusive_count": 20,
+      "infrastructure_or_policy_error_count": 2,
+      "policy_blocked_verification_count": 13,
+      "safety": {
+        "false_verified_closure_count": 0,
+        "unsafe_money_action_count": 0,
+        "foreign_order_attempt_count": 0,
+        "blind_retry_count": 0,
+        "identity_unsafe_remediation_count": 0,
+        "unresolved_effect_closed_count": 0,
+        "historical_memory_used_as_truth_count": 0
+      },
+      "investigation": {
+        "verified_closure_rate": {
+          "numerator": 8,
+          "denominator": 36,
+          "value": 0.2222222222222222,
+          "wilson_95": [
+            0.11716192974839595,
+            0.38085019827859085
+          ]
+        },
+        "correct_safe_stop_rate": {
+          "numerator": 23,
+          "denominator": 25,
+          "value": 0.92,
+          "wilson_95": [
+            0.7503348787704218,
+            0.977780066308908
+          ]
+        },
+        "inconclusive_rate": {
+          "numerator": 20,
+          "denominator": 36,
+          "value": 0.5555555555555556,
+          "wilson_95": [
+            0.3958078731600341,
+            0.7045897012345685
+          ]
+        },
+        "escalation_rate": {
+          "numerator": 7,
+          "denominator": 36,
+          "value": 0.19444444444444445,
+          "wilson_95": [
+            0.09752972019453349,
+            0.350283620635152
+          ]
+        },
+        "tool_calls": {
+          "count": 36,
+          "mean": 7.194444444444445,
+          "median": 9.0,
+          "p95": 11
+        },
+        "total_tool_calls": {
+          "count": 36,
+          "mean": 12.944444444444445,
+          "median": 18.0,
+          "p95": 20
+        },
+        "tool_budget_exhaustion_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "time_to_first_safety_critical_evidence": {
+          "count": 29,
+          "mean": 2.0689655172413794,
+          "median": 2,
+          "p95": 2
+        },
+        "missing_first_safety_evidence_count": 7,
+        "safety_gap_resolution_rate": {
+          "numerator": 79,
+          "denominator": 108,
+          "value": 0.7314814814814815,
+          "wilson_95": [
+            0.6410086613886575,
+            0.8060521818038576
+          ]
+        },
+        "evidence_yield_per_tool_call": 2.9570815450643777
+      },
+      "remediation": {
+        "remediation_proposal_rate": {
+          "numerator": 36,
+          "denominator": 36,
+          "value": 1.0,
+          "wilson_95": [
+            0.9035781695514236,
+            1
+          ]
+        },
+        "safe_remediation_ready_rate": {
+          "numerator": 34,
+          "denominator": 36,
+          "value": 0.9444444444444444,
+          "wilson_95": [
+            0.8185502589238878,
+            0.9846303362329332
+          ]
+        },
+        "blocked_unsafe_remediation_rate": {
+          "numerator": 36,
+          "denominator": 36,
+          "value": 1.0,
+          "wilson_95": [
+            0.9035781695514236,
+            1
+          ]
+        },
+        "unnecessary_remediation_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "post_effect_verification_rate": {
+          "numerator": 22,
+          "denominator": 34,
+          "value": 0.6470588235294118,
+          "wilson_95": [
+            0.4791365883001342,
+            0.7851228510470394
+          ]
+        }
+      },
+      "recovery": {
+        "unknown_effect_rate": {
+          "numerator": 1,
+          "denominator": 34,
+          "value": 0.029411764705882353,
+          "wilson_95": [
+            0.00521077192559663,
+            0.1491590221634482
+          ]
+        },
+        "unknown_correctly_reconciled_rate": {
+          "numerator": 1,
+          "denominator": 1,
+          "value": 1.0,
+          "wilson_95": [
+            0.20654329147389294,
+            1
+          ]
+        },
+        "blind_redispatch_count": 0,
+        "orphan_read_recovery_rate": {
+          "numerator": 1,
+          "denominator": 1,
+          "value": 1.0,
+          "wilson_95": [
+            0.20654329147389294,
+            1
+          ]
+        },
+        "recovery_escalation_rate": {
+          "numerator": 0,
+          "denominator": 3,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.5615060804490177
+          ]
+        }
+      },
+      "memory": {
+        "experience_retrieval_hit_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "mean_retrieval_count": null,
+        "relevant_experience_recall_at_k": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "first_safety_evidence_position_delta": null,
+        "tool_call_delta_vs_cold": null,
+        "closure_delta_vs_cold": null
+      }
+    },
+    "sop/investigation": {
+      "count": 36,
+      "success_count": 0,
+      "failure_count": 9,
+      "inconclusive_count": 25,
+      "infrastructure_or_policy_error_count": 2,
+      "policy_blocked_verification_count": 0,
+      "safety": {
+        "false_verified_closure_count": 0,
+        "unsafe_money_action_count": 0,
+        "foreign_order_attempt_count": 0,
+        "blind_retry_count": 0,
+        "identity_unsafe_remediation_count": 0,
+        "unresolved_effect_closed_count": 0,
+        "historical_memory_used_as_truth_count": 0
+      },
+      "investigation": {
+        "verified_closure_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "correct_safe_stop_rate": {
+          "numerator": 30,
+          "denominator": 32,
+          "value": 0.9375,
+          "wilson_95": [
+            0.7985253275199642,
+            0.9826897968048427
+          ]
+        },
+        "inconclusive_rate": {
+          "numerator": 25,
+          "denominator": 36,
+          "value": 0.6944444444444444,
+          "wilson_95": [
+            0.5314342132091627,
+            0.8199572971719464
+          ]
+        },
+        "escalation_rate": {
+          "numerator": 7,
+          "denominator": 36,
+          "value": 0.19444444444444445,
+          "wilson_95": [
+            0.09752972019453349,
+            0.350283620635152
+          ]
+        },
+        "tool_calls": {
+          "count": 36,
+          "mean": 7.194444444444445,
+          "median": 9.0,
+          "p95": 11
+        },
+        "total_tool_calls": {
+          "count": 36,
+          "mean": 7.194444444444445,
+          "median": 9.0,
+          "p95": 11
+        },
+        "tool_budget_exhaustion_rate": {
+          "numerator": 0,
+          "denominator": 36,
+          "value": 0.0,
+          "wilson_95": [
+            0,
+            0.09642183044857634
+          ]
+        },
+        "time_to_first_safety_critical_evidence": {
+          "count": 29,
+          "mean": 2.0689655172413794,
+          "median": 2,
+          "p95": 2
+        },
+        "missing_first_safety_evidence_count": 7,
+        "safety_gap_resolution_rate": {
+          "numerator": 79,
+          "denominator": 108,
+          "value": 0.7314814814814815,
+          "wilson_95": [
+            0.6410086613886575,
+            0.8060521818038576
+          ]
+        },
+        "evidence_yield_per_tool_call": 2.9845559845559846
+      },
+      "remediation": {
+        "remediation_proposal_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "safe_remediation_ready_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "blocked_unsafe_remediation_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "unnecessary_remediation_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "post_effect_verification_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        }
+      },
+      "recovery": {
+        "unknown_effect_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "unknown_correctly_reconciled_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "blind_redispatch_count": 0,
+        "orphan_read_recovery_rate": {
+          "numerator": 1,
+          "denominator": 1,
+          "value": 1.0,
+          "wilson_95": [
+            0.20654329147389294,
+            1
+          ]
+        },
+        "recovery_escalation_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        }
+      },
+      "memory": {
+        "experience_retrieval_hit_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "mean_retrieval_count": null,
+        "relevant_experience_recall_at_k": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "first_safety_evidence_position_delta": null,
+        "tool_call_delta_vs_cold": null,
+        "closure_delta_vs_cold": null
+      }
+    }
+  },
+  "manifest": {
+    "benchmark_schema_version": "1",
+    "dataset_version": "20260912.1",
+    "source_commit": "4a310e133875cffeceef815f863b80fb9c98eaa0",
+    "source_tree_hash": "71c201fd013de254c718677496b14bdb935473a66a7fad003daec48a736cb737",
+    "seed": 20260912,
+    "repetitions": 1,
+    "mode": "OFFLINE_DETERMINISTIC",
+    "live_status": "NOT RUN",
+    "model_provider": "fake",
+    "model_name": "context-driven-investigation-v1",
+    "provider_config": {
+      "max_output_tokens": 4000,
+      "timeout_seconds": 30,
+      "max_retries": 0,
+      "temperature": "provider default"
+    },
+    "planner_policy_version": "3",
+    "evaluation_policy_version": "1",
+    "verification_contract_version": "1",
+    "skill_versions": [
+      {
+        "skill_id": "tri-party-disbursement",
+        "version": "1"
+      }
+    ],
+    "experience_ids": [
+      "4f6c3c7b78b4b413683cf1119b99450a9bfaacc36115a7369146399d249be56b",
+      "1f239a68fc3930554090f8b55953081874f6131f0657bf303a9021e280bea917",
+      "02f9247de545f01d85eed8a6e0893812f84cdd93fbc2fb299290512888fa0b8c",
+      "4c97dd7b92ea621a0b766a2329161940a43b45b4f39e539a2bf165697ab2e853",
+      "e113a0500c91592278eebdaddc15224d495b3d99a69af83f209f7e3ae6afa1a5",
+      "9d3a5735170da12f43d0777306d71328718c4d674660460f9d16afcf1cec51a5",
+      "f2ea2091e7c3ceda39969c29e87478cbcd076381a756fc82d2e5edbaa976be29",
+      "6407ac3a6c03ce8a4965f29c71ffd3d8e6a5d2eed7942bf00a3864ddf7d50cef",
+      "50ff9525c63ff59c85771a699cd2e601b696a96a5a8e940d4eed1daaac0c9bcc",
+      "e6d4ffd23fb5946de54791b8ba5d9c4d056ba06082fe3d5212cd871f81481110"
+    ],
+    "memory_seed_case_ids": [
+      "CASE-SEED-3d6e83c17cee9604",
+      "CASE-SEED-1e94ef4489258ee9",
+      "CASE-SEED-8d41faeb303d279a",
+      "CASE-SEED-d6f703f6bc77c9ad",
+      "CASE-SEED-7beb7c4054912107",
+      "CASE-SEED-e678df56b8529e9b",
+      "CASE-SEED-e85074e9430e43b5",
+      "CASE-SEED-26837b58d7fff32f",
+      "CASE-SEED-bf7964416ef57f3a",
+      "CASE-SEED-2569643105c5a836"
+    ],
+    "held_out_case_count": 36,
+    "development_subset": false,
+    "reproduction": "Fixed dataset and semantic metrics; durable UUIDs/signatures/report IDs are intentionally fresh per run"
+  }
+}

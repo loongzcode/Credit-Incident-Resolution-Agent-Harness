@@ -129,7 +129,7 @@ Capsule 不包含历史 source_case_id、订单、Evidence/Observation 原文、
 
 ## Aggregation 与改进提案
 
-ExperiencePatternAggregator 提供可选 exact signature 分组的样本数、outcome counts、first useful Tool counts、每 Tool 调用数/有新 Evidence 的调用数/新增 Evidence 数/median position。
+ExperiencePatternAggregator 提供可选 exact signature 分组的样本数、outcome counts、`first_evidence_yield` Tool counts、每 Tool 调用数/有新 Evidence 的调用数/新增 Evidence 数/median position。这只是首次产生新 Evidence，不等于已证明其业务效用。
 
 `propose(skill, now)` 只产生 `SkillImprovementProposal(status=PROPOSED)`，含 base_version、证据优先级建议、支持经验 IDs、sample_size 和生成时间。至少两个独立经验中出现早期 Evidence yield 才建议该 claim；不会把同一 Case 的重复查询伪装成多样本，也不降低已有 SAFETY_CRITICAL strategy。无自动写 Skill、无自动 activate、无 LLM self-modification。
 
@@ -160,6 +160,8 @@ CURRENT CASE: INVESTIGATING (not automatically closed or published)
 Cold / Guided 是刻意可检查的 Fake 对比 fixture，不是模型质量实验结果。当前 Payment 必须经现有 Step 6 revalidation + CAS + 当前 CaseToolExecutor 获取。后续其余 Read 是 Demo 显式调用。最终 Evaluator 完全不读取历史 Guidance。
 
 ## 验收结果
+
+以下是 Step 11 的历史验收快照，示例 JSON 也保留原版本。Step 12 已将 Experience 新写入 schema 升为 v2：`observed_evidence_types` 替代原字段名，v1 的序列化与内容哈希保持兼容；Planner Decision/Audit 增加 GuidanceBuildStatus。新的对照实验和全量验收见 [Benchmark 文档](benchmark.md)。
 
 本阶段新增 65 个测试实例，总计 979 个；以下为冻结功能代码的实际结果：
 

@@ -114,7 +114,7 @@ class VerifiedExperiencePublisher:
             tenant_id=case.tenant_id, internal_order_ref=order_token, outcome_path=report.outcome_path,
             incident_signature=signature, partner_context=SkillScope(), protocol_context=protocols,
             observed_symptoms=symptoms, confirmed_hypotheses=tuple(confirmations[k] for k in sorted(confirmations)),
-            investigation_sequence=tuple(sequence), useful_evidence_types=tuple(sorted({f.claim_type for f in historical})),
+            investigation_sequence=tuple(sequence), observed_evidence_types=tuple(sorted({f.claim_type for f in historical})),
             remediation_actions=actions, side_effect_outcomes=tuple(HistoricalEffect(action=e.action_type, outcome=e.status) for e in source.effects),
             recovery_patterns=tuple(RecoveryPattern(source_status=a.source_status, result_status=a.result_status,
                 completed=a.completed_at is not None) for a in source.attempts), safety_lessons=tuple(lessons),

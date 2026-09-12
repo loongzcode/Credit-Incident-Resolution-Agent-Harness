@@ -14,12 +14,12 @@ from credit_harness.context.models import (
 )
 from credit_harness.context.structured_values import ContextReference, OpaqueSubjectRef
 from credit_harness.identity.models import FinancialSubject
-from credit_harness.memory.models import OrganizationalGuidanceSection, HistoricalGuidanceSection, SkillRef
+from credit_harness.memory.models import OrganizationalGuidanceSection, HistoricalGuidanceSection, SkillRef, GuidanceBuildStatus
 from .metadata import PlannerModelMetadata
 
 PLANNER_SCHEMA_VERSION = "1"
 PLANNER_POLICY_VERSION = "3"
-MODEL_INPUT_SCHEMA_VERSION = "2"
+MODEL_INPUT_SCHEMA_VERSION = "3"
 ACTION_RANKING_VERSION = "1"
 ShortText = Annotated[str, Field(max_length=600)]
 CandidateId = Annotated[str, Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")]
@@ -192,6 +192,7 @@ class PlannerDecision(Model):
     guidance_fingerprint: Hash | None = None
     skill_refs: tuple[SkillRef, ...] = ()
     experience_refs: tuple[Hash, ...] = ()
+    guidance_build_status: GuidanceBuildStatus = GuidanceBuildStatus.EMPTY
 
 
 class PlannerUnavailable(RuntimeError):
