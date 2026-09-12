@@ -45,7 +45,7 @@ class ReasoningContextAssembler:
         all_current = {e.evidence_id: e for c in C for e in index.current(c)}
         current = {ref: e for ref, e in all_current.items() if ref in eligible_ids}
         compactor = ContextCompactor()
-        lookup_groups = compactor.lookup_groups(eligible)
+        lookup_groups = compactor.lookup_groups(eligible, retry_after=case.lookup_retry_after)
         definitions = {d.hypothesis_id: d for d in graph.definitions}
         critical_gaps = {g.gap_id for g in graph.open_gaps if g.priority_class == P.SAFETY_CRITICAL}
         critical_hypotheses = {h for g in graph.open_gaps if g.gap_id in critical_gaps for h in g.hypothesis_ids}
@@ -123,6 +123,7 @@ class ReasoningContextAssembler:
         def render():
             payload = {**base, **{k: tuple(v) for k, v in selected.items() if k not in ("lookups", "states")},
                        "history_digest": HistoryDigest(
+                           retry_window_start=case.lookup_retry_after,
                            tool_calls_used=case.budget.used_tool_calls, evidence_count=len(index.evidence),
                            latest_observation_time=max((e.observed_at for e in index.evidence), default=None),
                            repeated_lookup_groups=tuple(selected["lookups"]), state_transitions=tuple(selected["states"]),

@@ -13,6 +13,8 @@ def create_harness_schema(engine):
         ReadDispatchRecoveryRow.__table__,
         AgentCheckpointRow.__table__,
     ])
+    from credit_harness.orchestration.tables import create_orchestration_schema
+    create_orchestration_schema(engine)
     add_dispatch_correlation_columns(engine)
     from credit_harness.evaluation.tables import create_evaluation_schema
     create_evaluation_schema(engine)

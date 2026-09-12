@@ -140,6 +140,35 @@ def test_planner_audit_records_guidance_degradation(factory, monkeypatch):
     assert compact_decision(decision)["guidance_degradation"] == "BUDGET_DROPPED"
 
 
+def test_guidance_build_result_is_per_call_under_concurrency(factory, monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier, current_thread
+    x = factory(); provider = guidance_setup(x); snap = context(x); gate = Barrier(2)
+    def retrieve(*args):
+        gate.wait(timeout=10)
+        if current_thread().name.endswith("_1"):
+            raise RuntimeError("synthetic retrieval unavailable")
+        return ()
+    monkeypatch.setattr(provider.retriever, "retrieve", retrieve)
+    with ThreadPoolExecutor(2) as pool:
+        results = list(pool.map(lambda _:provider.build_result(snap), range(2)))
+    assert {r.status for r in results} == {GuidanceBuildStatus.AVAILABLE, GuidanceBuildStatus.RETRIEVAL_FAILED}
+    assert all(r.degradation == GuidanceDegradation.NONE for r in results)
+    assert all((r.bundle is not None) == (r.status == GuidanceBuildStatus.AVAILABLE) for r in results)
+
+
+def test_planner_uses_typed_guidance_result_not_shared_properties(factory):
+    x = factory(); provider = guidance_setup(x); snap = context(x)
+    class TypedOnly:
+        def build_result(self, snapshot): return provider.build_result(snapshot)
+        @property
+        def last_status(self): raise AssertionError("shared status read")
+        @property
+        def last_degradation(self): raise AssertionError("shared degradation read")
+    decision = PlannerService(FakePlannerModel(scripted_draft), guidance_provider=TypedOnly()).plan(snap)
+    assert decision.guidance_build_status == GuidanceBuildStatus.AVAILABLE
+
+
 @pytest.mark.parametrize("status", [s for s in CaseStatus if s != CaseStatus.CLOSED_VERIFIED])
 def test_only_closed_verified_case_can_publish_experience(factory, status):
     x = factory()

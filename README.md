@@ -6,6 +6,8 @@
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。
 
+Step 13 已增加 [Durable Case Orchestration](docs/orchestration.md)：WAIT／ESCALATE 与工作项原子交接，租约和 Case revision CAS 控制恢复，新的 Agent Run 从当前 Evidence 重建 Snapshot。正常／恢复的 APPLIED 交给独立验证工作；Evaluator 仍只读，PASS 仍由 VerifiedClosureService 关闭。运行 `python -m scripts.demo_orchestration --scenario wait-resume`，也可选择 `effect-verification` 或 `escalation-resolution`。全部使用本地 synthetic fixture，无真实资金副作用；尚未进入 System Registry。
+
 Step 12 / 12.1 的故障矩阵、四组对照、Memory seed/held-out 隔离、双 Track 与指标定义见 [Benchmark 文档](docs/benchmark.md)。运行 `python scripts/run_benchmark.py --mode offline --seed 20260912 --output benchmark` 生成真实 raw runs 与可重算汇总。Benchmark schema v2 区分显式安全停止、未关闭与危险候选阻断，并保留 Guidance availability / degradation 遥测。默认离线，Live 必须显式开启；不使用单一总分，也不以离线 fake 结果宣称 LLM 收益。
 
 新增调查链路与运行命令见 [Case / Evidence 实现文档](docs/case-evidence.md)。本阶段只实现 `Case → Tool → Observation → Evidence → Provenance`，不调用 LLM、不修复、不结案。运行 `python scripts/demo_case_evidence.py --output .local/s6-case-evidence.json` 可以通过两个 FastAPI 应用的实际路由复现七次人工调查并导出完整 Case Evidence View。
@@ -18,7 +20,7 @@ Step 4–4.2 的上下文边界见 [Reasoning Context 文档](docs/reasoning-con
 
 Step 5 见 [Planner 文档](docs/planner.md)。运行 `python scripts/demo_planner.py --provider fake --stage all` 查看六个实际调查阶段的模型候选、Harness 拒绝、排序与选择。模型只消费分区且已 alias 的 Snapshot 投影，没有 Tool 权限。可选 Provider 使用环境变量 PLANNER_MODEL / OPENAI_API_KEY；在线测试默认跳过。
 
-Step 6 见 [Agent Runtime 文档](docs/agent-runtime.md)。运行 `python scripts/demo_agent_loop.py --scenario S6 --provider fake` 或 `--scenario S8`，查看从无 Evidence 开始的自主调查、执行前再校验、DB CAS、知识变化和有界停止。WAIT 只暂停并返回，ESCALATE 只更新 Case；Agent 永不 CLOSED，不直接向模型传入 Tool Response。Fake 根据当前 ModelInputBundle 生成建议，用于确定性 Runtime 验收，不宣称已验证真实模型推理质量。
+Step 6 见 [Agent Runtime 文档](docs/agent-runtime.md)。运行 `python scripts/demo_agent_loop.py --scenario S6 --provider fake` 或 `--scenario S8`，查看从无 Evidence 开始的自主调查、执行前再校验、DB CAS、知识变化和有界停止。WAIT／ESCALATE 暂停当前 Run；Step 13 同事务保存后续工作，由显式 Worker tick 在到期／信号满足后恢复。Agent 永不 CLOSED，不直接向模型传入 Tool Response。Fake 根据当前 ModelInputBundle 生成建议，用于确定性 Runtime 验收，不宣称已验证真实模型推理质量。
 
 第一阶段全部使用 Simulator。目标是以可本地运行的系统证明生产关键约束：真实状态与工具返回分离、证据驱动调查、权限控制、幂等执行、崩溃恢复和独立验收。
 

@@ -25,9 +25,8 @@ class PlannerService:
         degradation = GD.NONE
         if guidance is None and self.guidance_provider is not None:
             try:
-                guidance = self.guidance_provider.build(snapshot)
-                build_status = getattr(self.guidance_provider, "last_status", GS.EMPTY)
-                degradation = getattr(self.guidance_provider, "last_degradation", GD.NONE)
+                result = self.guidance_provider.build_result(snapshot)
+                guidance, build_status, degradation = result.bundle, result.status, result.degradation
             except Exception:
                 guidance = None
                 build_status = GS.RETRIEVAL_FAILED

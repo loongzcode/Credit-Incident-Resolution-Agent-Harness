@@ -306,3 +306,9 @@ class SkillImprovementProposal(Model):
     sample_size: int = Field(ge=1)
     generated_at: AwareDatetime
     status: Literal["PROPOSED"] = "PROPOSED"
+
+
+class GuidanceBuildResult(Model):
+    bundle: InvestigationGuidanceBundle | None
+    status: GuidanceBuildStatus
+    degradation: GuidanceDegradation = GuidanceDegradation.NONE

@@ -25,7 +25,7 @@ def reference_range(items):
 
 
 class ContextCompactor:
-    def lookup_groups(self, evidence):
+    def lookup_groups(self, evidence, *, retry_after=None):
         groups = defaultdict(list)
         observations = defaultdict(dict)
         for e in evidence:
@@ -42,7 +42,9 @@ class ContextCompactor:
                 statuses = {e.value for e in call if e.claim_type == C.SOURCE_LOOKUP_STATUS}
                 by_time[max(e.observed_at for e in call)].append(next(iter(statuses)) if len(statuses) == 1 else None)
             consecutive = 0
-            for _, statuses in sorted(by_time.items(), reverse=True):
+            for at, statuses in sorted(by_time.items(), reverse=True):
+                if retry_after is not None and at < retry_after:
+                    break
                 if any(status != last.value for status in statuses):
                     break
                 consecutive += len(statuses)

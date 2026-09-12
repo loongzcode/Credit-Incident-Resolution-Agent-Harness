@@ -85,7 +85,9 @@ class ReasoningContextInvariantValidator:
         require(snapshot.context_budget_usage.serialized_chars == len(snapshot.model_dump_json())
                 and fits(snapshot), "budget mismatch")
         eligible = tuple(e for e in index.evidence if eligibility.allows(e))
-        lookup_groups = ContextCompactor().lookup_groups(eligible)
+        require(snapshot.history_digest.retry_window_start == index.case.lookup_retry_after,
+                "lookup retry window is not bound to durable Case")
+        lookup_groups = ContextCompactor().lookup_groups(eligible, retry_after=index.case.lookup_retry_after)
         retained = snapshot.history_digest.repeated_lookup_groups
         require(all(g in lookup_groups for g in retained), "lookup history projection changed")
         from credit_harness.evidence.models import ClaimType

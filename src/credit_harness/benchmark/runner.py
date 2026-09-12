@@ -121,8 +121,8 @@ def run_case(engine, spec, system, track, *, seed=20260912, run_index=0, model=N
                         planner_decisions = [dict(kind="ONE_SHOT_CHECKLIST",
                             snapshot_id=checklist.last_draft.snapshot_id,
                             steps=[s.model_dump(mode="json") for s in checklist.last_draft.steps],
-                            experience_refs=checklist_refs, guidance_build_status=guidance.last_status.value,
-                            guidance_degradation=guidance.last_degradation.value,
+                            experience_refs=checklist_refs, guidance_build_status=checklist.last_guidance_result.status.value,
+                            guidance_degradation=checklist.last_guidance_result.degradation.value,
                             model=model.metadata.model_dump(mode="json") if model else
                                 dict(model_provider="fake",model_name="one-shot-checklist-v1"))]
             else:

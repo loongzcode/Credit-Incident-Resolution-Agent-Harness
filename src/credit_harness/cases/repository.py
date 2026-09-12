@@ -68,7 +68,7 @@ class CaseRepository:
     def create(self, case: Case, tool_credential: str) -> Case:
         if case.tenant_id != self.tenant_id:
             raise CaseAccessError("tenant mismatch")
-        if case.status != CaseStatus.NEW or case.budget.used_tool_calls != 0:
+        if case.status != CaseStatus.NEW or case.budget.used_tool_calls != 0 or case.lookup_retry_after is not None:
             raise CasePolicyError("new cases must start NEW with zero usage")
         with Session(self.engine) as session, session.begin():
             grant = session.get(GrantRow, token_hash(tool_credential))
@@ -90,6 +90,7 @@ class CaseRepository:
                      precondition: AgentExecutionPrecondition | None = None) -> tuple[Case, str]:
         conditions = () if precondition is None else execution_conditions(case_id, self.tenant_id, precondition)
         with Session(self.engine) as session, session.begin():
+            self._work_fence(session, case_id, precondition)
             case = hydrate(self._row(session, case_id))
             if query.internal_order_id not in case.scope.allowed_order_ids:
                 raise CasePolicyError("order outside case scope")
@@ -141,11 +142,12 @@ class CaseRepository:
         return self.get(case_id)
 
     def pause_if_current(self, case_id: str, status: CaseStatus, *,
-                         precondition: AgentExecutionPrecondition) -> Case:
+                         precondition: AgentExecutionPrecondition, orchestration=None) -> Case:
         if status not in (CaseStatus.WAITING, CaseStatus.ESCALATED):
             raise CasePolicyError("agent may only wait or escalate")
         conditions = execution_conditions(case_id, self.tenant_id, precondition)
         with Session(self.engine) as session, session.begin():
+            self._work_fence(session, case_id, precondition)
             row = self._row(session, case_id)
             result = session.execute(update(CaseRow).where(
                 CaseRow.case_id == case_id, CaseRow.tenant_id == self.tenant_id,
@@ -154,4 +156,25 @@ class CaseRepository:
             ).values(status=status.value, updated_at=next_update_time(datetime.fromisoformat(row.updated_at))))
             if result.rowcount != 1:
                 raise AgentPreconditionFailed("case changed; pause not committed")
+            if orchestration is not None:
+                from credit_harness.orchestration.handoff import pause_handoff
+                session.refresh(row)
+                pause_handoff(session, row, orchestration, utc_now())
         return self.get(case_id)
+
+    def _work_fence(self, session, case_id, precondition):
+        from credit_harness.orchestration.tables import WorkItemRow
+        # The same Case lock is used by lease claims, so loss of ownership
+        # cannot race a Tool reservation or lifecycle action.
+        session.execute(update(CaseRow).where(CaseRow.case_id == case_id,
+            CaseRow.tenant_id == self.tenant_id).values(updated_at=CaseRow.updated_at))
+        active = session.scalar(select(WorkItemRow).where(WorkItemRow.case_id == case_id,
+            WorkItemRow.tenant_id == self.tenant_id, WorkItemRow.status == "CLAIMED"))
+        fence = precondition.work_lease if precondition else None
+        if active is None and fence is None:
+            return
+        if (active is None or fence is None or active.work_item_id != fence.work_item_id
+                or active.payload["claimed_by"] != fence.worker_id
+                or active.payload["lease_token"] != fence.lease_token
+                or active.lease_until is None or active.lease_until <= utc_now().timestamp()):
+            raise AgentPreconditionFailed("work lease lost; no dispatch reserved")

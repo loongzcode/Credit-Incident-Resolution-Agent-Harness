@@ -92,12 +92,14 @@ class ChecklistPlanner:
     def __init__(self, guidance_provider, model=None):
         self.guidance_provider, self.model = guidance_provider, model
         self.last_guidance = None
+        self.last_guidance_result = None
         self.last_draft = None
 
     def plan(self, snapshot: ReasoningContextSnapshot):
         if type(snapshot) is not ReasoningContextSnapshot:
             raise TypeError("snapshot required")
-        self.last_guidance = self.guidance_provider.build(snapshot) if self.guidance_provider else None
+        self.last_guidance_result = self.guidance_provider.build_result(snapshot) if self.guidance_provider else None
+        self.last_guidance = self.last_guidance_result.bundle if self.last_guidance_result else None
         bundle = ModelInputRenderer().render(snapshot, self.last_guidance)
         if self.model:
             draft = ChecklistDraft.model_validate(self.model.plan_checklist(bundle))

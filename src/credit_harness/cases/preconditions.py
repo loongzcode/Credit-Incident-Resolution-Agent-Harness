@@ -7,6 +7,12 @@ from credit_harness.domain.models import Model
 from .models import CaseStatus, CasePolicyError
 
 
+class WorkLeasePrecondition(Model):
+    work_item_id: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+    worker_id: str
+    lease_token: str
+
+
 class AgentExecutionPrecondition(Model):
     case_id: str
     tenant_id: str
@@ -15,6 +21,7 @@ class AgentExecutionPrecondition(Model):
     expected_case_updated_at: AwareDatetime
     expected_snapshot_id: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
     planner_policy_version: str
+    work_lease: WorkLeasePrecondition | None = None
 
 
 class AgentPreconditionFailed(CasePolicyError):

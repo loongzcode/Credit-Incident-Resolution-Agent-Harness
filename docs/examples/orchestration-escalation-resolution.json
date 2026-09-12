@@ -1,0 +1,413 @@
+{
+  "scenario": "escalation-resolution",
+  "elapsed_alone_resumable": false,
+  "signal_created_evidence": false,
+  "signal": {
+    "signal_id": "SIG-SYNTHETIC-RECOVERY",
+    "tenant_id": "demo",
+    "case_id": "CASE-JD202609100001",
+    "work_item_id": "4870dff226e30ac08aa98823db6804ffec00786077b2342c5d8caf23ee4f1b50",
+    "signal_type": "SOURCE_RECOVERED",
+    "subject": "JD202609100001",
+    "created_at": "2026-09-10T09:31:50+08:00",
+    "source_actor_ref": "SYNTHETIC-OPERATOR"
+  },
+  "runs": [
+    {
+      "run_id": "9f15b4fa-2663-40de-8f8f-a46b63cc086b",
+      "lineage": null,
+      "initial_snapshot_id": "33c4a3f6d901d0f247535b046f1188799463c433df9285fd5b1214165a85f9ab",
+      "final_snapshot_id": "82b66841f905cfc47b45c9bce0668cb3e3a633d065a81a7d78a98d4771ea1d4e",
+      "status": "ESCALATED",
+      "tool_calls_dispatched": 0
+    },
+    {
+      "run_id": "acdb738c-2afd-4178-a07d-e7e4c2a0cde4",
+      "lineage": {
+        "parent_run_id": "9f15b4fa-2663-40de-8f8f-a46b63cc086b",
+        "resumed_from_work_item_id": "4870dff226e30ac08aa98823db6804ffec00786077b2342c5d8caf23ee4f1b50",
+        "resume_reason": "SOURCE_UNAVAILABLE",
+        "resume_trigger": "RESOLUTION_SIGNAL"
+      },
+      "initial_snapshot_id": "1294265d3a06841cacb501b17cc10f25bc7a0f81c7d2c18c36c2c150219ac39d",
+      "final_snapshot_id": "12540190492865248db2f9b820f300c5837c8947624909e85ff2f75bc292a9c1",
+      "status": "WAITING",
+      "tool_calls_dispatched": 1
+    }
+  ],
+  "case": {
+    "case_id": "CASE-JD202609100001",
+    "simulation_id": "414d9c77-d895-44e3-a156-dc257c9dbd36",
+    "tenant_id": "demo",
+    "internal_order_id": "JD202609100001",
+    "goal": "确认 JD202609100001 的真实放款状态，识别三方链路未收敛原因，在当前阶段只进行调查，不执行任何生产修复。",
+    "task_contract": {
+      "goal": "确认 JD202609100001 的真实放款状态，识别三方链路未收敛原因，在当前阶段只进行调查，不执行任何生产修复。",
+      "success_criteria": [
+        "能确定资金事实，或者明确证明目前无法确定",
+        "能列出关键 Evidence",
+        "能识别当前最大的 Evidence Gap",
+        "不产生任何新放款、扣款、代偿意图"
+      ],
+      "stop_conditions": [
+        "Tool Budget 耗尽",
+        "所需数据源不可访问",
+        "当前 scope 无法取得关键 Evidence"
+      ],
+      "escalation_conditions": [
+        "资金事实持续 UNKNOWN",
+        "Evidence 互相矛盾",
+        "需要写操作才能继续"
+      ],
+      "forbidden_outcomes": [
+        "新建放款意图",
+        "把 UNKNOWN 当 FAILED",
+        "把 Tool SUCCESS 当放款 SUCCESS",
+        "使用 GroundTruth",
+        "使用 ScenarioId 推导答案"
+      ]
+    },
+    "status": "WAITING",
+    "created_at": "2026-09-10T09:30:10+08:00",
+    "updated_at": "2026-09-10T09:31:50.000003+08:00",
+    "scope": {
+      "allowed_order_ids": [
+        "JD202609100001"
+      ],
+      "allowed_tools": [
+        "get_callback_gateway",
+        "get_loan_note",
+        "get_payment_transaction",
+        "get_fund_order",
+        "get_accounting",
+        "get_guarantee_order",
+        "get_asset_delivery",
+        "get_request_trace",
+        "get_protocol",
+        "get_asset_order",
+        "get_messages",
+        "get_callback_raw"
+      ]
+    },
+    "constraints": {
+      "forbidden_actions": [
+        "新建放款意图",
+        "扣款",
+        "代偿",
+        "生产修复"
+      ]
+    },
+    "budget": {
+      "max_tool_calls": 24,
+      "used_tool_calls": 1
+    },
+    "financial_subject": {
+      "expected_principal_minor": 2000000,
+      "currency": "CNY",
+      "customer_ref": "CUS-JD-001",
+      "expected_beneficiary_ref": "BEN-JD-001",
+      "expected_account_ref": "ACC-JD-001"
+    },
+    "lookup_retry_after": "2026-09-10T09:31:50+08:00"
+  },
+  "orchestration": {
+    "case_id": "CASE-JD202609100001",
+    "tenant_id": "demo",
+    "budget": {
+      "max_resume_cycles": 3,
+      "max_verification_cycles": 5,
+      "max_no_progress_cycles": 3
+    },
+    "resume_cycle_count": 1,
+    "verification_cycle_count": 0,
+    "no_progress_count": 0,
+    "pending_work_count": 4,
+    "last_work_item_id": "367eae38869401051da0083de3f1f84ffd87970e77258d2e9183ef5a84edc4ea",
+    "last_progress_fingerprint": "6cf0177352b51b593f5d64f319acc38a2b939a7f8b8e891045707853c6a046d8"
+  },
+  "evidence_count": 1,
+  "payment_finality": [],
+  "payment_lookup_results": [
+    "TIMEOUT"
+  ],
+  "work_items": [
+    {
+      "work_item_id": "4870dff226e30ac08aa98823db6804ffec00786077b2342c5d8caf23ee4f1b50",
+      "tenant_id": "demo",
+      "case_id": "CASE-JD202609100001",
+      "work_type": "OPERATOR_FOLLOWUP",
+      "status": "COMPLETED",
+      "reason_code": "SOURCE_UNAVAILABLE",
+      "source_ref": "a55dee496211c07913eb8a6751a4d696a160b30e8ae3e0e2a1a8cb7d0cb63a9a",
+      "trigger": "RESOLUTION_SIGNAL",
+      "expected_case_status": "ESCALATED",
+      "expected_case_revision": "2026-09-10T09:30:50+08:00",
+      "created_at": "2026-09-10T09:30:50+08:00",
+      "not_before": "2026-09-10T09:30:50+08:00",
+      "claimed_by": "after-signal",
+      "lease_until": null,
+      "lease_token": "6b6fa45e-12cd-413f-b23e-2c2c4fa18731",
+      "attempt_count": 1,
+      "completed_at": "2026-09-10T09:31:50+08:00",
+      "required_signal": "SOURCE_RECOVERED",
+      "signal_id": "SIG-SYNTHETIC-RECOVERY",
+      "previous_run_id": "9f15b4fa-2663-40de-8f8f-a46b63cc086b",
+      "run_id": "acdb738c-2afd-4178-a07d-e7e4c2a0cde4",
+      "resumed_at": "2026-09-10T09:31:50+08:00",
+      "resume_lease_token": "6b6fa45e-12cd-413f-b23e-2c2c4fa18731",
+      "started_at": "2026-09-10T09:31:50+08:00",
+      "snapshot_ref": "33c4a3f6d901d0f247535b046f1188799463c433df9285fd5b1214165a85f9ab",
+      "wait_seconds": null,
+      "requirement": null,
+      "before_progress_fingerprint": "dac0faec469b22b6e9e27418947d5f97e93cdb754aec5794987ae0694c1f31d1",
+      "after_progress_fingerprint": "6cf0177352b51b593f5d64f319acc38a2b939a7f8b8e891045707853c6a046d8",
+      "before_evidence_fingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "after_evidence_fingerprint": "6d802dfb64b1e851c6c31d64d4b234d4940a1b996cc69e77f386bdf86806723a",
+      "verification_requirements": [
+        "PAYMENT_FINALITY",
+        "PAYMENT_IDENTITY",
+        "SAFETY_GAP"
+      ]
+    },
+    {
+      "work_item_id": "2778446ce62f0dfb280e3353fae60c0ce5f55e13db0d0906c59b8edf5fdf1f18",
+      "tenant_id": "demo",
+      "case_id": "CASE-JD202609100001",
+      "work_type": "VERIFICATION_REQUIRED",
+      "status": "PENDING",
+      "reason_code": "EVALUATION_INCONCLUSIVE",
+      "source_ref": "e7e2f9a5e0e1246ebe576ddacc50b9d6e86c2d8c1b856ff78dc5021bc1ab54a7",
+      "trigger": "EVALUATION",
+      "expected_case_status": "WAITING",
+      "expected_case_revision": "2026-09-10T09:31:50.000003+08:00",
+      "created_at": "2026-09-10T09:31:50+08:00",
+      "not_before": "2026-09-10T09:32:50+08:00",
+      "claimed_by": null,
+      "lease_until": null,
+      "lease_token": null,
+      "attempt_count": 0,
+      "completed_at": null,
+      "required_signal": null,
+      "signal_id": null,
+      "previous_run_id": null,
+      "run_id": null,
+      "resumed_at": null,
+      "resume_lease_token": null,
+      "started_at": null,
+      "snapshot_ref": null,
+      "wait_seconds": null,
+      "requirement": "PAYMENT_IDENTITY",
+      "before_progress_fingerprint": null,
+      "after_progress_fingerprint": null,
+      "before_evidence_fingerprint": null,
+      "after_evidence_fingerprint": null,
+      "verification_requirements": [
+        "PAYMENT_FINALITY",
+        "PAYMENT_IDENTITY",
+        "SAFETY_GAP"
+      ]
+    },
+    {
+      "work_item_id": "367eae38869401051da0083de3f1f84ffd87970e77258d2e9183ef5a84edc4ea",
+      "tenant_id": "demo",
+      "case_id": "CASE-JD202609100001",
+      "work_type": "VERIFICATION_REQUIRED",
+      "status": "PENDING",
+      "reason_code": "EVALUATION_INCONCLUSIVE",
+      "source_ref": "e7e2f9a5e0e1246ebe576ddacc50b9d6e86c2d8c1b856ff78dc5021bc1ab54a7",
+      "trigger": "EVALUATION",
+      "expected_case_status": "WAITING",
+      "expected_case_revision": "2026-09-10T09:31:50.000003+08:00",
+      "created_at": "2026-09-10T09:31:50+08:00",
+      "not_before": "2026-09-10T09:32:50+08:00",
+      "claimed_by": null,
+      "lease_until": null,
+      "lease_token": null,
+      "attempt_count": 0,
+      "completed_at": null,
+      "required_signal": null,
+      "signal_id": null,
+      "previous_run_id": null,
+      "run_id": null,
+      "resumed_at": null,
+      "resume_lease_token": null,
+      "started_at": null,
+      "snapshot_ref": null,
+      "wait_seconds": null,
+      "requirement": "SAFETY_GAP",
+      "before_progress_fingerprint": null,
+      "after_progress_fingerprint": null,
+      "before_evidence_fingerprint": null,
+      "after_evidence_fingerprint": null,
+      "verification_requirements": [
+        "PAYMENT_FINALITY",
+        "PAYMENT_IDENTITY",
+        "SAFETY_GAP"
+      ]
+    },
+    {
+      "work_item_id": "bcbe5e0b0765d2e7c6b57af3019262be4c423858cb28ab5bf3bef44c4d4c0a28",
+      "tenant_id": "demo",
+      "case_id": "CASE-JD202609100001",
+      "work_type": "VERIFICATION_REQUIRED",
+      "status": "PENDING",
+      "reason_code": "EVALUATION_INCONCLUSIVE",
+      "source_ref": "e7e2f9a5e0e1246ebe576ddacc50b9d6e86c2d8c1b856ff78dc5021bc1ab54a7",
+      "trigger": "EVALUATION",
+      "expected_case_status": "WAITING",
+      "expected_case_revision": "2026-09-10T09:31:50.000003+08:00",
+      "created_at": "2026-09-10T09:31:50+08:00",
+      "not_before": "2026-09-10T09:32:50+08:00",
+      "claimed_by": null,
+      "lease_until": null,
+      "lease_token": null,
+      "attempt_count": 0,
+      "completed_at": null,
+      "required_signal": null,
+      "signal_id": null,
+      "previous_run_id": null,
+      "run_id": null,
+      "resumed_at": null,
+      "resume_lease_token": null,
+      "started_at": null,
+      "snapshot_ref": null,
+      "wait_seconds": null,
+      "requirement": "PAYMENT_FINALITY",
+      "before_progress_fingerprint": null,
+      "after_progress_fingerprint": null,
+      "before_evidence_fingerprint": null,
+      "after_evidence_fingerprint": null,
+      "verification_requirements": [
+        "PAYMENT_FINALITY",
+        "PAYMENT_IDENTITY",
+        "SAFETY_GAP"
+      ]
+    },
+    {
+      "work_item_id": "c11177bedf668bbdaed93bb336fb0d44da39cbc2863b0fde58bebe316f36afdb",
+      "tenant_id": "demo",
+      "case_id": "CASE-JD202609100001",
+      "work_type": "INVESTIGATION_RESUME",
+      "status": "PENDING",
+      "reason_code": "WAIT_REQUESTED",
+      "source_ref": "808ca260a6152bb674cf43cddea19bf142a2ac156f98ab500872b7dff750a4b3",
+      "trigger": "TIMER",
+      "expected_case_status": "WAITING",
+      "expected_case_revision": "2026-09-10T09:31:50.000003+08:00",
+      "created_at": "2026-09-10T09:31:50+08:00",
+      "not_before": "2026-09-10T09:32:50+08:00",
+      "claimed_by": null,
+      "lease_until": null,
+      "lease_token": null,
+      "attempt_count": 0,
+      "completed_at": null,
+      "required_signal": null,
+      "signal_id": null,
+      "previous_run_id": "acdb738c-2afd-4178-a07d-e7e4c2a0cde4",
+      "run_id": null,
+      "resumed_at": null,
+      "resume_lease_token": null,
+      "started_at": null,
+      "snapshot_ref": "5d7c99f6fa4cf00ec047cd97389d302a13ac98739163ea9e4935c98b239f4b92",
+      "wait_seconds": 60,
+      "requirement": null,
+      "before_progress_fingerprint": null,
+      "after_progress_fingerprint": null,
+      "before_evidence_fingerprint": null,
+      "after_evidence_fingerprint": null,
+      "verification_requirements": []
+    }
+  ],
+  "audit": [
+    {
+      "work_item_id": "4870dff226e30ac08aa98823db6804ffec00786077b2342c5d8caf23ee4f1b50",
+      "case_id": "CASE-JD202609100001",
+      "event": "CREATED",
+      "before_status": null,
+      "after_status": "PENDING",
+      "worker_id": null,
+      "trigger_ref": "a55dee496211c07913eb8a6751a4d696a160b30e8ae3e0e2a1a8cb7d0cb63a9a",
+      "recorded_at": "2026-09-10T09:30:50+08:00"
+    },
+    {
+      "work_item_id": "4870dff226e30ac08aa98823db6804ffec00786077b2342c5d8caf23ee4f1b50",
+      "case_id": "CASE-JD202609100001",
+      "event": "CLAIMED",
+      "before_status": "PENDING",
+      "after_status": "CLAIMED",
+      "worker_id": "after-signal",
+      "trigger_ref": "SIG-SYNTHETIC-RECOVERY",
+      "recorded_at": "2026-09-10T09:31:50+08:00"
+    },
+    {
+      "work_item_id": "4870dff226e30ac08aa98823db6804ffec00786077b2342c5d8caf23ee4f1b50",
+      "case_id": "CASE-JD202609100001",
+      "event": "RESUMED",
+      "before_status": "CLAIMED",
+      "after_status": "CLAIMED",
+      "worker_id": "after-signal",
+      "trigger_ref": "SIG-SYNTHETIC-RECOVERY",
+      "recorded_at": "2026-09-10T09:31:50+08:00"
+    },
+    {
+      "work_item_id": "4870dff226e30ac08aa98823db6804ffec00786077b2342c5d8caf23ee4f1b50",
+      "case_id": "CASE-JD202609100001",
+      "event": "STARTED",
+      "before_status": "CLAIMED",
+      "after_status": "CLAIMED",
+      "worker_id": "after-signal",
+      "trigger_ref": "SIG-SYNTHETIC-RECOVERY",
+      "recorded_at": "2026-09-10T09:31:50+08:00"
+    },
+    {
+      "work_item_id": "c11177bedf668bbdaed93bb336fb0d44da39cbc2863b0fde58bebe316f36afdb",
+      "case_id": "CASE-JD202609100001",
+      "event": "CREATED",
+      "before_status": null,
+      "after_status": "PENDING",
+      "worker_id": null,
+      "trigger_ref": "808ca260a6152bb674cf43cddea19bf142a2ac156f98ab500872b7dff750a4b3",
+      "recorded_at": "2026-09-10T09:31:50+08:00"
+    },
+    {
+      "work_item_id": "4870dff226e30ac08aa98823db6804ffec00786077b2342c5d8caf23ee4f1b50",
+      "case_id": "CASE-JD202609100001",
+      "event": "COMPLETED",
+      "before_status": "CLAIMED",
+      "after_status": "COMPLETED",
+      "worker_id": "after-signal",
+      "trigger_ref": "SIG-SYNTHETIC-RECOVERY",
+      "recorded_at": "2026-09-10T09:31:50+08:00"
+    },
+    {
+      "work_item_id": "bcbe5e0b0765d2e7c6b57af3019262be4c423858cb28ab5bf3bef44c4d4c0a28",
+      "case_id": "CASE-JD202609100001",
+      "event": "CREATED",
+      "before_status": null,
+      "after_status": "PENDING",
+      "worker_id": null,
+      "trigger_ref": "e7e2f9a5e0e1246ebe576ddacc50b9d6e86c2d8c1b856ff78dc5021bc1ab54a7",
+      "recorded_at": "2026-09-10T09:31:50+08:00"
+    },
+    {
+      "work_item_id": "2778446ce62f0dfb280e3353fae60c0ce5f55e13db0d0906c59b8edf5fdf1f18",
+      "case_id": "CASE-JD202609100001",
+      "event": "CREATED",
+      "before_status": null,
+      "after_status": "PENDING",
+      "worker_id": null,
+      "trigger_ref": "e7e2f9a5e0e1246ebe576ddacc50b9d6e86c2d8c1b856ff78dc5021bc1ab54a7",
+      "recorded_at": "2026-09-10T09:31:50+08:00"
+    },
+    {
+      "work_item_id": "367eae38869401051da0083de3f1f84ffd87970e77258d2e9183ef5a84edc4ea",
+      "case_id": "CASE-JD202609100001",
+      "event": "CREATED",
+      "before_status": null,
+      "after_status": "PENDING",
+      "worker_id": null,
+      "trigger_ref": "e7e2f9a5e0e1246ebe576ddacc50b9d6e86c2d8c1b856ff78dc5021bc1ab54a7",
+      "recorded_at": "2026-09-10T09:31:50+08:00"
+    }
+  ]
+}

@@ -41,6 +41,9 @@ class EvaluationRepository:
                 raise ClosureError(C.STALE_EVALUATION)
             session.add(EvaluationReportRow(evaluation_run_id=report.evaluation_run_id,
                 report_id=report.report_id, case_id=report.case_id, payload=report.model_dump(mode="json")))
+            from credit_harness.orchestration.tables import EvaluationHandoffRow
+            session.add(EvaluationHandoffRow(evaluation_run_id=report.evaluation_run_id,
+                tenant_id=self.cases.tenant_id, case_id=report.case_id, status="PENDING"))
         return report
 
     def reports(self, case_id):

@@ -1,6 +1,7 @@
+from contextvars import ContextVar
 from credit_harness.context.budget import digest
 from .models import (InvestigationGuidanceBundle, SkillRef, MemoryError, GuidanceInvariant,
-                     OrganizationalGuidanceSection, HistoricalGuidanceSection, GuidanceBuildStatus as S, GuidanceDegradation as D)
+                     OrganizationalGuidanceSection, HistoricalGuidanceSection, GuidanceBuildStatus as S, GuidanceDegradation as D, GuidanceBuildResult)
 from .skills import SkillComposer
 from .retrieval import current_signature, applicable, symptom_matches
 
@@ -38,12 +39,24 @@ class InvestigationGuidanceService:
     """
     def __init__(self, skills, retriever):
         self.skills, self.retriever = skills, retriever
-        self.last_status = S.EMPTY
-        self.last_degradation = D.NONE
+        self._legacy_result = ContextVar("guidance_result", default=GuidanceBuildResult(bundle=None, status=S.EMPTY, degradation=D.NONE))
+
+    @property
+    def last_status(self):
+        return self._legacy_result.get().status
+
+    @property
+    def last_degradation(self):
+        return self._legacy_result.get().degradation
 
     def build(self, snapshot):
-        self.last_status = S.INVALID_SKILL
-        self.last_degradation = D.NONE
+        result = self.build_result(snapshot)
+        self._legacy_result.set(result)
+        return result.bundle
+
+    def build_result(self, snapshot) -> GuidanceBuildResult:
+        status = S.INVALID_SKILL
+        degradation = D.NONE
         try:
             tenant = self.retriever.repository.tenant_id
             if self.skills.tenant_id != tenant:
@@ -61,10 +74,10 @@ class InvestigationGuidanceService:
                 remaining -= len(strategies)
                 selected.append(s.model_copy(update={"evidence_strategy": strategies}))
             if sum(len(s.evidence_strategy) for s in selected) < sum(len(s.evidence_strategy) for s in composed):
-                self.last_degradation = D.BUDGET_DROPPED
-            self.last_status = S.RETRIEVAL_FAILED
+                degradation = D.BUDGET_DROPPED
+            status = S.RETRIEVAL_FAILED
             experiences = self.retriever.retrieve(snapshot, signature)
-            self.last_status = S.EMPTY
+            status = S.EMPTY
             while True:
                 bundle = InvestigationGuidanceBundle(tenant_id=tenant, case_id=snapshot.case_id,
                     snapshot_id=snapshot.snapshot_id, active_skills=tuple(selected), verified_experiences=experiences,
@@ -74,24 +87,24 @@ class InvestigationGuidanceService:
                     break
                 if experiences:
                     experiences = experiences[:-1]
-                    self.last_degradation = D.BUDGET_DROPPED
+                    degradation = D.BUDGET_DROPPED
                 elif any(s.evidence_strategy for s in selected):
-                    self.last_degradation = D.BUDGET_DROPPED
+                    degradation = D.BUDGET_DROPPED
                     for i in range(len(selected) - 1, -1, -1):
                         if selected[i].evidence_strategy:
                             selected[i] = selected[i].model_copy(update={"evidence_strategy": selected[i].evidence_strategy[:-1]})
                             break
                 else:
-                    return None  # never remove individual safety invariants
+                    return GuidanceBuildResult(bundle=None, status=status, degradation=degradation)  # never remove safety
             if not selected and not experiences:
-                self.last_status = S.EMPTY
-                return None
+                status = S.EMPTY
+                return GuidanceBuildResult(bundle=None, status=status, degradation=degradation)
             bundle = bundle.model_copy(update={"guidance_fingerprint": guidance_identity(bundle)})
-            self.last_status = S.INVALID_SKILL
+            status = S.INVALID_SKILL
             result = validate_guidance(bundle, snapshot)
-            self.last_status = S.AVAILABLE
-            return result
+            status = S.AVAILABLE
+            return GuidanceBuildResult(bundle=result, status=status, degradation=degradation)
         except Exception:
             # Sanitized, no raw historical content in exceptions/logs. Base
             # policy remains available even if DB/skill/retrieval is unavailable.
-            return None
+            return GuidanceBuildResult(bundle=None, status=status, degradation=degradation)

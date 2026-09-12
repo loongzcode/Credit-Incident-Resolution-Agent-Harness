@@ -188,6 +188,8 @@ Guidance availability 与 degradation 分开写入 PlannerDecision、PlannerAudi
 
 ## Stage Handoff Gap
 
+Step 13 更新：下文描述的是本文件保留的 Step 12.1 历史实验状态。当前实现已增加 [Durable Orchestration](orchestration.md)，用定向回归验证合法 WAIT Resume／Verification 交接；本文件的 288-run 原始数据、分母和关闭率未重算。报告表头已从 `Errors / blocked` 修正为 `Errors`。新 Runtime 的 Guidance 遥测通过单次调用返回的 `GuidanceBuildResult` 获取，历史同步可变状态的限制已移除。
+
 本次 End-to-end 实测暴露：Investigation WAIT / ESCALATED 后，当前缺乏合法 durable Resume / Verification Handoff。后续补查受 Case policy 阻断，是系统下一阶段需要解决的能力问题。Benchmark 不通过 `case.status = INVESTIGATING` 绕过，不重新打开 WAITING / ESCALATED，也不提高 budget、延长 turns 或修改 SOP/Fake Planner/Evaluator 来美化关闭率。
 
 本 patch 只改 scorer 分类、报告和 Guidance 遥测，不实现 Resume / Orchestration。

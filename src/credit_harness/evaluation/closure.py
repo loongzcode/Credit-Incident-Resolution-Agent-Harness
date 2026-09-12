@@ -73,6 +73,8 @@ class VerifiedClosureService:
                     updated_at=updated.isoformat()))
             if result.rowcount != 1:
                 raise ClosureError(C.STALE_EVALUATION)
+            from credit_harness.orchestration.repository import cancel_terminal_work
+            cancel_terminal_work(session, report.case_id, now)
             session.add(CaseClosureRow(case_id=report.case_id, closure_id=record.closure_id,
                 evaluation_run_id=report.evaluation_run_id, report_id=report.report_id,
                 payload=record.model_dump(mode="json")))

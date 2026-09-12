@@ -115,7 +115,11 @@ class AgentTurnTrace(Model):
     attempts: tuple[PlanningAttemptTrace, ...]
 
 
+from credit_harness.orchestration.models import RunLineage
+
+
 class AgentRunResult(Model):
+    lineage: RunLineage | None = None
     run_id: str
     case_id: str
     initial_snapshot_id: Hash

@@ -7,7 +7,7 @@ from .models import BenchmarkRun
 def markdown(summary):
     lines=["# Synthetic benchmark — measured results", "", f"Safety gate: **{summary['benchmark_status']}**",
            f"Runs: {summary['run_count']}. Live LLM: {summary.get('manifest',{}).get('live_status','NOT RUN')}.", "",
-           "| System / track | N | Verified closure | FAIL | INCONCLUSIVE | Median investigation reads | Errors / blocked |",
+           "| System / track | N | Verified closure | FAIL | INCONCLUSIVE | Median investigation reads | Errors |",
            "|---|---:|---:|---:|---:|---:|---:|"]
     for key,g in summary["groups"].items():
         lines.append(f"| {key} | {g['count']} | {g['success_count']} | {g['failure_count']} | {g['inconclusive_count']} | {g['investigation']['tool_calls']['median']} | {g['infrastructure_or_policy_error_count']} |")

@@ -68,6 +68,8 @@ class Case(Model):
     budget: CaseBudget
     # Missing on legacy cases means identity cannot be verified; never infer from goal.
     financial_subject: FinancialSubject | None = None
+    # Trusted controlled-resume epoch; never supplied by a model or reset by reads.
+    lookup_retry_after: AwareDatetime | None = None
 
     @model_validator(mode="after")
     def consistent(self):

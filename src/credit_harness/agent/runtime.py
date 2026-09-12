@@ -44,16 +44,18 @@ class InvestigationAgentRuntime:
         evidence = self.evidence.list(case_id)
         return case, evidence, self.assembler.build(case, evidence)
 
-    def run(self, case_id: str) -> AgentRunResult:
+    def run(self, case_id: str, *, lineage=None, run_id=None, lease_guard=None) -> AgentRunResult:
         self.recovery.before_investigation(case_id)
         case, evidence, initial = self.load_current_context(case_id)
-        run_id = str(uuid4())
+        run_id = run_id or str(uuid4())
         self.checkpoints.save(run_id, case_id, 0, initial.snapshot_id)
         current = initial
         turns, decision_ids = [], []
         dispatched, no_progress = 0, 0
         stop = Stop.MAX_TURNS_REACHED
         for number in range(1, self.config.max_turns + 1):
+            if lease_guard is not None:
+                lease_guard()
             case, evidence, before = self.load_current_context(case_id)
             current = before
             if case.status not in (CaseStatus.NEW, CaseStatus.INVESTIGATING):
@@ -95,6 +97,10 @@ class InvestigationAgentRuntime:
                 attempts[-1] = attempt
                 candidate = decision.selected_action.candidate
                 try:
+                    if lease_guard is not None:
+                        precondition = precondition.model_copy(update=dict(work_lease=lease_guard()))
+                        attempt = attempt.model_copy(update=dict(execution_precondition=precondition))
+                        attempts[-1] = attempt
                     if isinstance(candidate, CallToolCandidate):
                         query = build_tool_query(case, candidate)
                         tool_name = candidate.tool_name
@@ -108,7 +114,26 @@ class InvestigationAgentRuntime:
                         outcome, turn_stop = Outcome.TOOL_OBSERVED, None
                     else:
                         status = CaseStatus.WAITING if isinstance(candidate, WaitCandidate) else CaseStatus.ESCALATED
-                        self.cases.pause_if_current(case_id, status, precondition=precondition)
+                        from credit_harness.orchestration.models import PauseReservation, WorkReason, SignalType
+                        waiting = isinstance(candidate, WaitCandidate)
+                        from credit_harness.hypotheses.models import UncollectedClaimType
+                        deployed = getattr(candidate, "requested_capability", None) == UncollectedClaimType.DEPLOYED_CONSUMER_SCHEMA_VERSION
+                        source_failure = candidate.reason_code.value == "REPEATED_SOURCE_FAILURE"
+                        reason = (WorkReason.WAIT_REQUESTED if waiting else
+                            WorkReason.DEPLOYMENT_STATE_UNKNOWN if deployed else
+                            WorkReason.SOURCE_UNAVAILABLE if source_failure else
+                            WorkReason.CAPABILITY_UNAVAILABLE if candidate.reason_code.value == "NO_AVAILABLE_TOOL" else
+                            WorkReason.OPERATOR_REQUIRED)
+                        signal = (SignalType.DEPLOYMENT_STATE_UPDATED if reason == WorkReason.DEPLOYMENT_STATE_UNKNOWN else
+                            SignalType.SOURCE_RECOVERED if source_failure else
+                            SignalType.CAPABILITY_AVAILABLE if reason == WorkReason.CAPABILITY_UNAVAILABLE else
+                            SignalType.OPERATOR_ACKNOWLEDGED)
+                        paused = self.cases.pause_if_current(case_id, status, precondition=precondition,
+                            orchestration=PauseReservation(decision_id=decision.decision_id,
+                                snapshot_id=planned_snapshot.snapshot_id, run_id=run_id, reason=reason,
+                                wait_seconds=candidate.suggested_wait_seconds if waiting else None,
+                                required_signal=None if waiting else signal))
+                        status = paused.status
                         outcome = Outcome.WAITING if status == CaseStatus.WAITING else Outcome.ESCALATED
                         turn_stop = Stop(outcome.value)
                     attempts[-1] = attempt.model_copy(update={"execution_cas": CAS.PASSED})
@@ -152,7 +177,7 @@ class InvestigationAgentRuntime:
             if no_progress >= self.config.max_consecutive_no_knowledge_progress:
                 stop = Stop.NO_KNOWLEDGE_PROGRESS
                 break
-        result = AgentRunResult(run_id=run_id, case_id=case_id,
+        result = AgentRunResult(run_id=run_id, case_id=case_id, lineage=lineage,
             initial_snapshot_id=initial.snapshot_id, final_snapshot_id=current.snapshot_id,
             status=stop, turn_count=len(turns), tool_calls_dispatched=dispatched,
             planner_decision_ids=tuple(decision_ids), turns=tuple(turns), final_case_status=case.status)

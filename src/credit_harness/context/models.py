@@ -11,10 +11,10 @@ from credit_harness.identity.models import FinancialSubject, IdentityDimension, 
 from .structured_values import OpaqueBusinessRef, OpaqueSubjectRef, ContextReference, StructuredVersion, StructuredFieldPath
 from .value_contracts import validate_claim_value, validate_subject_field
 
-CONTEXT_SCHEMA_VERSION = "4"
+CONTEXT_SCHEMA_VERSION = "5"
 ELIGIBILITY_POLICY_VERSION = "4"
-COMPACTION_POLICY_VERSION = "3"
-CONTEXT_POLICY_VERSION = "4"
+COMPACTION_POLICY_VERSION = "4"
+CONTEXT_POLICY_VERSION = "5"
 Hash = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 Count = Annotated[StrictInt, Field(ge=0)]
 FactValue = StrictBool | StrictInt | StrictStr
@@ -177,6 +177,7 @@ class HistoricalStateGroup(Model):
 
 
 class HistoryDigest(Model):
+    retry_window_start: AwareDatetime | None = None
     tool_calls_used: Count
     evidence_count: Count
     latest_observation_time: AwareDatetime | None

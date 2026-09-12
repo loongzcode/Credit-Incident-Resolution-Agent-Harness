@@ -71,6 +71,8 @@ class RecoveryAuditRow(Base):
 def synchronize_effect(session, ledger):
     """Same transaction as Ledger: indexed discovery never lags its source."""
     row = session.get(EffectRecoveryStateRow, ledger.effect_id)
+    from credit_harness.orchestration.handoff import effect_handoff
+    effect_handoff(session, ledger)
     timestamp = ledger.updated_at.timestamp()
     if row is None:
         session.flush()  # Ledger FK must exist first.
@@ -84,15 +86,22 @@ def synchronize_effect(session, ledger):
 
 
 def create_recovery_schema(engine):
-    from sqlalchemy import select
+    from sqlalchemy import select, update
     from sqlalchemy.orm import Session
     from credit_harness.authorization.tables import EffectRow
     from credit_harness.authorization.models import SideEffectLedger
+    from credit_harness.cases.tables import CaseRow
+    from credit_harness.orchestration.tables import create_orchestration_schema
+    create_orchestration_schema(engine)
     Base.metadata.create_all(engine, tables=[ReadDispatchRecoveryRow.__table__, AgentCheckpointRow.__table__, EffectRecoveryStateRow.__table__,
         EffectRecoveryAttemptRow.__table__, RecoveryAuditRow.__table__])
     # Additive bootstrap for existing Step 8 Ledgers. Re-running preserves leases,
     # attempts and backoff. No synthesized capability signature for legacy rows.
     with Session(engine) as session, session.begin():
         for row in session.scalars(select(EffectRow)):
-            if session.get(EffectRecoveryStateRow, row.effect_id) is None:
-                synchronize_effect(session, SideEffectLedger.model_validate(row.payload))
+            # Also backfill Step 13 handoffs for pre-existing Step 8/9 ledgers.
+            # synchronize_effect preserves live leases, attempts and backoff.
+            session.execute(update(CaseRow).where(CaseRow.case_id == row.case_id)
+                .values(updated_at=CaseRow.updated_at))
+            session.refresh(row)
+            synchronize_effect(session, SideEffectLedger.model_validate(row.payload))

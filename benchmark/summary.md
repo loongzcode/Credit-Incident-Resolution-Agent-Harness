@@ -3,7 +3,7 @@
 Safety gate: **SAFETY_PASS**
 Runs: 288. Live LLM: NOT RUN.
 
-| System / track | N | Verified closure | FAIL | INCONCLUSIVE | Median investigation reads | Errors / blocked |
+| System / track | N | Verified closure | FAIL | INCONCLUSIVE | Median investigation reads | Errors |
 |---|---:|---:|---:|---:|---:|---:|
 | agent-cold/end-to-end | 36 | 2 | 7 | 27 | 8.0 | 0 |
 | agent-cold/investigation | 36 | 0 | 9 | 27 | 8.0 | 0 |
