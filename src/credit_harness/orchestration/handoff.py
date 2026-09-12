@@ -1,8 +1,13 @@
 """Transactional handoffs. These functions publish work, never Evidence."""
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from credit_harness.cases.repository import CaseRepository
+from credit_harness.cases.repository import hydrate
+from credit_harness.context.tool_capabilities import ToolCapabilityCatalog
+from credit_harness.authorization.models import SideEffectLedger
+from credit_harness.authorization.tables import EffectRow
+from credit_harness.recovery.tables import EffectRecoveryStateRow
 from credit_harness.cases.models import CaseStatus
 from credit_harness.cases.tables import CaseRow
 from credit_harness.authorization.models import EffectStatus
@@ -12,8 +17,9 @@ from credit_harness.evaluation.models import (EvaluationReport, EvaluationVerdic
 from credit_harness.evaluation.tables import EvaluationReportRow
 from credit_harness.evaluation.evaluator import report_identity
 from .models import WorkType as T, WorkReason as R, Trigger, SignalType, OrchestrationError, PauseReservation
-from .repository import create_work, lock_case, state_in
-from .tables import EvaluationHandoffRow
+from .repository import create_work, lock_case, state_in, escalate_in
+from .routing import RequirementRouter, RequirementRoute, RecoveryRouteState
+from .tables import EvaluationHandoffRow, WorkItemRow
 
 
 def pause_handoff(session, case, reservation, now):
@@ -102,11 +108,63 @@ class EvaluationHandoffService:
                 return (create_work(session, case, work_type=T.OPERATOR_FOLLOWUP, reason=R.EVALUATION_FAILED,
                     source_ref=report.report_id, trigger=Trigger.EVALUATION, now=report.created_at,
                     required_signal=SignalType.OPERATOR_ACKNOWLEDGED),)
-            return tuple(create_work(session, case, work_type=T.VERIFICATION_REQUIRED,
-                reason=R.EVALUATION_INCONCLUSIVE, source_ref=report.report_id, trigger=Trigger.EVALUATION,
-                now=report.created_at, not_before=report.created_at+timedelta(seconds=30), requirement=q,
-                verification_requirements=tuple(sorted({r.requirement for r in report.unresolved_requirements})))
-                for q in sorted({r.requirement for r in report.unresolved_requirements}))
+            return self._route_requirements(session, case, report)
+
+    def _route_requirements(self, session, case, report):
+        available = {t.tool_name for t in ToolCapabilityCatalog().for_case(hydrate(case))}
+        effects, recovery_states = [], {}
+        if any(r.requirement in (Q.EFFECT_FINALITY, Q.RECOVERY_FINALITY) for r in report.unresolved_requirements):
+            # Trusted current rows under the same Case lock as both producers.
+            # No report rationale, model field or Simulator oracle controls this.
+            for row in session.scalars(select(EffectRow).where(EffectRow.case_id == case.case_id)):
+                ledger = SideEffectLedger.model_validate(row.payload)
+                if ledger.case_id != case.case_id or ledger.tenant_id != case.tenant_id:
+                    raise OrchestrationError("effect boundary mismatch")
+                state = session.get(EffectRecoveryStateRow, row.effect_id)
+                valid = state is not None and state.case_id == case.case_id and state.tenant_id == case.tenant_id
+                if valid:
+                    recovery_states[row.effect_id] = state
+                effects.append(RecoveryRouteState(effect_ref=row.effect_id, status=ledger.status,
+                    recovery_available=valid, requires_escalation=state.requires_escalation if valid else False))
+        router = RequirementRouter()
+        routes = {r for requirement in report.unresolved_requirements
+            for r in router.route(requirement, available_tools=available, effects=effects)}
+        read_requirements = tuple(sorted({r.requirement for r in routes if r.route == RequirementRoute.READ_VERIFICATION}))
+        items = {}
+        for route in sorted(routes, key=lambda r: (r.route.value, r.requirement.value, r.effect_ref or "")):
+            if route.route == RequirementRoute.READ_VERIFICATION:
+                item = create_work(session, case, work_type=T.VERIFICATION_REQUIRED,
+                    reason=R.EVALUATION_INCONCLUSIVE, source_ref=report.report_id, trigger=Trigger.EVALUATION,
+                    now=report.created_at, not_before=report.created_at+timedelta(seconds=30),
+                    requirement=route.requirement, verification_requirements=read_requirements)
+            elif route.route == RequirementRoute.EFFECT_RECOVERY:
+                state = recovery_states[route.effect_ref]
+                item = create_work(session, case, work_type=T.RECOVERY_RECHECK, reason=R.EFFECT_UNRESOLVED,
+                    source_ref=route.effect_ref, trigger=Trigger.RECOVERY, now=report.created_at,
+                    not_before=max(report.created_at, datetime.fromtimestamp(
+                        max(state.next_eligible_at, state.lease_until or 0), timezone.utc)))
+            else:
+                finality = route.requirement in (Q.EFFECT_FINALITY, Q.RECOVERY_FINALITY)
+                state = recovery_states.get(route.effect_ref)
+                source = route.effect_ref or report.report_id
+                if route.effect_ref:
+                    recovery_work = session.scalar(select(WorkItemRow).where(WorkItemRow.case_id == case.case_id,
+                        WorkItemRow.payload["work_type"].as_string() == T.RECOVERY_RECHECK.value,
+                        WorkItemRow.payload["source_ref"].as_string() == route.effect_ref))
+                    if recovery_work is not None:
+                        source = recovery_work.work_item_id  # Keep Step 13.1 operator identity, including legacy rows.
+                reason = R.EFFECT_UNRESOLVED if finality else R.OPERATOR_REQUIRED
+                # Step 9 alone decides exhaustion. Do not duplicate its counter
+                # or infer failure from an unavailable read Tool.
+                if state and state.requires_escalation and case.status != CaseStatus.ESCALATED.value:
+                    item = escalate_in(session, case, reason, source, self.repository.clock())
+                else:
+                    item = create_work(session, case, work_type=T.OPERATOR_FOLLOWUP, reason=reason,
+                        source_ref=source, trigger=Trigger.EVALUATION, now=report.created_at,
+                        requirement=None if finality else route.requirement,
+                        required_signal=SignalType.OPERATOR_ACKNOWLEDGED)
+            items[item.work_item_id] = item
+        return tuple(items.values())
 
     def poll_unhanded_reports(self, *, limit=100):
         # Report persistence and this bounded outbox are atomic. Work keys

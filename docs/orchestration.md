@@ -1,6 +1,6 @@
 # Step 13 — Durable Case Orchestration
 
-当前补丁：**Step 13.1 — Recovery-aware Resume Integrity**。仅修正读恢复 rebase、语义进度和 Recovery backoff 交接，不增加业务功能。
+当前补丁：**Step 13.2 — Finality Handoff Routing Integrity**。在 Step 13.1 原子恢复与 backoff 基础上，修正 requirement 路由及 Recovery／Investigation no-progress 计数隔离。
 
 本阶段把 Investigation、Recovery 和 Independent Evaluation 之间的交接写入数据库。WAIT、ESCALATE、Effect APPLIED 都不表示业务已经成功。所有数据仍为 synthetic fixtures；不接真实用户、金融系统或在线模型。
 
@@ -73,7 +73,7 @@ Case 增加可信 `lookup_retry_after`。只有合法 durable resume 设置这�
 | --- | --- |
 | PASS | 仅调用现有 VerifiedClosureService，由它再次验证 fresh report 并 CAS 关闭 |
 | FAIL | Operator followup；不自动再修复 |
-| INCONCLUSIVE | 从 unresolved verification requirements 创建有限验证 Work |
+| INCONCLUSIVE | 由 RequirementRouter 把缺口路由到 Read Verification、Effect Recovery 或 Operator Followup |
 
 outbox 有租户／状态／sequence 索引，有限扫描。工作创建完成但 ack 前崩溃可幂等重放；陈旧报告被取消，不阻塞后续报告。没有将 Report 或 Signal 写成 Evidence。
 
@@ -221,3 +221,59 @@ RECOVERY_RECHECK 由专用有限分支处理，不先启动 Agent Run，也不�
 ```
 
 本次没有重跑或改写历史 Benchmark v2 产物，也没有启动 System Registry、UI-1、Money Movement 或 Interview Packaging。
+
+## Step 13.2：Requirement 不等于 Work Type
+
+`UnresolvedVerificationRequirement` 只声明缺什么，不指定 Worker、Tool 或重试机制。`orchestration/routing.py` 的 `RequirementRouter` 返回冻结的 typed `RoutedRequirement`，使用三种 `RequirementRoute`：
+
+| Requirement / 当前可信状态 | Resolution Mechanism |
+| --- | --- |
+| 静态 `VERIFICATION_TOOLS` 中的业务 Evidence requirement，且对应 Tool 在当前 Case scope 内 | READ_VERIFICATION → VERIFICATION_REQUIRED |
+| EFFECT_FINALITY 的 effect_ref 指向当前 Case 的 PREPARED / DISPATCHED / ACCEPTED / UNKNOWN Ledger，且有可用 Recovery state、尚未 requires_escalation | EFFECT_RECOVERY → RECOVERY_RECHECK |
+| RECOVERY_FINALITY | 枚举当前 Case 未决 Ledger，逐个按 Recovery state 路由；不创建 aggregate Read Work |
+| Step 9 requires_escalation | OPERATOR_FOLLOWUP(EFFECT_UNRESOLVED)；Ledger 仍保持 UNKNOWN |
+| PROVENANCE、SAFE_POLICY 等没有明确 machine resolver 的 requirement；缺失／外来 effect 引用；缺少 Recovery state；Read Tool 不在 scope 内 | OPERATOR_FOLLOWUP，要求人工信号 |
+
+只有真实 Read 路由的 requirements 才进入 read batch。EFFECT_FINALITY / RECOVERY_FINALITY 永远不进入该 batch，不伪造 Tool。存在其他合法业务 Read 不妨碍 Recovery backoff；但不能由 Finality 的 NO_TOOL 错误提前升级 Case。没有把所有 INCONCLUSIVE 都解释成“再查一个 Tool”。Evaluator 的 requirements、verdict、资金真值与 Closure authority 均保持原样。
+
+路由只使用 requirement 类型、effect_ref、当前 Case Tool scope 和同一 Case lock 下读取的 Ledger / Recovery state；reason_code、自然语言解释不决定路线。Recovery work 的 source_ref 始终是 effect_id，继续使用 `create_work` 的 effect source 去重。Evaluator 与 effect_handoff 并发创建也在事务内复用同一个 Work，不做事后清理。
+
+新建 Recovery Work 使用 Step 9 next_eligible_at / 有效 lease 作为到期下界；已有 Work 原样复用，不能覆盖其 backoff。实际 lookup 的 grace、backoff、max_attempts 和 requires_escalation 全由原 Step 9 Repository 校验，Handoff 不复制 retry counter 或另设 max_attempts。Step 9 在完成尝试或检查到耗尽时发布 requires_escalation；Handoff 消费这个可信结果。EFFECT_UNRESOLVED 人工跟进沿用该 effect 原 Recovery Work 的 source identity，兼容 Step 13.1 已有跟进；没有 Recovery Work 时才使用 effect_id，避免两个 producer 创建重复跟进。
+
+## Step 13.2：Recovery 与 Investigation no-progress 隔离
+
+保留原 `CaseOrchestrationState.no_progress_count` 字段及已有持久值，现在明确只计 Investigation / Verification cycle。没有表迁移、字段重命名或启动时清零；无法可靠拆分的旧计数不自动扣减。
+
+- RECOVERY_RECHECK UNKNOWN → UNKNOWN：semantic_progress=false，普通 no_progress_count 保持原值。
+- UNKNOWN → APPLIED / FAILED_CONFIRMED：算确定性编排进度，可将普通 no-progress 重置为 0。
+- Recovery 尝试仍由 Step 9 attempt_count / max_attempts 限制，不增设第二套预算。
+- 普通 Investigation / Verification 没有进展仍递增，达到原上限仍升级；原 resume / verification / Tool Budget gate 不变。
+
+本次回归覆盖报告与 Recovery Work 同时存在、backoff 前 claim_next、两次 UNKNOWN 后 APPLIED 与真实 MESSAGES Read、Step 9 limit 后单一人工跟进、Payment verification 不受 Recovery 空转计数影响，以及两库并发 handoff。测试保留真实 Evaluator 时间语义：超过收敛宽限期时允许报告变成 FAIL，不为测试强行改成 INCONCLUSIVE。
+
+两项耗尽报告的幂等测试使用现有可配置 `EvaluationPolicy` 的较长 synthetic 收敛窗口，以单独验证 INCONCLUSIVE + requires_escalation 路由；没有伪造 Report 或修改生产 Evaluator。默认窗口下的完整重试测试仍保留真实 FAIL 结果。
+
+### Step 13.2 最终验收（2026-09-12）
+
+最终代码收集 1203 个测试实例，较 Step 13.1 新增 28 个。旧 UNKNOWN → UNKNOWN 回归只调整普通 no-progress 的预期值：原来从 2 增加到 3，现在保留 2；普通 Investigation 的递增和旧状态兼容断言均保留。
+
+| 验证 | 实际结果 | 耗时 |
+| --- | --- | --- |
+| Step 13.2 最终专项 | 28 passed | 38.24s |
+| SQLite 编排并发／原子性／路由边界 | 14 passed, 112 deselected | 10.59s |
+| PostgreSQL 编排并发／原子性／路由边界 | 14 passed, 112 deselected | 15.46s |
+| SQLite 全量 | 1200 passed, 3 skipped | 1005.27s |
+| PostgreSQL 全量 | 1201 passed, 2 skipped | 1238.04s |
+
+两库全量包含 Orchestration、Recovery、Evaluator、Agent Runtime 及全部既有安全回归。两个在线 LLM 测试未启用；SQLite 另跳过 PostgreSQL 专用测试。Provider SDK + MockTransport 离线测试实际执行；仅有既有 Starlette/AnyIO BlockingPortal 弃用提示。
+
+```powershell
+.\.venv\Scripts\python -m pytest tests/test_finality_routing.py -q --basetemp .local/pytest-step132-frozen-target
+.\.venv\Scripts\python -m pytest tests/test_orchestration.py tests/test_resume_recovery_integrity.py tests/test_finality_routing.py -q -k 'concurrent or two_workers or atomic or stale_lease or lease_expiry or aggregate_finality' --basetemp .local/pytest-step132-concurrency-sqlite
+# 配置 TEST_POSTGRES_URL 为专用测试数据库；各测试使用独立 schema。
+.\.venv\Scripts\python -m pytest tests/test_orchestration.py tests/test_resume_recovery_integrity.py tests/test_finality_routing.py -q --postgres -k 'concurrent or two_workers or atomic or stale_lease or lease_expiry or aggregate_finality' --basetemp .local/pytest-step132-concurrency-postgres
+.\.venv\Scripts\python -m pytest -q --basetemp .local/pytest-step132-full-sqlite
+.\.venv\Scripts\python -m pytest -q --postgres --basetemp .local/pytest-step132-full-postgres
+```
+
+未修改 Evidence、Payment Identity、Hypothesis、Remediation、Approval/Capability、Effect idempotency、Recovery proof、Evaluator truth、Closure、Tool Budget 或历史 Benchmark v2 产物。未开始 System Registry、Vector/Embedding、UI-1、Money Movement 或 Interview Packaging。

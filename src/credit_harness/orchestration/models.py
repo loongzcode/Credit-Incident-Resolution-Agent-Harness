@@ -89,7 +89,7 @@ class CaseOrchestrationState(Model):
     budget: OrchestrationBudget = OrchestrationBudget()
     resume_cycle_count: int = 0
     verification_cycle_count: int = 0
-    no_progress_count: int = 0
+    no_progress_count: int = 0  # Investigation / Verification only; legacy values are preserved.
     pending_work_count: int = 0
     last_work_item_id: Hash | None = None
     last_progress_fingerprint: Hash | None = None

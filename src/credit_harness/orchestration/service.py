@@ -13,16 +13,7 @@ from .repository import lock_case, save_work, state_in, save_state, audit, escal
 from .resume import CaseResumeService
 from .handoff import EvaluationHandoffService
 
-# Small read-only verification contract. No planner, write command, arbitrary
-# query or all-tools sweep. Unsupported requirements go to an operator.
-VERIFICATION_TOOLS = {
-    Q.PAYMENT_FINALITY: Tool.PAYMENT, Q.PAYMENT_IDENTITY: Tool.PAYMENT,
-    Q.REQUEST_ASSOCIATION: Tool.GUARANTEE, Q.FUND_FINAL_STATE: Tool.FUND,
-    Q.GUARANTEE_FINAL_STATE: Tool.GUARANTEE, Q.ASSET_FINAL_STATE: Tool.ASSET,
-    Q.ACCOUNTING_ENTRY: Tool.ACCOUNTING, Q.CALLBACK_CONSUMPTION: Tool.MESSAGES,
-    Q.ASSET_DELIVERY: Tool.ASSET_DELIVERY, Q.POST_EFFECT_MESSAGE_STATUS: Tool.MESSAGES,
-    Q.POST_EFFECT_DELIVERY_STATUS: Tool.ASSET_DELIVERY,
-}
+from .routing import VERIFICATION_TOOLS
 
 
 class DurableCaseOrchestrator:
@@ -153,7 +144,9 @@ class DurableCaseOrchestrator:
             progress = work.progress_before.fingerprint != after.fingerprint or (
                 state.last_progress_version == after.version and state.last_progress_fingerprint is not None
                 and state.last_progress_fingerprint != after.fingerprint)
-            save_state(state_row, state.model_copy(update=dict(no_progress_count=0 if progress else state.no_progress_count+1,
+            # Recovery retry limits belong exclusively to Step 9. Preserve the
+            # persisted investigation count on UNKNOWN -> UNKNOWN.
+            save_state(state_row, state.model_copy(update=dict(no_progress_count=0 if progress else state.no_progress_count,
                 last_progress_fingerprint=after.fingerprint, last_progress_version=after.version)))
             changed = work.model_copy(update=dict(after_progress_fingerprint=after.fingerprint,
                 after_evidence_fingerprint=after.evidence_fingerprint, verification_requirements=after.requirements))

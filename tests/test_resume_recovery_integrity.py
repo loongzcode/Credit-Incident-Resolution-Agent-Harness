@@ -214,7 +214,7 @@ def test_unknown_to_unknown_does_not_reset_no_progress(factory):
     x = recovering(factory); no_progress_near_limit(x)
     result = tick(x)
     assert not result.semantic_progress
-    assert x.work.state(x.case.case_id).no_progress_count == 3
+    assert x.work.state(x.case.case_id).no_progress_count == 2
     assert x.work.get(x.item.work_item_id).status == WorkStatus.PENDING
     assert x.cases.get(x.case.case_id).status != CaseStatus.ESCALATED
 
