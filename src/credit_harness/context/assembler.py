@@ -20,7 +20,9 @@ from .identity_projection import IdentityContextProjector, identity_auxiliary_re
 
 
 class ReasoningContextAssembler:
-    def __init__(self, *, budget: ContextBudget | None = None, eligibility: ContextEligibilityPolicy | None = None):
+    def __init__(self, *, budget: ContextBudget | None = None, eligibility: ContextEligibilityPolicy | None = None,
+                 catalog=None):
+        self.catalog = catalog or ToolCapabilityCatalog()
         self.budget = budget or ContextBudget()
         self.eligibility = eligibility or ContextEligibilityPolicy()
         if type(self.budget) is not ContextBudget or type(self.eligibility) is not ContextEligibilityPolicy:
@@ -89,6 +91,8 @@ class ReasoningContextAssembler:
         selected = {"current_facts": list(mandatory_facts), "active_hypotheses": list(mandatory_hypotheses),
                     "open_evidence_gaps": list(mandatory_gaps), "resolved_hypotheses_summary": [],
                     "lookups": [], "states": []}
+        tools, capability_snapshot = (self.catalog.project(case) if hasattr(self.catalog, "project")
+                                      else (self.catalog.for_case(case), None))
         base = dict(
             case_id=case.case_id, internal_order_id=case.internal_order_id,
             context_schema_version=CONTEXT_SCHEMA_VERSION, eligibility_policy_version=ELIGIBILITY_POLICY_VERSION,
@@ -109,7 +113,7 @@ class ReasoningContextAssembler:
                                         remaining_tool_calls=case.budget.max_tool_calls-case.budget.used_tool_calls,
                                         investigation_allowed=case.status in (CaseStatus.NEW, CaseStatus.INVESTIGATING)
                                         and case.budget.used_tool_calls < case.budget.max_tool_calls),
-            available_tools=ToolCapabilityCatalog().for_case(case),
+            available_tools=tools, capability_snapshot=capability_snapshot,
         )
         reasons = {}
         for e in index.evidence:

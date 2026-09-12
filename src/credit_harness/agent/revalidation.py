@@ -16,7 +16,9 @@ def execution_precondition(case, snapshot):
     return AgentExecutionPrecondition(case_id=case.case_id, tenant_id=case.tenant_id,
         expected_case_status=case.status, expected_used_tool_calls=case.budget.used_tool_calls,
         expected_case_updated_at=case.updated_at, expected_snapshot_id=snapshot.snapshot_id,
-        planner_policy_version=planner_models.PLANNER_POLICY_VERSION)
+        planner_policy_version=planner_models.PLANNER_POLICY_VERSION,
+        registry_version=snapshot.capability_snapshot.registry_version if snapshot.capability_snapshot else None,
+        routing_fingerprint=snapshot.capability_snapshot.routing_context_fingerprint if snapshot.capability_snapshot else None)
 
 
 class RuntimeActionRevalidator:

@@ -40,7 +40,8 @@ class RoutedRequirement(Model):
 
 
 class RequirementRouter:
-    def route(self, requirement: UnresolvedVerificationRequirement, *, available_tools, effects=()):
+    def route(self, requirement: UnresolvedVerificationRequirement, *, available_tools, effects=(),
+              resolved_tools=None):
         q = requirement.requirement
         if q in (Q.EFFECT_FINALITY, Q.RECOVERY_FINALITY):
             relevant = [s for s in effects if (s.effect_ref == requirement.effect_ref
@@ -60,5 +61,6 @@ class RequirementRouter:
                     else RequirementRoute.OPERATOR_FOLLOWUP)
                 for s in sorted(relevant, key=lambda s: s.effect_ref))
         return (RoutedRequirement(requirement=q,
-            route=RequirementRoute.READ_VERIFICATION if VERIFICATION_TOOLS.get(q) in available_tools
+            route=RequirementRoute.READ_VERIFICATION if (resolved_tools if resolved_tools is not None
+                else VERIFICATION_TOOLS).get(q) in available_tools
                 else RequirementRoute.OPERATOR_FOLLOWUP),)

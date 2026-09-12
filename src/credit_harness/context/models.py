@@ -8,10 +8,11 @@ from credit_harness.domain.enums import Completeness, Freshness, SourceKind, Too
 from credit_harness.evidence.models import ClaimType, SubjectKind
 from credit_harness.hypotheses.models import HypothesisId, HypothesisKind, HypothesisStatus, GapStatus, PriorityClass, UncollectedClaimType
 from credit_harness.identity.models import FinancialSubject, IdentityDimension, IdentityMatch
+from credit_harness.registry.models import CaseCapabilitySnapshot
 from .structured_values import OpaqueBusinessRef, OpaqueSubjectRef, ContextReference, StructuredVersion, StructuredFieldPath
 from .value_contracts import validate_claim_value, validate_subject_field
 
-CONTEXT_SCHEMA_VERSION = "5"
+CONTEXT_SCHEMA_VERSION = "6"
 ELIGIBILITY_POLICY_VERSION = "4"
 COMPACTION_POLICY_VERSION = "4"
 CONTEXT_POLICY_VERSION = "5"
@@ -289,6 +290,7 @@ class ContextSectionTrust(Model):
     financial_subject: Literal[ContextTrustClass.TRUSTED_CONTROL] = ContextTrustClass.TRUSTED_CONTROL
     safety_constraints: Literal[ContextTrustClass.TRUSTED_CONTROL] = ContextTrustClass.TRUSTED_CONTROL
     available_tools: Literal[ContextTrustClass.TRUSTED_CONTROL] = ContextTrustClass.TRUSTED_CONTROL
+    capability_snapshot: Literal[ContextTrustClass.TRUSTED_CONTROL] = ContextTrustClass.TRUSTED_CONTROL
     budget: Literal[ContextTrustClass.TRUSTED_CONTROL] = ContextTrustClass.TRUSTED_CONTROL
     current_facts: Literal[ContextTrustClass.UNTRUSTED_EXTERNAL_DATA] = ContextTrustClass.UNTRUSTED_EXTERNAL_DATA
     history_digest: Literal[ContextTrustClass.UNTRUSTED_EXTERNAL_DATA] = ContextTrustClass.UNTRUSTED_EXTERNAL_DATA
@@ -329,6 +331,7 @@ class ReasoningContextSnapshot(Model):
     safety_constraints: SafetyContext
     budget: RuntimeBudgetContext
     available_tools: tuple[ToolCapability, ...]
+    capability_snapshot: CaseCapabilitySnapshot | None = None
     history_digest: HistoryDigest
     selected_evidence_refs: tuple[ContextReference, ...]
     omitted_evidence_summary: OmittedEvidenceSummary

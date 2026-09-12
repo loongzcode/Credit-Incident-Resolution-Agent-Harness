@@ -1,5 +1,7 @@
 # Step 13 — Durable Case Orchestration
 
+Step 14 接入：[System Registry](system-registry.md) 为 Evaluation handoff 与 Verification Worker 提供 Requirement → Claim → CapabilityResolver 路径。配置 Registry 时优先使用它，缺失/歧义不回退静态 Tool；真实读取仍经过 CaseToolExecutor。Step 9 Recovery、Step 13.3 effect-bound freshness、独立验收与关闭边界保持原语义。
+
 当前补丁：**Step 13.3 — Effect-bound Recovery Work Integrity**。调查／验证保留快照绑定，Recovery 工作改为 Effect 绑定；旧 Finality requirement 已被当前 Ledger 解决时路由为 NO_ACTION。
 
 本阶段把 Investigation、Recovery 和 Independent Evaluation 之间的交接写入数据库。WAIT、ESCALATE、Effect APPLIED 都不表示业务已经成功。所有数据仍为 synthetic fixtures；不接真实用户、金融系统或在线模型。

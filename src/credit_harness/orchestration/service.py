@@ -50,23 +50,26 @@ class DurableCaseOrchestrator:
         result = None
         if work.work_type == T.VERIFICATION_REQUIRED:
             case = repo.cases.get(work.case_id)
-            available = {t.tool_name for t in ToolCapabilityCatalog().for_case(case)}
-            tool = VERIFICATION_TOOLS.get(work.requirement)
-            if tool not in available:
+            from credit_harness.registry.verification import verification_tools
+            guard = repo.cases.registry_guard
+            mapping = verification_tools(case, resolver=guard.resolver if guard else None)
+            tool = mapping.get(work.requirement)
+            if tool is None:
                 self._block(claim, R.NO_TOOL)
                 return None
             requirements = work.verification_requirements or (work.requirement,)
             # A report's finite read set avoids evaluating half-refreshed state.
             # Unsupported requirements remain gaps; they never become fake reads.
-            tools = tuple(dict.fromkeys(VERIFICATION_TOOLS[q] for q in requirements
-                if q in VERIFICATION_TOOLS and VERIFICATION_TOOLS[q] in available))
+            tools = tuple(dict.fromkeys(mapping[q] for q in requirements if q in mapping))
             for tool in tools:
                 fence = repo.renew(claim)
                 case = repo.cases.get(work.case_id)
                 if case.budget.used_tool_calls >= case.budget.max_tool_calls:
                     self._block(claim, R.TOOL_BUDGET_EXHAUSTED)
                     return None
-                snapshot = ReasoningContextAssembler().build(case, self.evidence.list(work.case_id))
+                from credit_harness.registry.snapshot import RegistryBackedCatalog
+                snapshot = ReasoningContextAssembler(catalog=RegistryBackedCatalog(guard.resolver) if guard else None
+                    ).build(case, self.evidence.list(work.case_id))
                 self.executor.execute_if_current(work.case_id, tool, ToolQuery(internal_order_id=case.internal_order_id),
                     precondition=execution_precondition(case, snapshot).model_copy(update=dict(work_lease=fence)))
         elif work.work_type != T.RECOVERY_RECHECK:

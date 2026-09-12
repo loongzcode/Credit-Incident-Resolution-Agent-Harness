@@ -126,7 +126,10 @@ class EvaluationHandoffService:
             return self._route_requirements(session, case, report)
 
     def _route_requirements(self, session, case, report):
-        available = {t.tool_name for t in ToolCapabilityCatalog().for_case(hydrate(case))}
+        from credit_harness.registry.verification import verification_tools
+        guard = self.repository.cases.registry_guard
+        resolved_tools = verification_tools(hydrate(case), resolver=guard.resolver if guard else None, session=session)
+        available = set(resolved_tools.values())
         effects, recovery_states = [], {}
         if any(r.requirement in (Q.EFFECT_FINALITY, Q.RECOVERY_FINALITY) for r in report.unresolved_requirements):
             # Trusted current rows under the same Case lock as both producers.
@@ -143,7 +146,7 @@ class EvaluationHandoffService:
                     recovery_available=valid, requires_escalation=state.requires_escalation if valid else False))
         router = RequirementRouter()
         routes = {r for requirement in report.unresolved_requirements
-            for r in router.route(requirement, available_tools=available, effects=effects)}
+            for r in router.route(requirement, available_tools=available, effects=effects, resolved_tools=resolved_tools)}
         read_requirements = tuple(sorted({r.requirement for r in routes if r.route == RequirementRoute.READ_VERIFICATION}))
         items = {}
         for route in sorted(routes, key=lambda r: (r.route.value, r.requirement.value, r.effect_ref or "")):

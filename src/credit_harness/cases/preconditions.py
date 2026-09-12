@@ -22,6 +22,8 @@ class AgentExecutionPrecondition(Model):
     expected_snapshot_id: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
     planner_policy_version: str
     work_lease: WorkLeasePrecondition | None = None
+    registry_version: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")] | None = None
+    routing_fingerprint: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")] | None = None
 
 
 class AgentPreconditionFailed(CasePolicyError):

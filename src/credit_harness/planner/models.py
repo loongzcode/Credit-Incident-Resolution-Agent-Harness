@@ -16,10 +16,11 @@ from credit_harness.context.structured_values import ContextReference, OpaqueSub
 from credit_harness.identity.models import FinancialSubject
 from credit_harness.memory.models import OrganizationalGuidanceSection, HistoricalGuidanceSection, SkillRef, GuidanceBuildStatus, GuidanceDegradation
 from .metadata import PlannerModelMetadata
+from credit_harness.registry.models import CaseCapabilitySnapshot
 
 PLANNER_SCHEMA_VERSION = "1"
 PLANNER_POLICY_VERSION = "3"
-MODEL_INPUT_SCHEMA_VERSION = "3"
+MODEL_INPUT_SCHEMA_VERSION = "4"
 ACTION_RANKING_VERSION = "1"
 ShortText = Annotated[str, Field(max_length=600)]
 CandidateId = Annotated[str, Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")]
@@ -101,6 +102,7 @@ class TrustedControl(Model):
     safety_constraints: SafetyContext
     budget: RuntimeBudgetContext
     available_tools: tuple[ToolCapability, ...]
+    capability_snapshot: CaseCapabilitySnapshot | None = None
 
 
 class DeterministicDerived(Model):

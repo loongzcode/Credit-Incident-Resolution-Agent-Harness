@@ -76,6 +76,11 @@ class ReasoningContextInvariantValidator:
                 and snapshot.safety_constraints.invariants == tuple(SafetyInvariant)
                 and snapshot.safety_constraints.forbidden_actions == index.case.constraints.forbidden_actions,
                 "mandatory task/safety contract changed")
+        if snapshot.capability_snapshot is not None:
+            registry = snapshot.capability_snapshot
+            require(registry.case_id == index.case.case_id, "foreign registry snapshot")
+            require({c.tool_name for c in registry.available_capabilities} == {t.tool_name for t in snapshot.available_tools},
+                    "registry/tool projection mismatch")
         usage = snapshot.context_budget_usage
         require(usage.fact_capsules == len(snapshot.current_facts)
                 and usage.hypothesis_capsules == len(snapshot.active_hypotheses) + len(snapshot.resolved_hypotheses_summary)

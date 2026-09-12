@@ -43,7 +43,9 @@ class CaseToolExecutor:
         try:
             # The configured client uses the existing tool credential and HTTP API.
             # Its result is verified against durable ObservationRow before extraction.
-            observation = self._client_for_case(case_id).observe(
+            client = (self.cases.registry_guard.client(case_id, call_id) if self.cases.registry_guard
+                      else self._client_for_case(case_id))
+            observation = client.observe(
                 tool, query, dispatch_correlation_id=call_id,
             )
             refs = self.evidence.record_call(case_id, call_id, observation)

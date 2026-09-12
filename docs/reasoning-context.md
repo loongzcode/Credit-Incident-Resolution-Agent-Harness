@@ -1,5 +1,7 @@
 # Step 4.2 — Full Context Envelope Eligibility / Model Trust Boundary
 
+Step 14 增量：Context schema 升为 6（policy 保持 5），Model Input schema 升为 4。可信部署可注入 RegistryBackedCatalog，取得当前 Case 的兼容 available_tools 及 capability_snapshot；后者是 TRUSTED_CONTROL，只含抽象能力、权威条件、版本和指纹，不含 system/adapter/credential_ref。Registry 的 SQL 与路由在独立 trusted catalog 边界完成，Context 模块仍不直接导入 repository 或持久层。静态 catalog 保留给未迁移部署。详见 [System Registry](system-registry.md)。下文 Step 13 数字是历史基线。
+
 Step 13 增量：合法 durable resume 设置可信 `Case.lookup_retry_after`，装配为 `HistoryDigest.retry_window_start`。保留全部历史事实和引用，仅对当前重试窗口计算连续失败次数；Invariant Validator 核对该时间与 Case 输入一致。Context schema/policy 当前为 5，compaction 为 4，eligibility 仍为 4；历史版本记录保留。详见 [Durable Orchestration](orchestration.md)。
 
 本组件的边界是 `Case + Evidence → Immutable Snapshot`，只做确定性计算。Step 5 的 [Planner](planner.md) 消费此边界；独立 [Step 6 Runtime](agent-runtime.md) 在受控只读查询前后重新装配 Snapshot。Context 本身没有执行或持久化依赖，Context Demo 继续只做人工查询与确定性投影。下文分阶段记录保留历史基线；当前 Graph aggregate ruleset 为 4，见 Agent Runtime 的 Gap 入口补全说明。

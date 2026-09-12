@@ -50,8 +50,9 @@ def hydrate(row: CaseRow) -> Case:
 class CaseRepository:
     """Trusted server repository. Tenant comes from deployment/auth, never query JSON."""
 
-    def __init__(self, engine, tenant_id: str):
+    def __init__(self, engine, tenant_id: str, *, registry_guard=None):
         self.engine, self.tenant_id = engine, tenant_id
+        self.registry_guard = registry_guard
 
     def _row(self, session, case_id):
         row = session.scalar(select(CaseRow).where(
@@ -98,6 +99,12 @@ class CaseRepository:
                 raise CasePolicyError("tool outside case scope")
             if tool != ToolName.PROTOCOL and (query.protocol_version or query.effective_at):
                 raise CasePolicyError("protocol parameters require protocol tool")
+            from credit_harness.registry.tables import RouteContextRow
+            registered_route = session.get(RouteContextRow, case_id)
+            if registered_route is not None and self.registry_guard is None:
+                raise AgentPreconditionFailed("registry-bound Case requires registry dispatch guard")
+            resolved = (self.registry_guard.prepare(session, case, tool, precondition)
+                        if self.registry_guard is not None else None)
             # A single conditional UPDATE serializes concurrent budget reservations on
             # both SQLite and PostgreSQL. No DB transaction spans the HTTP call.
             result = session.execute(update(CaseRow).where(
@@ -118,6 +125,9 @@ class CaseRepository:
                                     dispatch_correlation_id=call_id,
                                     tool=tool.value, request=query.model_dump(mode="json"),
                                     state=CallState.DISPATCHED.value))
+            if resolved is not None:
+                session.flush()
+                self.registry_guard.record(session, call_id, case, resolved)
         return self.get(case_id), call_id
 
     def mark_error(self, case_id: str, call_id: str) -> None:

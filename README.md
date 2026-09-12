@@ -6,7 +6,9 @@
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。
 
-Step 13 已增加 [Durable Case Orchestration](docs/orchestration.md)：WAIT／ESCALATE 与工作项原子交接，租约和 Case revision CAS 控制恢复，新的 Agent Run 从当前 Evidence 重建 Snapshot。正常／恢复的 APPLIED 交给独立验证工作；Evaluator 仍只读，PASS 仍由 VerifiedClosureService 关闭。运行 `python -m scripts.demo_orchestration --scenario wait-resume`，也可选择 `effect-verification` 或 `escalation-resolution`。全部使用本地 synthetic fixture，无真实资金副作用；尚未进入 System Registry。
+Step 14 已增加 [Enterprise System / Capability / Authority Registry](docs/system-registry.md)：SQL 持久化不可变版本、Case 范围内的 Partner/Product/Protocol 路由、来源权威规则、模型可见抽象能力快照，以及执行前版本重验。配置 Registry 的调查与 Verification 路径共用受限来源解析，凭据和实际 adapter 保留在服务器端。运行 `python -m scripts.demo_registry` 可查看 S6 实际查询、来源追溯、缺失 Accounting 和双权威 Payment 来源的拒绝结果。尚未进入 Vector / Embedding 或真实资金操作。
+
+Step 13 已增加 [Durable Case Orchestration](docs/orchestration.md)：WAIT／ESCALATE 与工作项原子交接，租约和 Case revision CAS 控制恢复，新的 Agent Run 从当前 Evidence 重建 Snapshot。正常／恢复的 APPLIED 交给独立验证工作；Evaluator 仍只读，PASS 仍由 VerifiedClosureService 关闭。运行 `python -m scripts.demo_orchestration --scenario wait-resume`，也可选择 `effect-verification` 或 `escalation-resolution`。全部使用本地 synthetic fixture，无真实资金副作用。
 
 Step 12 / 12.1 的故障矩阵、四组对照、Memory seed/held-out 隔离、双 Track 与指标定义见 [Benchmark 文档](docs/benchmark.md)。运行 `python scripts/run_benchmark.py --mode offline --seed 20260912 --output benchmark` 生成真实 raw runs 与可重算汇总。Benchmark schema v2 区分显式安全停止、未关闭与危险候选阻断，并保留 Guidance availability / degradation 遥测。默认离线，Live 必须显式开启；不使用单一总分，也不以离线 fake 结果宣称 LLM 收益。
 

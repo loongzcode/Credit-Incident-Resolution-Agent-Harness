@@ -1,5 +1,7 @@
 # Step 5 — Proposal-only Next Best Action Planner
 
+Step 14 增量：Model Input Schema 为 4。Renderer 的 TRUSTED_CONTROL 增加可选的 CaseCapabilitySnapshot，available_tools 可由 Registry-backed catalog 收窄；仅包含抽象 capability、claims、authority 条件与指纹。模型不接触系统地址、adapter 或 credential_ref，候选仍只使用 ToolName。Registry 不能授权执行，Step 6 在准入事务中重验 Registry 版本与路由。详见 [System Registry](system-registry.md)；下文旧版本数字为分阶段历史记录。
+
 > Step 11 接入补充：调查 Planner 现在可接受独立的 `InvestigationGuidanceBundle`；不是 CaseEvidenceView 或任意 raw context。Renderer 在原三分区之外增加组织 Skill 与历史 Experience 分区，Model Input Schema 为 2，Decision/Audit 绑定 guidance fingerprint、skill versions 和 experience IDs。缺失/损坏 Guidance 回退基础调查；CandidateValidator、HardPolicyFilter、Ranking 与 Step 6 再校验不变。详见 [Organizational Memory](organizational-memory.md)。下文 Step 5/5.1 数字保留为历史验收记录。
 
 当前仓库已在独立 [Step 6 Agent Runtime](agent-runtime.md) 消费选中建议：执行前重新加载 Case/Evidence、重建 Snapshot、再次校验并通过 DB CAS。**PlannerService 自身仍在返回 Proposal 后 STOP**，包内没有执行器或 Agent 依赖。下文 Step 5 的未实现项和测试数字属于当时阶段记录。
