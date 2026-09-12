@@ -65,6 +65,22 @@ class CapabilitySnapshotRow(Base):
     payload: Mapped[dict] = mapped_column(JSON)
 
 
+class RouteRevisionRow(Base):
+    __tablename__ = "registry_case_route_revisions"
+    route_revision_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    case_id: Mapped[str] = mapped_column(ForeignKey("investigation_cases.case_id"), index=True)
+    tenant_id: Mapped[str] = mapped_column(String(100))
+    parent_revision_id: Mapped[str | None] = mapped_column(ForeignKey("registry_case_route_revisions.route_revision_id"))
+    payload: Mapped[dict] = mapped_column(JSON)
+
+
+class RouteHeadRow(Base):
+    __tablename__ = "registry_case_route_heads"
+    case_id: Mapped[str] = mapped_column(ForeignKey("investigation_cases.case_id"), primary_key=True)
+    tenant_id: Mapped[str] = mapped_column(String(100))
+    route_revision_id: Mapped[str] = mapped_column(ForeignKey("registry_case_route_revisions.route_revision_id"))
+
+
 class DispatchSourceRow(Base):
     __tablename__ = "registry_dispatch_sources"
     call_id: Mapped[str] = mapped_column(ForeignKey("case_tool_calls.call_id"), primary_key=True)
@@ -76,4 +92,5 @@ class DispatchSourceRow(Base):
 def create_registry_schema(engine):
     Base.metadata.create_all(engine, tables=[RegistryVersionRow.__table__, RegistryHeadRow.__table__,
         SystemRow.__table__, CapabilityRow.__table__, AuthorityRow.__table__, RegistryAuditRow.__table__,
-        RouteContextRow.__table__, CapabilitySnapshotRow.__table__, DispatchSourceRow.__table__])
+        RouteContextRow.__table__, CapabilitySnapshotRow.__table__, DispatchSourceRow.__table__,
+        RouteRevisionRow.__table__, RouteHeadRow.__table__])

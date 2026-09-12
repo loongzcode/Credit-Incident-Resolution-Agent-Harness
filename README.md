@@ -6,7 +6,9 @@
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。
 
-Step 14 已增加 [Enterprise System / Capability / Authority Registry](docs/system-registry.md)：SQL 持久化不可变版本、Case 范围内的 Partner/Product/Protocol 路由、来源权威规则、模型可见抽象能力快照，以及执行前版本重验。配置 Registry 的调查与 Verification 路径共用受限来源解析，凭据和实际 adapter 保留在服务器端。运行 `python -m scripts.demo_registry` 可查看 S6 实际查询、来源追溯、缺失 Accounting 和双权威 Payment 来源的拒绝结果。尚未进入 Vector / Embedding 或真实资金操作。
+Step 14 / 14.1 已增加 [System Registry 与 Case Route Revision](docs/system-registry.md)：Registry 不可变版本、Case 路由 revision 链、真实协议 Evidence 驱动的 UNKNOWN→KNOWN、来源权威规则，以及执行前旧快照重验。资金来源表示我司资金接入记录与合作方正式接口，支付终态仅接受明确登记的合法权威来源。配置 Registry 的调查与 Verification 路径共用受限解析，凭据和实际 adapter 留在服务器端。运行 `python -m scripts.demo_registry` 可查看 S6 协议推进、Messages 解锁、旧快照 stale 和来源追溯。尚未进入 Vector / Embedding 或真实资金操作。
+
+Step 14.2 新增独立 [Registry Administration Console](docs/registry-admin-console.md)：SSO identity boundary、服务端 RBAC、四眼审批、Draft/版本 Diff、只读 Case Impact、原子激活 CAS、审计回滚和 Excel 公司清单导入。前端 `/admin/registry` 与调查权限分离；运行 `python -m scripts.serve_registry_admin --local` 启动 synthetic 管理 API。Excel 不会生成 Agent 权威配置，真实 SSO 联调和生产部署需使用企业配置，未开始 Vector / Embedding。
 
 Step 13 已增加 [Durable Case Orchestration](docs/orchestration.md)：WAIT／ESCALATE 与工作项原子交接，租约和 Case revision CAS 控制恢复，新的 Agent Run 从当前 Evidence 重建 Snapshot。正常／恢复的 APPLIED 交给独立验证工作；Evaluator 仍只读，PASS 仍由 VerifiedClosureService 关闭。运行 `python -m scripts.demo_orchestration --scenario wait-resume`，也可选择 `effect-verification` 或 `escalation-resolution`。全部使用本地 synthetic fixture，无真实资金副作用。
 

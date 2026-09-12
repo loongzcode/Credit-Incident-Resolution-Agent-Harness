@@ -1,6 +1,7 @@
 """Immutable publications and a CAS active pointer, only for trusted deployment code."""
 import hashlib
 import json
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
@@ -29,16 +30,38 @@ class RegistryRepository:
         row = session.get(RegistryVersionRow, head.version)
         if row is None or row.tenant_id != self.tenant_id or fingerprint(row.payload) != row.version:
             raise RegistryError(ResolutionCode.STALE_CAPABILITY)
-        return row.version, RegistryDefinition.model_validate(row.payload)
+        from .compatibility import read_definition
+        return row.version, read_definition(row.payload)
 
     def route(self, case_id, session=None):
         if session is None:
             with Session(self.engine) as s:
                 return self.route(case_id, s)
+        from .tables import RouteHeadRow, RouteRevisionRow
+        if session.get(RouteHeadRow, case_id) is not None:
+            return self.route_revision(case_id, session).route_context
+        if session.scalar(select(RouteRevisionRow.route_revision_id).where(RouteRevisionRow.case_id == case_id)):
+            raise RegistryError(ResolutionCode.INVALID_ROUTE_CONTEXT)
         row = session.get(RouteContextRow, case_id)
         if row is None or row.tenant_id != self.tenant_id or fingerprint(row.payload) != row.fingerprint:
             raise RegistryError(ResolutionCode.INVALID_ROUTE_CONTEXT)
         return CaseRouteContext.model_validate(row.payload)
+
+    def route_revision(self, case_id, session=None):
+        if session is None:
+            with Session(self.engine) as s:
+                return self.route_revision(case_id, s)
+        from .revisions import read_revision
+        from .tables import RouteHeadRow
+        head = session.get(RouteHeadRow, case_id)
+        if head is None or head.tenant_id != self.tenant_id:
+            raise RegistryError(ResolutionCode.INVALID_ROUTE_CONTEXT)
+        return read_revision(session, head.route_revision_id, case_id, self.tenant_id)
+
+    def route_history(self, case_id):
+        with Session(self.engine) as s:
+            from .revisions import revision_chain
+            return revision_chain(s, self.route_revision(case_id, s))
 
 
 class RegistryAdmin:
@@ -55,7 +78,17 @@ class RegistryAdmin:
         s.add(RegistryAuditRow(tenant_id=self.repository.tenant_id, version=version,
             event=event.value, actor=actor, occurred_at=self.clock().isoformat()))
 
-    def register(self, definition, *, actor):
+    @contextmanager
+    def _transaction(self, session=None):
+        if session is not None:
+            if not session.in_transaction():
+                raise ValueError("caller transaction required")
+            yield session
+        else:
+            with Session(self.repository.engine) as s, s.begin():
+                yield s
+
+    def register(self, definition, *, actor, session=None):
         definition = RegistryDefinition.model_validate(definition.model_dump())
         if definition.tenant_id != self.repository.tenant_id or not actor:
             raise ValueError("invalid registry tenant/actor")
@@ -73,7 +106,7 @@ class RegistryAdmin:
             payload[key].sort(key=lambda d: d[sortkey])
         payload["authority_rules"].sort(key=lambda d: (d["capability_id"], d["claim_type"]))
         version = fingerprint(payload)
-        with Session(self.repository.engine) as s, s.begin():
+        with self._transaction(session) as s:
             # Serialize publication with activation and dispatch admission.
             s.execute(update(RegistryHeadRow).where(RegistryHeadRow.tenant_id == definition.tenant_id)
                       .values(version=RegistryHeadRow.version))
@@ -89,10 +122,10 @@ class RegistryAdmin:
             self._audit(s, version, RegistryEvent.REGISTERED, actor)
         return version
 
-    def activate(self, version, *, expected_version, actor):
+    def activate(self, version, *, expected_version, actor, session=None):
         if not actor:
             raise ValueError("actor required")
-        with Session(self.repository.engine) as s, s.begin():
+        with self._transaction(session) as s:
             row = s.get(RegistryVersionRow, version)
             if row is None or row.tenant_id != self.repository.tenant_id:
                 raise RegistryError(ResolutionCode.STALE_CAPABILITY)
@@ -122,7 +155,12 @@ class RegistryAdmin:
             existing = s.get(RouteContextRow, case.case_id)
             if existing:
                 if existing.fingerprint != fingerprint(route):
-                    raise ValueError("route binding is immutable; create a reviewed routing revision before changing it")
+                    raise ValueError("initial binding cannot be overwritten; use evidence-verified RouteUpdater")
+                from .revisions import ensure_initial_revision
+                ensure_initial_revision(s, case, existing, self.clock())
                 return
-            s.add(RouteContextRow(case_id=case.case_id, tenant_id=case.tenant_id, fingerprint=fingerprint(route),
-                                  payload=route.model_dump(mode="json"), actor=actor))
+            initial = RouteContextRow(case_id=case.case_id, tenant_id=case.tenant_id, fingerprint=fingerprint(route),
+                                      payload=route.model_dump(mode="json"), actor=actor)
+            s.add(initial)
+            from .revisions import ensure_initial_revision
+            ensure_initial_revision(s, case, initial, self.clock(), imported=False)

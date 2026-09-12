@@ -1,0 +1,59 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { describe, expect, it, vi } from 'vitest';
+import { AdminApiError, AdminContext, type AdminRequest, transport } from '../admin/api';
+import { CapabilityEditor } from '../admin/editor';
+import { ChangeDetail, Changes, DiffPage, ImpactPage, ImportSystems, SystemDetail, Systems } from '../admin/pages';
+import type { Catalog, Dashboard, Definition, Detail, Impact, Permission, VersionDiff } from '../admin/types';
+
+const scope = { tenant_id:'demo',business_domain:'PERSONAL_CREDIT',environment:'SIMULATOR',partner_role:null,partner_id:null,product_codes:['CONSUMER_LOAN'],protocol_versions:[],version_agnostic:true };
+const definition:Definition = {tenant_id:'demo', systems:[{system_id:'sim-fund',display_name:'我司资金接入系统',system_type:'FUNDING_INTEGRATION',source_channel:'PARTNER_OFFICIAL_API',owner_team:'platform',status:'ACTIVE',scope,effective_from:'2026-01-01T00:00:00Z',effective_until:null,draining_since:null,credential_ref:'[MASKED]'}],capabilities:[{capability_id:'cap-fund',system_id:'sim-fund',capability_type:'READ_FUND_STATE',tool_name:'get_fund_order',read_or_write:'READ',produces_claim_types:['FUND_BUSINESS_STATUS'],contributes_requirements:[],supports_lookup:true,authority_level:'AUTHORITATIVE',scope,adapter_id:'synthetic-fund',query_contract_version:'1',response_contract_version:'1',status:'ACTIVE',effective_from:'2026-01-01T00:00:00Z',effective_until:null,draining_since:null,recovery:{supports_status_lookup:false,not_found_proves_no_effect:false,resolver_contract_version:'1'}}],authority_rules:[{capability_id:'cap-fund',claim_type:'FUND_BUSINESS_STATUS',authority_level:'AUTHORITATIVE',subject_binding_required:true,identity_binding_required:false,freshness_requirement:'CURRENT',completeness_requirement:'COMPLETE'}]};
+const diff:VersionDiff={systems_added:[],systems_removed:[],systems_changed:[{entity_id:'sim-fund',fields:['display_name'],before_values:{display_name:'旧名称'},after_values:{display_name:'新名称'}}],capabilities_added:[],capabilities_removed:[],capabilities_changed:[],authority_added:[],authority_removed:[],authority_changed:[],routing_scope_changed:[],status_changed:[],risk_level:'HIGH_RISK',risk_reasons:['PAYMENT_FINALITY_SOURCE_CHANGE']};
+const detail:Detail={change_request:{change_request_id:'CR-1',tenant_id:'demo',base_registry_version:'a'.repeat(64),proposed_registry_version:'b'.repeat(64),revision:3,kind:'CONFIGURATION',status:'SUBMITTED',title:'支付来源变更',reason:'synthetic test',created_by:'editor',created_at:'2026-01-01T00:00:00Z',submitted_by:'editor',approved_by:null,activated_by:null},definition,diff};
+const impact:Impact={affected_active_case_count:2,affected_case_ids_digest:'digest-only',affected_partner_products:[],affected_capability_types:['READ_FUND_STATE'],invalidated_snapshot_count:3,affected_pending_work_count:1,case_page:{items:['CASE-1'],total:2},analysis_scope:'CONSERVATIVE_REGISTRY_VERSION_FENCE',base_is_current:true};
+const catalog:Catalog={system_types:['FUNDING_INTEGRATION'],source_channels:['PARTNER_OFFICIAL_API'],capability_types:['READ_FUND_STATE'],partner_roles:['FUNDING'],authority_levels:['AUTHORITATIVE','DIAGNOSTIC'],tools:[{tool_name:'get_fund_order',claims:['FUND_BUSINESS_STATUS'],requirements:[]}]};
+function setup(element:React.ReactNode,path='/',permissions:Permission[]=['REGISTRY_VIEW'],override?:(path:string,method?:string)=>unknown) {
+  const request=vi.fn(async(path:string,method?:string)=>{
+    const custom=override?.(path,method); if(custom!==undefined)return custom;
+    if(path.includes('/impact'))return impact;
+    if(path.includes('/diff/'))return diff;
+    if(path==='/catalog')return catalog;
+    if(path==='/inventory')return {items:[],total:0};
+    if(path==='/systems/sim-fund')return {system:definition.systems[0],capabilities:definition.capabilities,authority:definition.authority_rules};
+    if(path.startsWith('/systems?'))return {items:definition.systems,total:1};
+    if(path.startsWith('/change-requests?'))return {items:[detail.change_request],total:1};
+    return detail;
+  });
+  const dashboard:Dashboard={active_version:'a'.repeat(64),inventory_revision:0,system_count:1,permissions,roles:[],identity:{user_id:'approver',display_name:'Test Approver'}};
+  const client=new QueryClient({defaultOptions:{queries:{retry:false},mutations:{retry:false}}});
+  render(<QueryClientProvider client={client}><AdminContext.Provider value={{api:request as AdminRequest,dashboard}}><MemoryRouter initialEntries={[path]}><Routes><Route path={path.includes('CR-1')?'/change-requests/:id':path.includes('/diff/')?'/versions/:a/diff/:b':path.includes('sim-fund')?'/systems/:id':path} element={element}/></Routes></MemoryRouter></AdminContext.Provider></QueryClientProvider>);
+  return request;
+}
+
+describe('Registry Administration',()=>{
+  it('system list shows legitimate integration meaning',async()=>{setup(<Systems/>);expect(await screen.findByText('我司资金接入系统')).toBeVisible();expect(screen.getByText('FUNDING_INTEGRATION')).toBeVisible();});
+  it('system detail masks credentials and shows capabilities',async()=>{setup(<SystemDetail/>,'/systems/sim-fund');expect(await screen.findByText('[MASKED]')).toBeVisible();expect(screen.getByText('get_fund_order')).toBeVisible();expect(document.body.textContent).not.toContain('vault://');});
+  it('capability editor uses typed tool claims',()=>{setup(<CapabilityEditor definition={definition} catalog={catalog} onChange={vi.fn()}/>);expect(screen.getByText('Claim Authority（独立审核）')).toBeVisible();expect(screen.getByText('新增 Capability')).toBeVisible();});
+  it('diff page displays backend diff and before/after values',async()=>{setup(<DiffPage/>,'/versions/a/diff/b');expect(await screen.findByText('HIGH_RISK')).toBeVisible();expect(screen.getByText('"旧名称"')).toBeVisible();expect(screen.getByText('"新名称"')).toBeVisible();});
+  it('approval queue requests only submitted changes',async()=>{const api=setup(<Changes approvals/>);expect(await screen.findByText('支付来源变更')).toBeVisible();expect(api).toHaveBeenCalledWith(expect.stringContaining('status=SUBMITTED'));});
+  it('impact page shows digest and paginated case scope',async()=>{setup(<ImpactPage/>,'/change-requests/CR-1');expect(await screen.findByText('CASE-1')).toBeVisible();expect(screen.getByText(/digest-only/)).toBeVisible();expect(screen.getByText('Pending Work')).toBeVisible();});
+  it('permission-hidden actions keep viewer read only',async()=>{setup(<Changes/>);await screen.findByText('支付来源变更');expect(screen.queryByText('创建 Draft')).not.toBeInTheDocument();});
+  it('server 403 is displayed without exposing data',async()=>{setup(<Systems/>,'/',['REGISTRY_VIEW'],()=>{throw new AdminApiError(403,'FORBIDDEN');});expect(await screen.findByText(/无权执行此操作/)).toBeVisible();});
+  it('stale version conflict requires refresh and never claims activation',async()=>{
+    setup(<ChangeDetail/>,'/change-requests/CR-1',['REGISTRY_VIEW','REGISTRY_APPROVE'],(path,method)=>{if(method==='POST')throw new AdminApiError(409,'STALE_CHANGE_REQUEST');});
+    fireEvent.click(await screen.findByRole('button',{name:/批\s*准/}));
+    fireEvent.click(screen.getByRole('button',{name:/OK/}));
+    expect(await screen.findByText(/版本或状态已变化/)).toBeVisible();expect(screen.queryByText('ACTIVATED')).not.toBeInTheDocument();
+  });
+  it('import preview shows additions and never automatically activates',async()=>{
+    const api=setup(<ImportSystems/>,'/',['REGISTRY_VIEW','REGISTRY_EDIT'],(path)=>path==='/import/preview'?{preview_id:'IMP-1',added:['PAY'],changed:[],unchanged:[],invalid:[],rows:[{system_code:'PAY',system_name:'Synthetic payment',description:'inventory only',source_metadata:{source_row_ref:'Sheet!2'}}]}:undefined);
+    const input=document.querySelector('input[type=file]')!;fireEvent.change(input,{target:{files:[new File(['fake-xlsx'],'systems.xlsx')]}});
+    expect(await screen.findByText('Added 1')).toBeVisible();expect(screen.getByText('确认并生成 Draft')).toBeVisible();expect(api.mock.calls.some(([p])=>p.includes('/activate'))).toBe(false);
+  });
+  it('transport uses explicit bearer and CSRF header without cookies',async()=>{
+    const fetch=vi.spyOn(globalThis,'fetch').mockResolvedValue({ok:true,json:async()=>({})} as Response);
+    await transport(async()=> 'synthetic-token')('/change-requests','POST',{});
+    expect(fetch).toHaveBeenCalledWith('/admin-api/registry/change-requests',expect.objectContaining({credentials:'omit',headers:expect.objectContaining({Authorization:'Bearer synthetic-token','X-Registry-Request':'1'})}));
+  });
+});

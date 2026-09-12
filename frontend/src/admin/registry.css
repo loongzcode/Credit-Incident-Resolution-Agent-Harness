@@ -1,0 +1,13 @@
+.registry-layout { min-height: calc(100vh - 110px); margin: 20px; border: 1px solid #dbe2e8; border-radius: 8px; overflow: hidden; }
+.registry-title { padding: 24px 18px; font-weight: 700; letter-spacing: .07em; color: #31596d; }
+.registry-title small { font-weight: 400; letter-spacing: 0; }
+.registry-content { padding: 24px; min-width: 0; }
+.registry-content h2 { margin-top: 24px; }
+.registry-content .ant-card, .registry-content .ant-table-wrapper { margin-top: 16px; }
+.registry-identity { padding: 24px 16px; line-height: 2; }
+.registry-login { max-width: 660px; margin: 80px auto; }
+.registry-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.registry-form-grid label { display: flex; flex-direction: column; gap: 5px; color: #566879; }
+.registry-hash { font-family: monospace; overflow-wrap: anywhere; }
+.registry-toolbar { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; gap: 12px; flex-wrap: wrap; }
+@media(max-width: 800px) { .registry-layout { margin: 0; } .registry-content { padding: 12px; } .registry-layout > .ant-layout-sider { display: none; } }

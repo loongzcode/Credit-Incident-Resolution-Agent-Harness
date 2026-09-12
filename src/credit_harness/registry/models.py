@@ -12,8 +12,8 @@ Hash = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 
 
 class SystemType(StrEnum):
-    PAYMENT_LEDGER = "PAYMENT_LEDGER"
-    FUNDING_CORE = "FUNDING_CORE"
+    PAYMENT_STATUS_SOURCE = "PAYMENT_STATUS_SOURCE"
+    FUNDING_INTEGRATION = "FUNDING_INTEGRATION"
     GUARANTEE_CORE = "GUARANTEE_CORE"
     CALLBACK_GATEWAY = "CALLBACK_GATEWAY"
     MESSAGE_PLATFORM = "MESSAGE_PLATFORM"
@@ -24,6 +24,14 @@ class SystemType(StrEnum):
 
 class BusinessDomain(StrEnum):
     PERSONAL_CREDIT = "PERSONAL_CREDIT"
+
+
+class SourceChannel(StrEnum):
+    INTERNAL_SYSTEM = "INTERNAL_SYSTEM"
+    INTERNAL_SETTLEMENT = "INTERNAL_SETTLEMENT"
+    PARTNER_OFFICIAL_API = "PARTNER_OFFICIAL_API"
+    RECONCILIATION_FILE = "RECONCILIATION_FILE"
+    PAYMENT_INSTITUTION_API = "PAYMENT_INSTITUTION_API"
 
 
 class Environment(StrEnum):
@@ -84,6 +92,9 @@ class ResolutionCode(StrEnum):
     AMBIGUOUS_SOURCE = "AMBIGUOUS_SOURCE"
     STALE_CAPABILITY = "STALE_CAPABILITY"
     INVALID_ROUTE_CONTEXT = "INVALID_ROUTE_CONTEXT"
+    INVALID_ROUTING_PROOF = "INVALID_ROUTING_PROOF"
+    ROUTING_FACT_CONFLICT = "ROUTING_FACT_CONFLICT"
+    STALE_ROUTE_REVISION = "STALE_ROUTE_REVISION"
 
 
 class RegistryError(ValueError):
@@ -126,6 +137,7 @@ class SystemDefinition(EffectiveDefinition):
     system_id: Ref
     display_name: Annotated[str, Field(min_length=1, max_length=120)]
     system_type: SystemType
+    source_channel: SourceChannel
     scope: RoutingScope
     status: RegistryStatus = RegistryStatus.ACTIVE
     owner_team: Ref
@@ -221,8 +233,13 @@ class RegistryDefinition(Model):
             if c is None or r.claim_type not in c.produces_claim_types:
                 raise ValueError("authority cannot invent evidence claims")
             if (r.claim_type == ClaimType.PAYMENT_FINALITY and r.authority_level == AuthorityLevel.AUTHORITATIVE
-                    and systems[c.system_id].system_type != SystemType.PAYMENT_LEDGER):
-                raise ValueError("only payment ledger may authoritatively observe payment finality")
+                    and systems[c.system_id].system_type != SystemType.PAYMENT_STATUS_SOURCE):
+                raise ValueError("only a registered payment status source may authoritatively observe payment finality")
+            if (r.claim_type == ClaimType.PAYMENT_FINALITY and r.authority_level == AuthorityLevel.AUTHORITATIVE
+                    and not (r.subject_binding_required and r.identity_binding_required
+                             and r.freshness_requirement == Freshness.CURRENT
+                             and r.completeness_requirement == Completeness.COMPLETE)):
+                raise ValueError("authoritative payment finality requires subject, identity, current and complete evidence")
         return self
 
 
@@ -272,3 +289,40 @@ class DispatchSource(Model):
     call_id: str
     case_id: Ref
     resolved: ResolvedCapability
+
+
+class RouteChangeReason(StrEnum):
+    INITIAL_BINDING = "INITIAL_BINDING"
+    LEGACY_IMPORT = "LEGACY_IMPORT"
+    PROTOCOL_VERIFIED = "PROTOCOL_VERIFIED"
+
+
+class RouteRevisionStatus(StrEnum):
+    TRUSTED_INITIAL = "TRUSTED_INITIAL"
+    VERIFIED = "VERIFIED"
+
+
+class CaseRouteRevision(Model):
+    route_revision_id: Hash
+    case_id: Ref
+    tenant_id: Ref
+    parent_revision_id: Hash | None
+    route_context: CaseRouteContext
+    routing_fingerprint: Hash
+    change_reason: RouteChangeReason
+    supporting_evidence_refs: tuple[Annotated[str, Field(pattern=r"^E-[0-9a-f]{64}$")], ...]
+    created_at: AwareDatetime
+    created_by: Ref
+    status: RouteRevisionStatus
+
+    @model_validator(mode="after")
+    def revision_binding(self):
+        if self.case_id != self.route_context.case_id or self.tenant_id != self.route_context.tenant_id:
+            raise ValueError("revision scope mismatch")
+        if self.change_reason == RouteChangeReason.PROTOCOL_VERIFIED:
+            if (not self.supporting_evidence_refs or self.parent_revision_id is None
+                    or self.route_context.protocol_version is None or self.status != RouteRevisionStatus.VERIFIED):
+                raise ValueError("protocol revision requires proof and parent")
+        elif self.parent_revision_id is not None or self.supporting_evidence_refs or self.status != RouteRevisionStatus.TRUSTED_INITIAL:
+            raise ValueError("initial route cannot impersonate evidence promotion")
+        return self

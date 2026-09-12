@@ -1,4 +1,4 @@
-# Step 14 — Enterprise System / Capability / Authority Registry
+# Step 14 / 14.1 — System Registry、Case Route Revision 与金融接入语义
 
 系统由可信部署人员登记。Agent 不扫描内网，不试 URL，不自行替换 Partner。Registry 回答“当前 Case 可以向哪个已登记来源取得什么事实”；它不是业务事实，也不是执行授权。全部演示系统、账户、订单和身份数据均为 synthetic test fixtures。
 
@@ -6,7 +6,7 @@
 
 | 对象 | 含义与字段 |
 |---|---|
-| SystemDefinition | 有限 SystemType、system_id、display_name、owner_team、status、scope、effective interval；credential_ref 仅服务器可见 |
+| SystemDefinition | 有限 SystemType、SourceChannel、system_id、display_name、owner_team、status、scope、effective interval；credential_ref 仅服务器可见 |
 | CapabilityDefinition | 业务问题类型、ToolName、READ/WRITE、可产生 Claim、可贡献 requirement、lookup、adapter reference、协议契约版本、状态、生效区间与 RecoveryContract |
 | RoutingScope | tenant_id、PERSONAL_CREDIT domain、environment、partner_role/id、product_codes、protocol_versions 或明确 version_agnostic |
 | ClaimAuthorityRule | 每个 capability × claim 的 AUTHORITATIVE / CORROBORATING / DIAGNOSTIC，以及 subject/identity/freshness/completeness 前置条件 |
@@ -14,7 +14,7 @@
 | ResolvedCapability | Runtime 私有的 source/adapter、Claim 与 authority rules、registry_version、routing_fingerprint、query/response contract versions；没有 URL、secret、credential_ref |
 | CaseCapabilitySnapshot | Case 范围内的抽象 capability、ToolName、claims、authority、cost/latency，以及版本与内容指纹；没有基础设施标识 |
 
-系统和能力共用 `RoutingScope` 与 `EffectiveDefinition`，避免两份 tenant / partner / effective-time 字段漂移。CapabilityDefinition 保留一个业务主类型；例如支付来源以 ESTABLISH_PAYMENT_FINALITY 登记，同时声明真实 Payment DTO 提供的完整身份 Claim。能力的存在与 claim 的权威性分开：Funding Core 可以权威观察 FUND_BUSINESS_STATUS，却不能把 SUCCESS 变成 PAYMENT_FINALITY。注册入口校验 Claim 与实际静态 Tool DTO contract 的集合包含关系，不能通过 metadata 发明 deployed schema 或其他工具不能返回的事实。
+系统和能力共用 `RoutingScope` 与 `EffectiveDefinition`，避免两份 tenant / partner / effective-time 字段漂移。CapabilityDefinition 保留一个业务主类型；例如支付来源以 ESTABLISH_PAYMENT_FINALITY 登记，同时声明真实 Payment DTO 提供的完整身份 Claim。能力的存在与 claim 的权威性分开：FUNDING_INTEGRATION（我司资金接入记录与资金合作方正式接口）可以权威观察 FUND_BUSINESS_STATUS，却不能把 SUCCESS 变成 PAYMENT_FINALITY。注册入口校验 Claim 与实际静态 Tool DTO contract 的集合包含关系，不能通过 metadata 发明 deployed schema 或其他工具不能返回的事实。
 
 `authority.can_support()` 只判断证据是否满足来源规则要求，接受已有确定性身份服务的 MATCH/MISMATCH/UNKNOWN。它不调用 Vault，不比较姓名或手机号，不确认支付，不改变 Evidence strength。现有 Hypothesis / Identity / IndependentEvaluator 的完整 witness 和新鲜度规则继续执行，Registry 不替代它们。
 
@@ -36,9 +36,47 @@ DISABLED 总是拒绝；DRAINING 默认拒绝。只有配置 allow_existing_drai
 
 RegistryAdmin 是不挂 HTTP 路由的可信配置入口。先 register 不可变定义，再 activate(version, expected_version, actor)。System、Capability、Authority body 都以 version 为键保存；激活仅 CAS 修改 tenant 唯一 head。并发激活同一旧 head 只有一个成功，另一个得到 STALE_CAPABILITY。审计记录 REGISTERED、ACTIVATED、DRAINING、DISABLED、RETIRED、actor 与时间，不记录 credential 内容。RETIRED 表示被新 head 替换，历史 body 继续保留。
 
-Case routing facts 以独立 SQL 行和 hash 保存，是 Runtime 配置，不是从 Goal/LLM reason_summary 提取。当前绑定不可原地修改；改变绑定需要后续受审计 routing revision 设计，本版拒绝覆盖。Registry 配置本身没有 Agent 可写入口。当前 trusted admin 是进程内组合边界，不冒充完整企业 IAM。
+Case routing facts 是 Runtime 配置，不是从 Goal/LLM reason_summary 提取。Step 14.1 用不可变 revision 链推进协议，禁止原地覆盖；具体 proof 和并发规则见下节。Registry 配置本身没有 Agent 可写入口。当前 trusted admin 是进程内组合边界，不冒充完整企业 IAM。
 
 CaseCapabilitySnapshot 按有界、类型化、无基础设施信息的 payload 计算 SHA-256，assembled_at 使用 routing effective_at 逻辑水位。同一 Case/路由/版本/权限得到相同 snapshot_id。快照持久化供重演，旧版本在 Registry 变化后仍可审计。
+
+## Step 14.1：Case Route Revision
+
+新增 `registry_case_route_revisions` 和 `registry_case_route_heads`。Revision 保存 case/tenant、parent、完整 route、routing fingerprint、change reason、supporting Evidence refs、created_at/created_by 和验证状态。revision ID 是规范化内容的 SHA-256；读取时重新校验内容和 scope。`TRUSTED_INITIAL / VERIFIED` 表达来源验证状态，是否 active 只由独立 head 决定。旧 revision 永久保留；不存在更新旧 body 的服务接口。
+
+初始 trusted binding 同时建立 R1 与 head。旧 Step 14 的 `registry_case_routes` 原始 JSON/hash 保留不动；可信部署代码可调用 `RouteUpdater.initialize_legacy(case_id)` 幂等建立 LEGACY_IMPORT R1。未迁移旧绑定仍能只读解析；已存在 revision 却丢失 head 时 fail closed，不能回退旧 UNKNOWN 绑定。相同原始 admin bind 不会覆盖已经推进的 head。
+
+唯一推进入口是进程内可信 `RouteUpdater.promote_protocol(case_id, expected_revision_id=..., evidence_refs=(...))`。调用者只能提供 Evidence ID，不能提供协议值、partner/product 更新或任意 raw context；此服务没有 Agent Tool 或公共 HTTP 注册，Planner、Skill、Experience 无权调用。
+
+UNKNOWN→2.3 的确定性 proof：
+
+1. 从当前 Case 持久化 Evidence 中取得 CURRENT、COMPLETE 的 PROTOCOL_FIELD_TYPE，校验订单、PROTOCOL subject、版本 metadata、source_as_of 与观测时间。
+2. 反查 EvidenceOrigin→CaseCall→ObservationRow，核对当前 Case 的 simulation/grant、tool/request、dispatch correlation、Observation ID 与 content hash。
+3. 从已持久化 ProtocolData 重新确定性提取，要求与该 Evidence 完全一致；不能只看到字符串“2.3”就更新。多个 proof 字段必须来自同一 Observation，禁止跨次拼装。
+4. 核对 RegistryDispatchSource 的 tenant/case/call、注册版本、capability/system/adapter/contract/authority，以及当前 revision 祖先链的 route hash。来源必须仍有效，且为已注册 PROTOCOL_REGISTRY / READ_PROTOCOL_SCHEMA 的权威协议查询能力。
+5. 在 Case lock→Registry head lock 内追加 R2，并以 expected revision 对 route head 做 CAS。整个事务失败会回滚新增 revision。并发两个不同版本只允许一个成功，另一个返回 STALE_ROUTE_REVISION。
+
+第一版仅支持 UNKNOWN→KNOWN。再次验证相同协议是幂等 no-op；已知 2.3 后提交 2.2 返回 `ROUTING_FACT_CONFLICT`，保留原 head。可信调用方应将冲突交给人工继续调查；本补丁不自动创建人工 Work，也不改变 Case 生命周期。普通历史协议查询本身不会推进路由。
+
+路由协议使相应版本的查询能力可用，**不等于已证明资金请求实际使用该协议**；FUND_REQUEST_PROTOCOL_APPLICABILITY 仍由独立业务 Evidence contract 判断。推进 R2 改变 routing_fingerprint，旧 Snapshot 在执行前自动 STALE_CAPABILITY；重新组装 Context 才能获得 Messages 2.3。不会合成 Planner Candidate。
+
+## Step 14.1：金融接入与来源范围
+
+`FUNDING_INTEGRATION` 表示我司资金接入系统或合作机构正式接口；Harness 不访问苏商、海尔内部核心数据库。`PAYMENT_STATUS_SOURCE` 表示合法授权的支付最终状态来源，不假设存在可直连的合作方内部支付账本。
+
+`SourceChannel` 是有限枚举：INTERNAL_SYSTEM、INTERNAL_SETTLEMENT、PARTNER_OFFICIAL_API、RECONCILIATION_FILE、PAYMENT_INSTITUTION_API。它描述接入类别，没有 URL、凭据或自动发现能力。只有 PAYMENT_STATUS_SOURCE 且明确配置 AUTHORITATIVE PAYMENT_FINALITY rule 的来源，才能成为权威支付终态候选。注册同时要求 subject binding、identity binding、CURRENT 和 COMPLETE；最终业务结论仍需原 Identity/Evaluator witness，FUND SUCCESS 永远不能替代它。
+
+历史 Registry JSON 先验证原 hash，再进行只读兼容投影：旧 FUNDING_CORE / PAYMENT_LEDGER 映射到新类型，缺少 channel 的旧配置按有限映射补入。历史 payload/hash/version 不重写；新发布必须使用新模型。
+
+| Synthetic Tool | Partner scope | Source channel / 归属 |
+|---|---|---|
+| PAYMENT / FUND / LOAN_NOTE | FUNDING / SUSHANG | PARTNER_OFFICIAL_API；合法支付结果或我司资金接入来源 |
+| ASSET / ASSET_DELIVERY | ASSET / JD | PARTNER_OFFICIAL_API；JD-like asset integration |
+| GUARANTEE / ACCOUNTING / TRACE | neutral（两个 partner 字段均为 None） | INTERNAL_SYSTEM；我司内部系统 |
+| CALLBACK / CALLBACK_RAW / MESSAGES | neutral | INTERNAL_SYSTEM；我司 Gateway 与消费链路，仍按 Case/order/event 关联 |
+| PROTOCOL | neutral、version agnostic | INTERNAL_SYSTEM；我司持有的合作协议登记与发现入口 |
+
+Messages capability 仍限定 2.3；neutral 不等于绕过 tenant、Case、订单或事件 scope。所有上述接口及数据均为 synthetic，不接任何真实资金系统。
 
 ## Context / Planner 接入
 
@@ -76,18 +114,18 @@ WRITE metadata 可以登记，但不进入 read capability projection、resolve_
 
 ## 后续 Hybrid Retrieval
 
-Scope 中的 tenant/domain/partner-role/partner/product/protocol/environment，加上 Claim、capability_type、authority、status、effective interval、contract version 都是结构化字段。后续先执行这些 Hard Filter，再做向量检索、确定性 rerank、Top-K Context。不会从自由文本 Markdown 猜路由。本阶段没有 embedding/vector index、多 Agent、LangGraph、UI-1、真实资金动作或面试包装，也没有服务发现、完整 IAM、Vault/KMS 或动态插件加载。
+冻结后续 hard filter contract：tenant_id、business_domain、partner_role、partner_id、product_code、protocol_version、environment、capability_type、claim_types、authority_level、effective time、status。来源 scope 用 product_codes/protocol_versions 集合表达支持范围，Case 用单值匹配；effective time 使用明确半开区间。它们均取自结构化可信配置，Embedding 不得推断或覆盖。后续先执行这些 Hard Filter，再做检索、确定性 rerank、Top-K Context。本阶段没有 embedding/vector index、多 Agent、LangGraph、UI-1、真实资金动作或面试包装，也没有服务发现、完整 IAM、Vault/KMS 或动态插件加载。
 
 ## 本地演示与验证
 
 ```powershell
 .venv\Scripts\python -m scripts.demo_registry > .local/registry-demo.json
-.venv\Scripts\python -m pytest tests/test_registry.py tests/test_registry_runtime.py -q
+.venv\Scripts\python -m pytest tests/test_registry.py tests/test_registry_runtime.py tests/test_route_revisions.py -q
 ```
 
-Demo 使用 S6 synthetic HTTP 工具产生真实 Evidence，展示权威 Payment 来源、protocol 2.3 Messages 来源、缺失 Accounting 与双权威 Payment 歧义，并输出独立的模型可见快照和 Runtime 私有来源追溯。创建独立 `.local/registry-demo-*.db` 便于复查，不覆盖历史演示数据库。
+Demo 使用 S6 synthetic HTTP 工具产生真实 Evidence，展示 R1 UNKNOWN→Protocol Observation→R2 2.3、旧 Snapshot stale、Messages 解锁、中文接入语义、缺失 Accounting 与双权威 Payment 歧义。输出独立的模型可见快照和 Runtime 私有来源追溯；创建独立 `.local/registry-demo-*.db`，不覆盖历史演示数据库。PowerShell 重定向中文输出时建议先设置 `$env:PYTHONIOENCODING='utf-8'`。
 
-2026-09-12 最终验证（1270 collected；原 1231 项 + 新增 39 项，未删除或放宽原安全断言）：
+Step 14 历史基线（1270 collected；原 1231 项 + 新增 39 项）：
 
 | 验证 | 结果 | 耗时 |
 |---|---|---|
@@ -98,4 +136,46 @@ Demo 使用 S6 synthetic HTTP 工具产生真实 Evidence，展示权威 Payment
 
 两项 live Planner / Remediation 测试未显式开启；SQLite 另跳过 PostgreSQL 专项。离线 Provider + MockTransport 结构化输出测试实际执行。每套测试只有既存 Starlette/AnyIO BlockingPortal 弃用提示。`git diff --check` 通过。
 
-本次实际演示：Case CASE-JD202609100001，解析到 sim-payment-sushang 与 sim-messages-sushang；两次真实 synthetic Read 产生 14 条 Evidence，模型仅见 12 项抽象能力。移除 Accounting 后为 NO_REGISTERED_SOURCE，添加第二个权威 Payment 后为 AMBIGUOUS_AUTHORITATIVE_SOURCE，write_authorized=false。未执行真实副作用。
+历史演示的 Messages 来源已在 Step 14.1 调整为我司内部 neutral scope；当前结果以下方 Step 14.1 验证为准。
+
+### Step 14.1 实际演示
+
+`scripts/demo_registry.py` 当前实际输出摘要（完整结果含 revision hash、Evidence refs 与来源 sidecar）：
+
+```json
+{
+  "case_id": "CASE-JD202609100001",
+  "route_progression": [null, "2.3"],
+  "messages_available_before": false,
+  "messages_available_after": true,
+  "old_snapshot_revalidation": "STALE_CAPABILITY",
+  "observed_evidence_count": 22,
+  "business_meanings": {
+    "get_payment_transaction": "合法授权的支付结果来源（synthetic official API）",
+    "get_fund_order": "我司资金接入系统 / 苏商官方接口（synthetic）",
+    "get_asset_order": "JD-like asset integration（synthetic）",
+    "get_messages": "我司内部 messages（synthetic）"
+  },
+  "missing_accounting": "NO_REGISTERED_SOURCE",
+  "ambiguous_payment": "AMBIGUOUS_AUTHORITATIVE_SOURCE",
+  "write_authorized": false
+}
+```
+
+以上 route_progression 与 messages_available 是根据真实 revision 和前后 capability 列表整理的摘要字段；原始 Demo 返回完整列表，不把这些摘要变成业务 Evidence。
+
+### Step 14.1 测试记录
+
+新增 29 项，合计 1299 collected。既有测试仅更新新 SystemType 名称，没有删除或放宽安全断言。
+
+| 验证 | 结果 | 耗时 |
+|---|---|---|
+| Registry + Runtime + Route revision，SQLite | 68 passed | 32.99s |
+| Registry + Runtime + Route revision，PostgreSQL | 68 passed | 59.76s |
+| CAS / Worker lease / 原子性定向，SQLite | 15 passed, 141 deselected | 29.36s |
+| CAS / Worker lease / 原子性定向，PostgreSQL | 15 passed, 141 deselected | 42.41s |
+| Agent Runtime / Evaluator / Context / Orchestration / Recovery 专项，SQLite | 497 passed | 709.57s |
+| SQLite full suite | 1296 passed, 3 skipped | 1385.72s |
+| PostgreSQL full suite | 1297 passed, 2 skipped | 1727.98s |
+
+全量日志：`.local/step141-full-sqlite.log`、`.local/step141-full-postgres.log`；真实 Demo：`.local/step141-demo.json`。两项可选 live LLM 测试未开启；SQLite 另跳过 PostgreSQL 专项。离线 Provider / MockTransport 测试实际执行。每套仅有既存 Starlette/AnyIO BlockingPortal 弃用提示；`git diff --check` 通过。没有运行 Step 15、Vector/Embedding、UI 或真实资金操作。

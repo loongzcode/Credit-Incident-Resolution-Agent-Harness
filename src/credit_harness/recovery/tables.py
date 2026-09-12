@@ -1,6 +1,7 @@
 from sqlalchemy import JSON, Boolean, Float, ForeignKey, Index, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from credit_harness.persistence.store import Base
+from credit_harness.authorization import tables as authorization_tables  # noqa: F401 - resolve ledger FK even in standalone admin/test bootstrap
 
 
 class ReadDispatchRecoveryRow(Base):

@@ -103,7 +103,7 @@ def test_disabled_capability_hidden(registered, target):
     x = registered
     if target == "system":
         publish(x, systems=[s.model_copy(update=dict(status=RegistryStatus.DISABLED))
-                           if s.system_type == SystemType.PAYMENT_LEDGER else s for s in x.definition.systems])
+                           if s.system_type == SystemType.PAYMENT_STATUS_SOURCE else s for s in x.definition.systems])
     else:
         publish(x, capabilities=[c.model_copy(update=dict(status=RegistryStatus.DISABLED))
                                 if c.tool_name == T.PAYMENT else c for c in x.definition.capabilities])
@@ -115,7 +115,7 @@ def test_draining_policy(registered):
     x = registered
     cutoff = x.case.created_at + timedelta(days=1)
     publish(x, systems=[s.model_copy(update=dict(status=RegistryStatus.DRAINING, draining_since=cutoff))
-                       if s.system_type == SystemType.PAYMENT_LEDGER else s for s in x.definition.systems])
+                       if s.system_type == SystemType.PAYMENT_STATUS_SOURCE else s for s in x.definition.systems])
     with pytest.raises(RegistryError):
         payment(x)
     assert payment(x, allow_existing_draining=True).tool_name == T.PAYMENT

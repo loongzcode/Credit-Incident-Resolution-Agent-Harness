@@ -24,7 +24,7 @@ class ToolCapabilityCatalog:
     entries = (
         capability(T.ASSET, "查询资产方订单状态。", (C.ASSET_STATUS,)),
         capability(T.GUARANTEE, "查询担保核心状态与版本。", (C.GUARANTEE_STATUS, C.GUARANTEE_VERSION)),
-        capability(T.FUND, "查询资金方业务状态与借据引用，不能替代支付终态。",
+        capability(T.FUND, "查询我司资金接入记录及资金合作方正式接口返回的业务状态与借据引用，不能替代支付终态。",
                    (C.FUND_BUSINESS_STATUS, C.LOAN_NO_PRESENT, C.LOAN_NOTE_REFERENCE)),
         capability(T.PAYMENT, "查询支付终态、交易与 tokenized 身份字段。",
                    (C.PAYMENT_FINALITY, C.PAYMENT_TRANSACTION_ID, C.TRANSACTION_FUND_REQUEST_ID,
