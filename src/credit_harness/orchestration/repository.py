@@ -8,7 +8,7 @@ from credit_harness.cases.repository import hydrate, utc_now
 from credit_harness.context.budget import digest
 from .models import (CaseWorkItem, CaseOrchestrationState, OrchestrationBudget, OrchestrationError,
     WorkStatus as S, WorkType as T, WorkReason as R, Trigger, WorkEvent as E,
-    WorkClaim, ResolutionSignal, SignalType, OrchestrationAuditRecord)
+    WorkClaim, ResolutionSignal, SignalType, OrchestrationAuditRecord, WorkBindingMode as B)
 from .tables import WorkItemRow, OrchestrationStateRow, SignalRow, OrchestrationAuditRow
 
 ACTIVE = (S.PENDING, S.READY, S.CLAIMED)
@@ -58,13 +58,17 @@ def create_work(session, case, *, work_type, reason, source_ref, trigger, now,
                 not_before=None, requirement=None, required_signal=None, previous_run_id=None,
                 snapshot_ref=None, wait_seconds=None, verification_requirements=()):
     if work_type == T.RECOVERY_RECHECK:
-        # Case lock serializes every producer. Rechecks always reuse the same
-        # effect's Work, including legacy keys and completed/blocked records.
-        existing = session.scalar(select(WorkItemRow).where(WorkItemRow.case_id == case.case_id,
-            WorkItemRow.payload["work_type"].as_string() == T.RECOVERY_RECHECK.value,
-            WorkItemRow.payload["source_ref"].as_string() == source_ref))
-        if existing is not None:
-            return value(existing)
+        from .effect_work import ensure_recovery_work
+        return ensure_recovery_work(session, case, source_ref, now, not_before=not_before)
+    return _create_work(session, case, work_type=work_type, reason=reason, source_ref=source_ref,
+        trigger=trigger, now=now, not_before=not_before, requirement=requirement, required_signal=required_signal,
+        previous_run_id=previous_run_id, snapshot_ref=snapshot_ref, wait_seconds=wait_seconds,
+        verification_requirements=verification_requirements)
+
+
+def _create_work(session, case, *, work_type, reason, source_ref, trigger, now,
+                 not_before=None, requirement=None, required_signal=None, previous_run_id=None,
+                 snapshot_ref=None, wait_seconds=None, verification_requirements=()):
     key = digest(dict(case=case.case_id, tenant=case.tenant_id, type=work_type,
         reason=reason, source=source_ref, requirement=requirement, snapshot=snapshot_ref))
     old = session.get(WorkItemRow, key)
@@ -72,7 +76,7 @@ def create_work(session, case, *, work_type, reason, source_ref, trigger, now,
         return value(old)
     state_row, state = state_in(session, case)
     status = S.CANCELED if CaseStatus(case.status).is_terminal else S.PENDING
-    if case.status == CaseStatus.ESCALATED.value and required_signal is None:
+    if case.status == CaseStatus.ESCALATED.value and required_signal is None and work_type != T.RECOVERY_RECHECK:
         # An effect receipt or an evaluation report cannot bypass an escalation.
         required_signal = SignalType.OPERATOR_ACKNOWLEDGED
     if case.status == CaseStatus.WAITING.value and work_type == T.VERIFICATION_REQUIRED:
@@ -116,11 +120,13 @@ def escalate_in(session, case, reason, source_ref, now):
 
 class WorkRepository:
     """Trusted tenant-scoped repository. All writers lock Case before Work."""
-    def __init__(self, cases, *, clock=utc_now, lease_seconds=120):
+    def __init__(self, cases, *, clock=utc_now, lease_seconds=120, recovery_policy=None):
         if not 1 <= lease_seconds <= 3600:
             raise ValueError("bounded lease required")
         self.cases, self.engine, self.clock = cases, cases.engine, clock
         self.lease_seconds = lease_seconds
+        from credit_harness.recovery.models import RecoveryPolicy
+        self.recovery_policy = recovery_policy or RecoveryPolicy()
 
     def _row(self, session, work_id):
         row = session.scalar(select(WorkItemRow).where(WorkItemRow.work_item_id == work_id,
@@ -165,7 +171,8 @@ class WorkRepository:
             ids = tuple(session.scalars(select(WorkItemRow.work_item_id).where(
                 WorkItemRow.tenant_id == self.cases.tenant_id,
                 or_(WorkItemRow.status.in_([S.PENDING.value, S.READY.value]) &
-                    or_(WorkItemRow.payload["required_signal"].as_string().is_(None),
+                    or_(WorkItemRow.payload["work_type"].as_string() == T.RECOVERY_RECHECK.value,
+                        WorkItemRow.payload["required_signal"].as_string().is_(None),
                         WorkItemRow.payload["signal_id"].as_string().is_not(None)),
                     (WorkItemRow.status == S.CLAIMED.value) & (WorkItemRow.lease_until <= now.timestamp())),
                 WorkItemRow.not_before <= now.timestamp()).order_by(WorkItemRow.not_before,
@@ -178,13 +185,17 @@ class WorkRepository:
                 row = self._row(session, work_id); session.refresh(row); item = value(row)
                 if CaseStatus(case.status).is_terminal:
                     cancel_terminal_work(session, case.case_id, now); continue
-                if item.status in (S.PENDING, S.READY) and (
+                if item.binding_mode == B.SIDE_EFFECT:
+                    from .effect_work import check_recovery_work
+                    if check_recovery_work(session, case, row, item, now) is None:
+                        continue
+                elif item.status in (S.PENDING, S.READY) and (
                         case.status != item.expected_case_status.value
                         or case.updated_at != item.expected_case_revision.isoformat()):
                     changed = item.model_copy(update=dict(status=S.CANCELED, lease_until=None))
                     save_work(row, changed); audit(session, changed, E.STALE, now, item.status)
                     continue
-                if item.status in (S.PENDING, S.READY) and (not item.required_signal or item.signal_id):
+                if item.status in (S.PENDING, S.READY) and (item.binding_mode == B.SIDE_EFFECT or not item.required_signal or item.signal_id):
                     if item.status == S.PENDING:
                         changed = item.model_copy(update=dict(status=S.READY))
                         save_work(row, changed); audit(session, changed, E.READY, now, item.status)
@@ -208,9 +219,13 @@ class WorkRepository:
             if CaseStatus(case.status).is_terminal:
                 cancel_terminal_work(session, case.case_id, now); return None
             if (item.status not in ACTIVE or item.not_before > now
-                    or (item.required_signal and not item.signal_id)
+                    or (item.binding_mode == B.CASE_SNAPSHOT and item.required_signal and not item.signal_id)
                     or (item.lease_until and item.lease_until > now)):
                 return None
+            if item.binding_mode == B.SIDE_EFFECT:
+                from .effect_work import check_recovery_work
+                if check_recovery_work(session, case, row, item, now) is None:
+                    return None
             other = session.scalar(select(WorkItemRow).where(WorkItemRow.case_id == item.case_id,
                 WorkItemRow.work_item_id != work_id, WorkItemRow.status == S.CLAIMED.value))
             if other is not None:

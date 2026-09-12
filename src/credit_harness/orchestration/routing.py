@@ -23,6 +23,7 @@ class RequirementRoute(StrEnum):
     READ_VERIFICATION = "READ_VERIFICATION"
     EFFECT_RECOVERY = "EFFECT_RECOVERY"
     OPERATOR_FOLLOWUP = "OPERATOR_FOLLOWUP"
+    NO_ACTION = "NO_ACTION"
 
 
 class RecoveryRouteState(Model):
@@ -45,14 +46,16 @@ class RequirementRouter:
             relevant = [s for s in effects if (s.effect_ref == requirement.effect_ref
                 if q == Q.EFFECT_FINALITY else s.status in RECOVERABLE)]
             if not relevant:
-                return (RoutedRequirement(requirement=q, route=RequirementRoute.OPERATOR_FOLLOWUP),)
+                return (RoutedRequirement(requirement=q, route=RequirementRoute.NO_ACTION
+                    if q == Q.RECOVERY_FINALITY else RequirementRoute.OPERATOR_FOLLOWUP),)
             if q == Q.RECOVERY_FINALITY:
                 recoverable = [s for s in relevant if s.recovery_available and not s.requires_escalation]
                 # The aggregate is machine-resolvable while any effect can
                 # continue. Individual EFFECT_FINALITY requirements remain specific.
                 relevant = recoverable or relevant
             return tuple(RoutedRequirement(requirement=q, effect_ref=s.effect_ref,
-                route=RequirementRoute.EFFECT_RECOVERY if s.status in RECOVERABLE
+                route=RequirementRoute.NO_ACTION if s.status not in RECOVERABLE else
+                    RequirementRoute.EFFECT_RECOVERY if s.status in RECOVERABLE
                     and s.recovery_available and not s.requires_escalation
                     else RequirementRoute.OPERATOR_FOLLOWUP)
                 for s in sorted(relevant, key=lambda s: s.effect_ref))

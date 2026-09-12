@@ -135,7 +135,7 @@ class DurableCaseOrchestrator:
             return None
         after = self.resume_service.progress(old.case_id)
         with Session(repo.engine) as session, session.begin():
-            current = self.resume_service._current(session, claim)
+            current = self.resume_service.effect_guard.current(session, claim)
             if current is None:
                 return None
             case, row, work = current

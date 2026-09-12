@@ -6,7 +6,7 @@ from credit_harness.cases.repository import hydrate
 from credit_harness.context.budget import digest
 from credit_harness.authorization.models import EffectStatus
 from credit_harness.recovery.case import CaseRecoveryCoordinator
-from .models import WorkStatus as S, WorkType as T, WorkReason as R, WorkEvent as E, OrchestrationError, ResumeRecoveryResult
+from .models import WorkStatus as S, WorkType as T, WorkReason as R, WorkEvent as E, OrchestrationError, ResumeRecoveryResult, WorkBindingMode as B
 from .repository import lock_case, state_in, save_state, save_work, audit, escalate_in, cancel_terminal_work
 
 
@@ -24,12 +24,29 @@ class CaseResumeService:
         self.evaluator = evaluator or IndependentEvaluator(repository.cases, clock=repository.clock)
         if self.evaluator.cases is not repository.cases:
             raise ValueError("progress evaluator must share Case boundary")
+        from .effect_work import EffectRecoveryWorkGuard
+        self.effect_guard = EffectRecoveryWorkGuard(repository)
+
+    @property
+    def effect_recovery(self):
+        return self._effect_recovery
+
+    @effect_recovery.setter
+    def effect_recovery(self, coordinator):
+        if coordinator is not None:
+            if coordinator.repository.cases is not self.repository.cases:
+                raise ValueError("recovery must share Case boundary")
+            # Trusted deployment wiring; no per-call retry limit override.
+            self.repository.recovery_policy = coordinator.repository.policy
+        self._effect_recovery = coordinator
 
     def _current(self, session, claim):
         repo = self.repository
         item = repo.get(claim.work_item_id)
         case = lock_case(session, repo.cases, item.case_id)
         row, item = repo.owned(session, claim, repo.clock())
+        if item.binding_mode != B.CASE_SNAPSHOT:
+            raise OrchestrationError("snapshot guard cannot validate effect work")
         if CaseStatus(case.status).is_terminal:
             raise OrchestrationError("terminal case")
         if item.resumed_at:
@@ -51,6 +68,8 @@ class CaseResumeService:
 
     def recover_before_resume(self, claim) -> ResumeRecoveryResult | None:
         repo = self.repository
+        if repo.get(claim.work_item_id).binding_mode == B.SIDE_EFFECT:
+            return self.recover_effect_work(claim)
         repo.renew(claim)
         with Session(repo.engine) as session, session.begin():
             current = self._current(session, claim)
@@ -98,8 +117,7 @@ class CaseResumeService:
                 select(EffectRow).where(EffectRow.case_id == item.case_id).order_by(EffectRow.effect_id))) if inspect(
                     connection).has_table(EffectRow.__tablename__, schema=schema) else ()
         unresolved = [e for e in ledgers if e.status in RECOVERABLE]
-        target = (next((e for e in ledgers if e.effect_id == item.source_ref), None)
-                  if item.work_type == T.RECOVERY_RECHECK else next(iter(unresolved), None))
+        target = next(iter(unresolved), None)
         effects = []
         # One effect recovery invocation per orchestration tick, never a loop.
         if target is not None and self.effect_recovery is not None:
@@ -124,9 +142,56 @@ class CaseResumeService:
             save_work(row, item.model_copy(update=dict(recovery_result=result)))
             return result
 
+    def recover_effect_work(self, claim) -> ResumeRecoveryResult | None:
+        """One bound Step 9 call. No Case resume, Agent Run or read publication."""
+        from .effect_work import effect_binding
+        from credit_harness.recovery.repository import RECOVERABLE
+        repo = self.repository
+        with Session(repo.engine) as session, session.begin():
+            current = self.effect_guard.current(session, claim)
+            if current is None:
+                return None
+            case, row, item = current
+            if item.recovery_claim_token == claim.lease_token:
+                return None
+            save_work(row, item.model_copy(update=dict(recovery_claim_token=claim.lease_token)))
+            before_revision = case.updated_at
+        before = item.progress_before or self.progress(item.case_id)
+        with Session(repo.engine) as session, session.begin():
+            current = self.effect_guard.current(session, claim)
+            if current is None:
+                return None
+            case, row, item = current
+            if item.progress_before is None:
+                save_work(row, item.model_copy(update=dict(progress_before=before,
+                    before_progress_fingerprint=before.fingerprint, before_evidence_fingerprint=before.evidence_fingerprint)))
+            ledger, state = effect_binding(session, case, item.source_ref)
+            requires_escalation = state.requires_escalation
+        effects = ()
+        if ledger.status in RECOVERABLE and not requires_escalation and self.effect_recovery is not None:
+            repo.renew(claim)
+            # Step 9 rechecks its own current state, lease, capability contract,
+            # grace/backoff and attempt limit. No proof is authored here.
+            effects = (self.effect_recovery.recover(ledger.effect_id),)
+        after = self.progress(item.case_id)
+        with Session(repo.engine) as session, session.begin():
+            current = self.effect_guard.current(session, claim)
+            if current is None:
+                return None
+            case, row, item = current
+            ledger, _ = effect_binding(session, case, item.source_ref)
+            result = ResumeRecoveryResult(case_id=item.case_id, work_item_id=item.work_item_id,
+                before_case_revision=before_revision, after_case_revision=case.updated_at,
+                effect_recoveries=effects, semantic_progress=before.fingerprint != after.fingerprint,
+                prepared_blocked=ledger.status == EffectStatus.PREPARED)
+            save_work(row, item.model_copy(update=dict(recovery_result=result)))
+            return result
+
     def resume(self, claim):
         repo = self.repository
         old = repo.get(claim.work_item_id)
+        if old.binding_mode != B.CASE_SNAPSHOT:
+            raise OrchestrationError("effect lookup cannot resume investigation")
         if old.status == S.COMPLETED:
             repo.complete(claim)  # Verify the completing owner's identity.
             return None

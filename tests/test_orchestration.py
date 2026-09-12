@@ -472,16 +472,17 @@ def test_prepared_effect_is_recovered_before_new_remediation(factory):
     x = factory(ScenarioId.S6); x.read(); effect = x.remediate(prepared_only=True)
     recovery = configure_recovery(x)
     item = create(x, WorkType.RECOVERY_RECHECK, None, WorkReason.EFFECT_UNRESOLVED, source=effect.effect_id)
-    assert x.worker.resume_service.resume(x.work.claim(item.work_item_id, "worker"))
+    assert x.worker.process(x.work.claim(item.work_item_id, "worker"))
     assert x.runtime.store.get_ledger(effect.effect_id).status == EffectStatus.APPLIED
     assert recovery.repository.attempts(effect.effect_id)
     assert any(w.reason_code == WorkReason.EFFECT_APPLIED for w in x.work.list(x.case.case_id))
 
 
 def test_prepared_without_recovery_capability_blocks_resume(factory):
-    x = factory(ScenarioId.S6); x.read(); x.remediate(prepared_only=True)
-    item = create(x, WorkType.RECOVERY_RECHECK, None, WorkReason.EFFECT_UNRESOLVED)
-    assert x.worker.resume_service.resume(x.work.claim(item.work_item_id, "worker")) is None
+    x = factory(ScenarioId.S6); x.read(); effect = x.remediate(prepared_only=True)
+    item = create(x, WorkType.RECOVERY_RECHECK, None, WorkReason.EFFECT_UNRESOLVED, source=effect.effect_id)
+    x.worker.process(x.work.claim(item.work_item_id, "worker"))
+    assert x.work.get(item.work_item_id).status == WorkStatus.BLOCKED
     assert x.cases.get(x.case.case_id).status == CaseStatus.ESCALATED
 
 

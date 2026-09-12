@@ -25,6 +25,11 @@ class WorkStatus(StrEnum):
     BLOCKED = "BLOCKED"
 
 
+class WorkBindingMode(StrEnum):
+    CASE_SNAPSHOT = "CASE_SNAPSHOT"
+    SIDE_EFFECT = "SIDE_EFFECT"
+
+
 class WorkReason(StrEnum):
     WAIT_REQUESTED = "WAIT_REQUESTED"
     SOURCE_UNAVAILABLE = "SOURCE_UNAVAILABLE"
@@ -173,6 +178,12 @@ class CaseWorkItem(Model):
     recovery_reads: tuple[RecoveryResult, ...] = ()
     recovery_result: ResumeRecoveryResult | None = None
     recovery_claim_token: OpaqueSubjectRef | None = None
+
+    @property
+    def binding_mode(self) -> WorkBindingMode:
+        # Derived from the durable type, including legacy rows. Callers cannot
+        # provide a mode that weakens another Work's freshness contract.
+        return WorkBindingMode.SIDE_EFFECT if self.work_type == WorkType.RECOVERY_RECHECK else WorkBindingMode.CASE_SNAPSHOT
 
 
 class WorkClaim(Model):

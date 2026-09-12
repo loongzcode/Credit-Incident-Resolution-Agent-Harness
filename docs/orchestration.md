@@ -1,6 +1,6 @@
 # Step 13 — Durable Case Orchestration
 
-当前补丁：**Step 13.2 — Finality Handoff Routing Integrity**。在 Step 13.1 原子恢复与 backoff 基础上，修正 requirement 路由及 Recovery／Investigation no-progress 计数隔离。
+当前补丁：**Step 13.3 — Effect-bound Recovery Work Integrity**。调查／验证保留快照绑定，Recovery 工作改为 Effect 绑定；旧 Finality requirement 已被当前 Ledger 解决时路由为 NO_ACTION。
 
 本阶段把 Investigation、Recovery 和 Independent Evaluation 之间的交接写入数据库。WAIT、ESCALATE、Effect APPLIED 都不表示业务已经成功。所有数据仍为 synthetic fixtures；不接真实用户、金融系统或在线模型。
 
@@ -277,3 +277,73 @@ RECOVERY_RECHECK 由专用有限分支处理，不先启动 Agent Run，也不�
 ```
 
 未修改 Evidence、Payment Identity、Hypothesis、Remediation、Approval/Capability、Effect idempotency、Recovery proof、Evaluator truth、Closure、Tool Budget 或历史 Benchmark v2 产物。未开始 System Registry、Vector/Embedding、UI-1、Money Movement 或 Interview Packaging。
+
+## Step 13.3：Snapshot-bound 与 Effect-bound
+
+`WorkBindingMode` 明确区分两种 freshness contract：
+
+| Work | Binding | 当前有效性的依据 |
+| --- | --- | --- |
+| INVESTIGATION_RESUME / VERIFICATION_REQUIRED / OPERATOR_FOLLOWUP | CASE_SNAPSHOT | 原 Case status/revision、触发条件、Work lease、原配额及 terminal fence |
+| RECOVERY_RECHECK | SIDE_EFFECT | 当前 Case/tenant、effect_id/source_ref、Ledger 归属、当前 RecoveryState、Work lease、Step 9 proof/lease/capability/policy 与 terminal fence |
+
+`CaseWorkItem.binding_mode` 是从 durable work_type 推导的 typed property，不接受外部覆写。旧 JSON 不需要新增字段或迁移，旧 `expected_case_status/revision` 保留为审计背景；它们不再决定 SideEffect status lookup 能否继续。普通快照工作仍按原规则 stale-cancel，并未放宽其他 Case CAS。
+
+原因是：已经 dispatch 的 SideEffect 不会因为新 Evidence、Tool Budget 使用、Case updated_at 前进或 WAITING → INVESTIGATING 就消失。Payment verification 产生 R13，不能取消仍需查证的 UNKNOWN Effect 对应 R10 Recovery Work。
+
+`poll_due_work` 与 `claim` 按 binding_mode 分流。Side-effect Work 使用共享的当前绑定校验；Ledger 已 final 时完成旧 Recovery Work，并幂等交给原 effect_handoff。requires_escalation 进入既有人工跟进。Effect 缺失／归属不符／RecoveryState 缺失则阻断，不执行 lookup。
+
+`EffectRecoveryWorkGuard` 专门检查已 claim 的 Recovery Work。它不经过 snapshot-bound `_current()`，后者也明确拒绝验证 Effect Work。`recover_effect_work()` 每次最多调用一次原 Step 9 `recover(effect_id)`，不恢复 Case、不创建 Agent Run、不发布 read Evidence、不额外消耗 Tool Budget。旧租约不能调用；Step 9 自己继续校验其 lease、capability contract、proof、grace/backoff 和 max attempts。
+
+Case terminal 仍是绝对 fence：CLOSED / CLOSED_VERIFIED 时取消迟到工作，无论 Effect 或 Work 旧状态如何，都不允许 Recovery。对非终态 Case 的 status lookup 不因普通调查状态变化或旧信号字段阻断；PREPARED 的首次发送仍完全交给原 PreparedEffectResumer 和 write fence，不能借此绕过授权。
+
+## Step 13.3：ensure_recovery_work 与遗留修复
+
+`orchestration/effect_work.py` 集中提供 `ensure_recovery_work(session, case, effect_id, now, ...)`。所有 producer 在统一 Case lock 下调用；通用 create_work 只保留兼容转发，不承载 Recovery 状态逻辑。
+
+- 当前 Effect final：完成旧 Recovery Work／不新建 Recovery Work，幂等复用效果后的交接。正在完成调用的有效 Work lease 不被另一个 producer 抢占。
+- 当前 Effect unresolved、Step 9 可继续：PENDING / READY / CLAIMED 复用，不能覆盖原 backoff 或重置 attempt。
+- 遗留 CANCELED：必须最后一条该 Work 审计是 STALE，同时 Ledger 和 RecoveryState 归属有效、requires_escalation=false、无未完成的 Step 9 lease、attempt_count 小于注入的 Step 9 max_attempts，才恢复 PENDING。
+- 恢复保留原 Work ID、原创建快照字段与计数，释放旧 Work claim 字段，按当前 Step 9 到期信息设置 not_before，并在同一事务追加 REARMED。任何失败全部回滚。
+- BLOCKED 不因新报告复活；Step 9 耗尽时仍复用／创建原 EFFECT_UNRESOLVED 人工跟进。非 STALE 的 CANCELED，以及异常的 COMPLETED + unresolved 组合也不会被盲目重启。
+
+WorkRepository 的恢复策略由可信 composition wiring 与实际 Step 9 Coordinator 同步，不接受每次请求任意指定的 retry budget。独立调用 ensure 修复已有尝试的遗留行时必须提供实际 Step 9 policy；策略未知则不能推断“仍未耗尽”。没有重置 Step 9 attempts/backoff，也没有增加新 retry counter。
+
+Step 9 旧 Ledger bootstrap 在同一事务中先调用 effect_handoff，随后补 RecoveryState。这里保留一个受限兼容分支：核对真实 Ledger 后只注册／复用 Work descriptor；提交后的 poll/claim 仍必须看到合法 RecoveryState 才能运行。若 State 始终缺失，Work 被阻断。没有修改 Step 9 bootstrap、proof、resolver 或 PreparedEffectResumer。
+
+## Step 13.3：旧 Finality Requirement 的 NO_ACTION
+
+`RequirementRoute.NO_ACTION` 只表示旧缺口已被当前可信状态解决，不表示 Case 可以关闭：
+
+- EFFECT_FINALITY(effect_ref)：当前同 Case/tenant Ledger 已 APPLIED / FAILED_CONFIRMED 或其他 final → NO_ACTION。
+- RECOVERY_FINALITY：当前没有任何 unresolved / recoverable Effect → NO_ACTION。
+- Missing / foreign effect_ref 不属于已解决，继续 Operator / invalid boundary。
+
+Evaluation Report 原有的持久化、hash、tenant、Case revision 校验保持不变。这里处理的是 Report 持久化后 Effect 状态已变化、而 Case revision 未变化的交接；不会把任意旧 Case 快照重新当成有效报告。旧报告中的其他真实业务缺口仍正常路由，既有 post-effect Read Work 也保持不变。NO_ACTION 不生成 Evidence、Operator Work 或 Closure。
+
+本阶段回归包含 UNKNOWN → backoff → 真实 Payment Read/Evidence → UNKNOWN → backoff → Accounting Read/Evidence → FOUND_APPLIED → POST_EFFECT_MESSAGE_STATUS → 真实 MESSAGES/CONSUMED Evidence；全程同一个 Recovery Work、一次 SideEffect dispatch，没有因新的 Case revision 被 STALE 取消。
+
+### Step 13.3 最终验收（2026-09-12）
+
+最终代码共收集 1231 个测试实例，较 Step 13.2 新增 28 个。既有测试仅调整三个连接／语义点：PREPARED 正负例改走专用 Recovery Worker，负例绑定真实 effect_id；空 aggregate RECOVERY_FINALITY 的预期从 Operator 改为 NO_ACTION。原授权、写 fence、调查 stale、no-progress、资金真值和 closure 断言保留。
+
+| 验证 | 实际结果 | 耗时 |
+| --- | --- | --- |
+| Step 13.3 最终专项 | 28 passed | 88.95s |
+| SQLite 并发／原子性／bootstrap 边界 | 17 passed, 137 deselected | 18.75s |
+| PostgreSQL 并发／原子性／bootstrap 边界 | 17 passed, 137 deselected | 30.32s |
+| SQLite 全量 | 1228 passed, 3 skipped | 1256.25s |
+| PostgreSQL 全量 | 1229 passed, 2 skipped | 1493.16s |
+
+两库全量包含 Orchestration、Recovery、Evaluator、Agent Runtime 以及全部既有安全测试。两个在线 LLM 测试未启用；SQLite 另跳过 PostgreSQL 专用测试。Provider SDK + MockTransport 离线测试执行。仅有既有 Starlette/AnyIO BlockingPortal 弃用提示。
+
+```powershell
+.\.venv\Scripts\python -m pytest tests/test_effect_bound_work.py -q --basetemp .local/pytest-step133-frozen-target
+.\.venv\Scripts\python -m pytest tests/test_orchestration.py tests/test_resume_recovery_integrity.py tests/test_finality_routing.py tests/test_effect_bound_work.py -q -k 'concurrent or two_workers or atomic or stale_lease or lease_expiry or bootstrap' --basetemp .local/pytest-step133-concurrency-sqlite
+# 配置 TEST_POSTGRES_URL 为专用测试数据库，各测试使用隔离 schema。
+.\.venv\Scripts\python -m pytest tests/test_orchestration.py tests/test_resume_recovery_integrity.py tests/test_finality_routing.py tests/test_effect_bound_work.py -q --postgres -k 'concurrent or two_workers or atomic or stale_lease or lease_expiry or bootstrap' --basetemp .local/pytest-step133-concurrency-postgres
+.\.venv\Scripts\python -m pytest -q --basetemp .local/pytest-step133-full-sqlite
+.\.venv\Scripts\python -m pytest -q --postgres --basetemp .local/pytest-step133-full-postgres
+```
+
+Step 9、Evidence、Identity、Hypothesis、Remediation、Approval/Capability、Evaluator、Closure、Tool Budget 及历史 Benchmark 文件未修改。未开始 System Registry、Vector/Embedding、UI-1、Money Movement 或 Interview Packaging。

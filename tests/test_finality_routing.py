@@ -179,7 +179,7 @@ def test_effect_finality_never_routes_to_read_verification():
 
 
 def test_recovery_finality_never_routes_to_read_verification():
-    assert routed(Q.RECOVERY_FINALITY)[0].route == Route.OPERATOR_FOLLOWUP
+    assert routed(Q.RECOVERY_FINALITY)[0].route == Route.NO_ACTION
 
 
 def test_supported_payment_requirement_routes_to_read():

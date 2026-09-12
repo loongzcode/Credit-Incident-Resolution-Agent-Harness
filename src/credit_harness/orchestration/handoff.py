@@ -17,9 +17,10 @@ from credit_harness.evaluation.models import (EvaluationReport, EvaluationVerdic
 from credit_harness.evaluation.tables import EvaluationReportRow
 from credit_harness.evaluation.evaluator import report_identity
 from .models import WorkType as T, WorkReason as R, Trigger, SignalType, OrchestrationError, PauseReservation
-from .repository import create_work, lock_case, state_in, escalate_in
+from .repository import create_work, _create_work, lock_case, state_in, escalate_in
 from .routing import RequirementRouter, RequirementRoute, RecoveryRouteState
 from .tables import EvaluationHandoffRow, WorkItemRow
+from .effect_work import ensure_recovery_work, existing_recovery_work
 
 
 def pause_handoff(session, case, reservation, now):
@@ -54,8 +55,22 @@ def effect_handoff(session, ledger):
         return None
     case = session.get(CaseRow, ledger.case_id)
     if ledger.status in (EffectStatus.UNKNOWN, EffectStatus.DISPATCHED):
-        return create_work(session, case, work_type=T.RECOVERY_RECHECK, reason=R.EFFECT_UNRESOLVED,
-            source_ref=ledger.effect_id, trigger=Trigger.RECOVERY, now=ledger.updated_at,
+        # Step 9 bootstrap invokes this before adding a missing RecoveryState
+        # in this same transaction. Register only a durable descriptor; poll /
+        # claim must validate the state after commit, before any lookup.
+        if session.get(EffectRecoveryStateRow, ledger.effect_id) is None:
+            row = session.get(EffectRow, ledger.effect_id)
+            if (not row or row.case_id != case.case_id or ledger.tenant_id != case.tenant_id
+                    or row.payload != ledger.model_dump(mode="json")):
+                raise OrchestrationError("invalid bootstrap effect binding")
+            existing = existing_recovery_work(session, case, ledger.effect_id)
+            if existing is not None:
+                from .repository import value
+                return value(existing)
+            return _create_work(session, case, work_type=T.RECOVERY_RECHECK, reason=R.EFFECT_UNRESOLVED,
+                source_ref=ledger.effect_id, trigger=Trigger.RECOVERY, now=ledger.updated_at,
+                not_before=ledger.updated_at+timedelta(seconds=30))
+        return ensure_recovery_work(session, case, ledger.effect_id, ledger.updated_at,
             not_before=ledger.updated_at+timedelta(seconds=30))
     requirement = {A.REPLAY_CALLBACK_CONSUMPTION: Q.POST_EFFECT_MESSAGE_STATUS,
                    A.REDELIVER_ASSET_NOTIFICATION: Q.POST_EFFECT_DELIVERY_STATUS}.get(ledger.action_type)
@@ -132,6 +147,8 @@ class EvaluationHandoffService:
         read_requirements = tuple(sorted({r.requirement for r in routes if r.route == RequirementRoute.READ_VERIFICATION}))
         items = {}
         for route in sorted(routes, key=lambda r: (r.route.value, r.requirement.value, r.effect_ref or "")):
+            if route.route == RequirementRoute.NO_ACTION:
+                continue
             if route.route == RequirementRoute.READ_VERIFICATION:
                 item = create_work(session, case, work_type=T.VERIFICATION_REQUIRED,
                     reason=R.EVALUATION_INCONCLUSIVE, source_ref=report.report_id, trigger=Trigger.EVALUATION,
@@ -139,8 +156,8 @@ class EvaluationHandoffService:
                     requirement=route.requirement, verification_requirements=read_requirements)
             elif route.route == RequirementRoute.EFFECT_RECOVERY:
                 state = recovery_states[route.effect_ref]
-                item = create_work(session, case, work_type=T.RECOVERY_RECHECK, reason=R.EFFECT_UNRESOLVED,
-                    source_ref=route.effect_ref, trigger=Trigger.RECOVERY, now=report.created_at,
+                item = ensure_recovery_work(session, case, route.effect_ref, self.repository.clock(),
+                    policy=self.repository.recovery_policy,
                     not_before=max(report.created_at, datetime.fromtimestamp(
                         max(state.next_eligible_at, state.lease_until or 0), timezone.utc)))
             else:
@@ -163,7 +180,8 @@ class EvaluationHandoffService:
                         source_ref=source, trigger=Trigger.EVALUATION, now=report.created_at,
                         requirement=None if finality else route.requirement,
                         required_signal=SignalType.OPERATOR_ACKNOWLEDGED)
-            items[item.work_item_id] = item
+            if item is not None:
+                items[item.work_item_id] = item
         return tuple(items.values())
 
     def poll_unhanded_reports(self, *, limit=100):
