@@ -57,6 +57,14 @@ def save_work(row, item):
 def create_work(session, case, *, work_type, reason, source_ref, trigger, now,
                 not_before=None, requirement=None, required_signal=None, previous_run_id=None,
                 snapshot_ref=None, wait_seconds=None, verification_requirements=()):
+    if work_type == T.RECOVERY_RECHECK:
+        # Case lock serializes every producer. Rechecks always reuse the same
+        # effect's Work, including legacy keys and completed/blocked records.
+        existing = session.scalar(select(WorkItemRow).where(WorkItemRow.case_id == case.case_id,
+            WorkItemRow.payload["work_type"].as_string() == T.RECOVERY_RECHECK.value,
+            WorkItemRow.payload["source_ref"].as_string() == source_ref))
+        if existing is not None:
+            return value(existing)
     key = digest(dict(case=case.case_id, tenant=case.tenant_id, type=work_type,
         reason=reason, source=source_ref, requirement=requirement, snapshot=snapshot_ref))
     old = session.get(WorkItemRow, key)

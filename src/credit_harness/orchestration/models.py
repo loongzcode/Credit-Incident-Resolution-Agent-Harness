@@ -5,7 +5,8 @@ from credit_harness.domain.models import Model
 from credit_harness.context.structured_values import OpaqueSubjectRef
 from credit_harness.context.models import Hash
 from credit_harness.cases.models import CaseStatus
-from credit_harness.evaluation.models import VerificationRequirement
+from credit_harness.evaluation.models import VerificationRequirement, EvidenceRef
+from credit_harness.recovery.models import RecoveryResult
 
 
 class WorkType(StrEnum):
@@ -59,6 +60,8 @@ class Trigger(StrEnum):
 
 
 class WorkEvent(StrEnum):
+    RECOVERY_REBASED = "RECOVERY_REBASED"
+    REARMED = "REARMED"
     CREATED = "CREATED"
     READY = "READY"
     CLAIMED = "CLAIMED"
@@ -90,6 +93,7 @@ class CaseOrchestrationState(Model):
     pending_work_count: int = 0
     last_work_item_id: Hash | None = None
     last_progress_fingerprint: Hash | None = None
+    last_progress_version: str | None = None
 
 
 class PauseReservation(Model):
@@ -110,6 +114,26 @@ class ResolutionSignal(Model):
     subject: OpaqueSubjectRef
     created_at: AwareDatetime
     source_actor_ref: OpaqueSubjectRef
+
+
+class OrchestrationProgressFingerprint(Model):
+    version: str = "2"
+    evidence_fingerprint: Hash
+    effect_fingerprint: Hash
+    requirements: tuple[VerificationRequirement, ...]
+    fingerprint: Hash
+
+
+class ResumeRecoveryResult(Model):
+    case_id: OpaqueSubjectRef
+    work_item_id: Hash
+    before_case_revision: AwareDatetime
+    after_case_revision: AwareDatetime
+    read_recoveries: tuple[RecoveryResult, ...] = ()
+    recovered_evidence_refs: tuple[EvidenceRef, ...] = ()
+    effect_recoveries: tuple[RecoveryResult, ...] = ()
+    semantic_progress: bool
+    prepared_blocked: bool
 
 
 class CaseWorkItem(Model):
@@ -145,6 +169,10 @@ class CaseWorkItem(Model):
     before_evidence_fingerprint: Hash | None = None
     after_evidence_fingerprint: Hash | None = None
     verification_requirements: tuple[VerificationRequirement, ...] = ()
+    progress_before: OrchestrationProgressFingerprint | None = None
+    recovery_reads: tuple[RecoveryResult, ...] = ()
+    recovery_result: ResumeRecoveryResult | None = None
+    recovery_claim_token: OpaqueSubjectRef | None = None
 
 
 class WorkClaim(Model):

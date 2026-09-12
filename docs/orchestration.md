@@ -1,5 +1,7 @@
 # Step 13 — Durable Case Orchestration
 
+当前补丁：**Step 13.1 — Recovery-aware Resume Integrity**。仅修正读恢复 rebase、语义进度和 Recovery backoff 交接，不增加业务功能。
+
 本阶段把 Investigation、Recovery 和 Independent Evaluation 之间的交接写入数据库。WAIT、ESCALATE、Effect APPLIED 都不表示业务已经成功。所有数据仍为 synthetic fixtures；不接真实用户、金融系统或在线模型。
 
 ## Work Item 与事务边界
@@ -40,10 +42,10 @@ Signal 只进入 orchestration 私有表。`submit_signal` 是可信基础设施
 
 所有写操作采用统一锁顺序 Case → Work。SQLite 的事务 UPDATE 锁、PostgreSQL 的 Case row UPDATE 锁共同实现相同语义：同一 Case 同时最多一个 CLAIMED 工作，同一个工作只有一个有效 lease token。租约默认 120 秒，可续租；旧 token 不能完成任务，也不能继续预约 Tool 或提交 WAIT/ESCALATE。
 
-`CaseResumeService.resume(WorkClaim)` 不提供 `resume(case_id)`。它先运行已有 read dispatch recovery、再检查／恢复未决 SideEffect，然后在锁内检查：
+`CaseResumeService.resume(WorkClaim)` 不提供 `resume(case_id)`。Step 13.1 调整为：先在锁内绑定原 Case 状态／revision 和 Work claim，再执行 lease-aware read recovery 与最多一次 Effect Recovery，最后重新核验并 Resume CAS：
 
 1. 仍拥有未过期 lease；Case 尚未 CLOSED/CLOSED_VERIFIED。
-2. 当前 Case status/revision 与 Work 创建时的值完全一致。
+2. 当前 Case status/revision 与 Work 预期值完全一致；只有本 claim 的原子读恢复允许受控推进 expected revision。
 3. not_before 到期，所需 Signal 已匹配。
 4. 独立 resume／verification／no-progress 配额允许继续；PREPARED 不得被跳过。
 
@@ -81,7 +83,7 @@ outbox 有租户／状态／sequence 索引，有限扫描。工作创建完成�
 
 默认 `max_resume_cycles=5 / max_verification_cycles=5 / max_no_progress_cycles=3`；每项有模型上限。Demo 在 Case 开始前配置 resume=3、verification=5、Tool Budget=24。开始恢复后不能重设 cycles；也不会增加原 Tool Budget。
 
-跨 Run fingerprint 来源于真实 Evidence（含新的 lookup/time/provenance），另记录本轮 verification requirements 和前后指纹。仅 Case revision、状态切换或 budget 使用量变化不能算进展。新 Timeout 是新调查历史，可以重置无进展计数，但不提供支付真值；独立最大 cycles 仍阻止无限查询。无新知识或达到配额时生成持久化 operator followup。
+跨 Run fingerprint v2 同时覆盖真实 Evidence、Effect 语义状态／身份和未决 verification requirements。仅 Case revision、状态切换、Ledger 时间、Recovery attempts 或 budget 使用量变化不能算进展。新 Tool Timeout 是新调查历史，可以重置无进展计数，但不提供支付真值；独立最大 cycles 仍阻止无限查询。Recovery Recheck 的重试上限由 Step 9 Policy 控制，不被通用 no-progress 上限提前截断。
 
 终态由每次 poll、claim、resume、read reservation 检查。VerifiedClosureService 在关闭同一事务内取消未完成 Work。迟到 timer、signal、receipt 或重复 claim 不得重开 CLOSED/CLOSED_VERIFIED。
 
@@ -119,6 +121,8 @@ outbox 有租户／状态／sequence 索引，有限扫描。工作创建完成�
 
 ## 最终验收（2026-09-12）
 
+以下为 Step 13 历史验收；Step 13.1 增量验收另列于文末。
+
 最终功能代码共收集 1137 个测试实例：原 1075 个，加 60 个 Orchestration 和 2 个 Guidance 调用隔离测试。
 
 | 验证 | 实际结果 | 耗时 |
@@ -139,3 +143,81 @@ outbox 有租户／状态／sequence 索引，有限扫描。工作创建完成�
 # 先配置 TEST_POSTGRES_URL
 .\.venv\Scripts\python -m pytest -q --postgres --basetemp .local/pytest-orchestration-postgres
 ```
+
+## Step 13.1：Recovery-caused revision rebasing
+
+原 self-stale 原因是：Work expected R10 → Read Recovery 发布 Evidence 推进 Case R11 → Resume 仍比较 R10。修复不能忽略所有 revision mismatch，否则另一个 Worker 的 dispatch、Evidence publication 或生命周期操作也会被错误吸收。
+
+`recover_before_resume(claim)` 先验证当前 lease、Case status 和 expected revision；已 stale 的 Work 直接取消，不先恢复。`ReadObservationRecoveryService.recover_if_owned(case_id, call_id, repository, claim)` 随后在同一个 **Case lock / SQL transaction** 内：
+
+1. 再核验 Work ownership、Case status/revision、非终态及尚未启动 Run。
+2. 调用原确定性 Recovery publication，沿用 CaseCall/Observation 的 simulation、grant、request、content hash、dispatch correlation 校验。
+3. 核对 durable ReadDispatchRecoveryRow、Call 的 OBSERVED 状态、Observation 绑定、EvidenceOrigin 及 recovered refs。
+4. 仅 OBSERVATION_RECOVERED 可更新本 Work 的 expected_case_revision，并记录 RECOVERY_REBASED audit；其他结果若出现 revision 变化则拒绝。
+
+没有接受 `old_revision / new_revision / recovery_caused=True` 的外部 rebase API。原 Work ID、claim token 和 Tool Budget 保持不变。Evidence、Origin、Recovery receipt、Case revision 与 Work rebase 一起提交或一起回滚。提交后 Worker 崩溃，后继 lease 仍可基于已经 rebased 的同一个 Work 继续。
+
+不同事务中的合法 mutation 无法插入这个 Case lock；若发生在任意两次读恢复之间、Effect lookup 期间或最终 Resume CAS 前，当前 revision 将与已 rebased 的 expected revision 不同，仍取消 Work。回归包含真实并发 mutation，不能把外部 R12 接受为本次 Recovery 的 R11。
+
+新增 frozen `ResumeRecoveryResult` 保存 case/work、before/after Case revision、read recovery receipts、recovered Evidence refs、effect recovery receipts、semantic_progress 和 prepared_blocked；它是编排回执，不是 Evidence。Work 同时持久化恢复前 progress 基线，防止 Recovery 已提交但进程中断后丢失这段进展。同一 claim 的 `recovery_claim_token` 防止重复投递并发调用 Effect Recovery；中途崩溃由 lease successor 接续。
+
+## Step 13.1：Orchestration semantic progress
+
+`OrchestrationProgressFingerprint` v2 使用：
+
+- Evidence content/provenance fingerprint；新的 Tool Observation 保持原有时间序列语义。
+- 每个 Effect 的 `(effect_id, action, status, target_hash, payload_hash, unresolved/resolved)`，稳定排序。
+- 当前 unresolved verification requirements 的去重排序集合。
+
+不读取 WorldState/GroundTruth；不纳入 Case updated_at、Tool Budget、Ledger.updated_at、attempt count、worker、lease 或调度时间。独立 Evaluator 的只读计算用于取得前后 requirement 集合，未额外改变 Evaluator contract、持久化规则或关闭权限。
+
+捕获顺序是 **progress BEFORE → Recovery → Resume/Read → Evaluation → progress AFTER**。第一次基线也取得真实 requirement 集合，不把“首次初始化空集合”误算为新知识。旧 evidence-only fingerprint 没有 v2 标记时不会直接与新 hash 比较，避免算法升级本身重置 no-progress。
+
+UNKNOWN → APPLIED 或 FAILED_CONFIRMED 是确定性编排状态变化，即使没有新增 Evidence 也重置 no-progress。UNKNOWN → UNKNOWN、单纯新 RecoveryAttempt／时间戳不构成变化。EFFECT_FINALITY → POST_EFFECT_MESSAGE_STATUS 是 requirement 变化；同一集合仅顺序改变不算进展。
+
+**Orchestration progress 不等于 Business Truth progress。** APPLIED 只允许进入效果后的业务验证；并不会证明三方已经收敛或让 Evaluator PASS。S8 恢复 Timeout Observation 后仍只有 lookup unavailable 的证据，不能生成支付 FAILED / NOT_EXECUTED。
+
+## Step 13.1：Recovery backoff handoff
+
+RECOVERY_RECHECK 由专用有限分支处理，不先启动 Agent Run，也不因为 EFFECT_FINALITY 没有普通 Read Tool 就立即人工升级。每次 tick 最多调用一次绑定 effect 的 `effect_recovery.recover()`；normal resume 也最多尝试一个未决 effect。PREPARED 的原授权检查及 DISPATCHED/UNKNOWN 禁止 redispatch 的规则保持不变。
+
+| Step 9 当前结果 | Work 处理 |
+| --- | --- |
+| APPLIED / FAILED_CONFIRMED 已确定 | 当前 Recovery Work COMPLETED；复用原 effect_handoff 创建验证／人工 Work，不 rearm |
+| STILL_UNKNOWN / BUSY_OR_NOT_DUE，尚未达到 limit | 同一 Work 重新 PENDING，释放 claim，按 Step 9 next_eligible_at 重新到期 |
+| requires_escalation 或 Step 9 max_attempts 已到达 | Work BLOCKED，创建 EFFECT_UNRESOLVED operator followup；Ledger 保持 UNKNOWN |
+
+正常重试的 not_before 等于 Step 9 next_eligible_at；若还有 grace 或其他 Step 9 Worker 的有效 lease，则取它们中更晚的时间。不会提前 lookup，也不会 sleep 或 while UNKNOWN。默认 attempts/backoff 沿用注入的 Step 9 RecoveryPolicy；测试使用不同上限验证并非写死三次。
+
+所有 Recovery Work producer 在 Case lock 下按 `(case, effect source_ref, RECOVERY_RECHECK)` 复用原记录，包括旧 key 和不同触发原因。同一 effect 不产生第二个 active Recovery Work，更不会产生第二个业务 Effect。无新增数据库表、Capability 或业务执行入口。
+
+## Step 13.1 验收范围
+
+新增回归覆盖：orphan WAIT Resume 不 self-stale、原子回滚与提交后 crash、同 Work/claim、无第二次预算、fresh Snapshot 可见、foreign Observation、stale lease、终态拒绝、并发 mutation 拒绝及并发 recovery publication 防重；语义状态/requirement 进展与非语义变化；Step 9 rearm/backoff/max attempts、busy lease、单 active work、同 claim 单 recovery invocation、S6 先 INDETERMINATE 后 FOUND_APPLIED，再通过真实 MESSAGES Observation 验证 CONSUMED。
+
+旧测试仅调整了两个连接点：Recovery-before-Planner 的 spy 改为 lease-aware 入口；PREPARED 正例 Work 明确绑定真实 effect_id。原安全断言不变。Benchmark v2 历史结果、Evidence extraction、Hypothesis、Remediation/Approval/Capability、资金真值和 Evaluator closure semantics 均未修改。
+
+### Step 13.1 最终测试结果（2026-09-12）
+
+最终代码共收集 1175 个测试实例，较 Step 13 新增 38 个；以下均为实际运行结果。
+
+| 验证 | 结果 | 耗时 |
+| --- | --- | --- |
+| 新增 Recovery-aware Resume 专项 | 38 passed | 58.14s |
+| SQLite 编排并发／原子性专项 | 12 passed, 86 deselected | 13.72s |
+| PostgreSQL 编排并发／原子性专项 | 12 passed, 86 deselected | 20.93s |
+| SQLite 全量 | 1172 passed, 3 skipped | 1088.90s |
+| PostgreSQL 全量 | 1173 passed, 2 skipped | 1303.58s |
+
+两库全量包含全部 Orchestration、Recovery、Agent Runtime 与 Evaluator 测试。两项在线 LLM 测试未启用，在两库均跳过；SQLite 另跳过 PostgreSQL 专用测试。Provider SDK + MockTransport 离线测试实际执行。仅有既有 Starlette/AnyIO BlockingPortal 弃用提示。
+
+```powershell
+.\.venv\Scripts\python -m pytest tests/test_resume_recovery_integrity.py -q --basetemp .local/pytest-step131-new-final
+.\.venv\Scripts\python -m pytest tests/test_orchestration.py tests/test_resume_recovery_integrity.py -q -k 'concurrent or two_workers or atomic or stale_lease or lease_expiry' --basetemp .local/pytest-step131-final-concurrency-sqlite
+# 配置 TEST_POSTGRES_URL，指向专用本地测试数据库；fixture 使用隔离 schema。
+.\.venv\Scripts\python -m pytest tests/test_orchestration.py tests/test_resume_recovery_integrity.py -q --postgres -k 'concurrent or two_workers or atomic or stale_lease or lease_expiry' --basetemp .local/pytest-step131-final-concurrency-postgres
+.\.venv\Scripts\python -m pytest -q --basetemp .local/pytest-step131-full-sqlite
+.\.venv\Scripts\python -m pytest -q --postgres --basetemp .local/pytest-step131-full-postgres
+```
+
+本次没有重跑或改写历史 Benchmark v2 产物，也没有启动 System Registry、UI-1、Money Movement 或 Interview Packaging。

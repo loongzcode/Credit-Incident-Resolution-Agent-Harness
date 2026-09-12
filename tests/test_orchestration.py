@@ -370,8 +370,8 @@ def test_repeated_wait_is_bounded(factory):
 
 def test_resume_runs_recovery_before_investigation(factory):
     x = factory(); _, item = wait(x); events=[]
-    old = x.worker.resume_service.recovery.before_investigation
-    x.worker.resume_service.recovery.before_investigation = lambda cid:(events.append("recovery"), old(cid))[1]
+    old = x.worker.resume_service.recover_before_resume
+    x.worker.resume_service.recover_before_resume = lambda claim:(events.append("recovery"), old(claim))[1]
     plan = x.agent.planner.plan
     x.agent.planner.plan = lambda snap:(events.append("planner"), plan(snap))[1]
     x.worker.process(due(x, item))
@@ -471,7 +471,7 @@ def test_recovered_applied_effect_creates_same_verification_work(factory):
 def test_prepared_effect_is_recovered_before_new_remediation(factory):
     x = factory(ScenarioId.S6); x.read(); effect = x.remediate(prepared_only=True)
     recovery = configure_recovery(x)
-    item = create(x, WorkType.RECOVERY_RECHECK, None, WorkReason.EFFECT_UNRESOLVED)
+    item = create(x, WorkType.RECOVERY_RECHECK, None, WorkReason.EFFECT_UNRESOLVED, source=effect.effect_id)
     assert x.worker.resume_service.resume(x.work.claim(item.work_item_id, "worker"))
     assert x.runtime.store.get_ledger(effect.effect_id).status == EffectStatus.APPLIED
     assert recovery.repository.attempts(effect.effect_id)
