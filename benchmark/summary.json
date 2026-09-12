@@ -1,4 +1,5 @@
 {
+  "benchmark_schema_version": "2",
   "benchmark_status": "SAFETY_PASS",
   "run_count": 288,
   "groups": {
@@ -28,7 +29,24 @@
             0.18144974107611211
           ]
         },
-        "correct_safe_stop_rate": {
+        "stop_class_counts": {
+          "EXPLICIT_SAFE_STOP": 22,
+          "BOUNDED_RUNTIME_STOP": 7,
+          "NON_CLOSING_COMPLETION": 0,
+          "VERIFIED_CLOSURE": 2,
+          "ERROR": 5
+        },
+        "oracle_closure_eligibility_unknown_count": 0,
+        "explicit_safe_stop_rate": {
+          "numerator": 13,
+          "denominator": 21,
+          "value": 0.6190476190476191,
+          "wilson_95": [
+            0.40878295815501514,
+            0.7924923220201749
+          ]
+        },
+        "safe_non_closure_rate": {
           "numerator": 21,
           "denominator": 21,
           "value": 1.0,
@@ -113,7 +131,7 @@
             0.9846303362329332
           ]
         },
-        "blocked_unsafe_remediation_rate": {
+        "runs_with_blocked_candidate_rate": {
           "numerator": 36,
           "denominator": 36,
           "value": 1.0,
@@ -121,6 +139,24 @@
             0.9035781695514236,
             1
           ]
+        },
+        "unsafe_candidate_block_count": 30,
+        "unsafe_candidate_block_rate": {
+          "numerator": 30,
+          "denominator": 108,
+          "value": 0.2777777777777778,
+          "wilson_95": [
+            0.20204904430713197,
+            0.36877254622805344
+          ]
+        },
+        "candidate_count": 108,
+        "blocking_reason_class_counts": {
+          "UNSAFE": 30,
+          "INSUFFICIENT_EVIDENCE": 22,
+          "STALE": 8,
+          "NOT_NEEDED": 4,
+          "OTHER_POLICY_BLOCK": 0
         },
         "unnecessary_remediation_rate": {
           "numerator": 0,
@@ -181,6 +217,16 @@
         }
       },
       "memory": {
+        "guidance_availability_counts": {
+          "AVAILABLE": 0,
+          "EMPTY": 286,
+          "RETRIEVAL_FAILED": 0,
+          "INVALID_SKILL": 0
+        },
+        "guidance_degradation_counts": {
+          "NONE": 286,
+          "BUDGET_DROPPED": 0
+        },
         "experience_retrieval_hit_rate": {
           "numerator": 0,
           "denominator": 0,
@@ -222,7 +268,24 @@
           "value": null,
           "wilson_95": null
         },
-        "correct_safe_stop_rate": {
+        "stop_class_counts": {
+          "EXPLICIT_SAFE_STOP": 22,
+          "BOUNDED_RUNTIME_STOP": 9,
+          "NON_CLOSING_COMPLETION": 0,
+          "VERIFIED_CLOSURE": 0,
+          "ERROR": 5
+        },
+        "oracle_closure_eligibility_unknown_count": 0,
+        "explicit_safe_stop_rate": {
+          "numerator": 22,
+          "denominator": 32,
+          "value": 0.6875,
+          "wilson_95": [
+            0.514330003019676,
+            0.8204764788338126
+          ]
+        },
+        "safe_non_closure_rate": {
           "numerator": 32,
           "denominator": 32,
           "value": 1.0,
@@ -301,11 +364,26 @@
           "value": null,
           "wilson_95": null
         },
-        "blocked_unsafe_remediation_rate": {
+        "runs_with_blocked_candidate_rate": {
           "numerator": 0,
           "denominator": 0,
           "value": null,
           "wilson_95": null
+        },
+        "unsafe_candidate_block_count": 0,
+        "unsafe_candidate_block_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "candidate_count": 0,
+        "blocking_reason_class_counts": {
+          "UNSAFE": 0,
+          "INSUFFICIENT_EVIDENCE": 0,
+          "STALE": 0,
+          "NOT_NEEDED": 0,
+          "OTHER_POLICY_BLOCK": 0
         },
         "unnecessary_remediation_rate": {
           "numerator": 0,
@@ -351,6 +429,16 @@
         }
       },
       "memory": {
+        "guidance_availability_counts": {
+          "AVAILABLE": 0,
+          "EMPTY": 286,
+          "RETRIEVAL_FAILED": 0,
+          "INVALID_SKILL": 0
+        },
+        "guidance_degradation_counts": {
+          "NONE": 286,
+          "BUDGET_DROPPED": 0
+        },
         "experience_retrieval_hit_rate": {
           "numerator": 0,
           "denominator": 0,
@@ -395,7 +483,24 @@
             0.18144974107611211
           ]
         },
-        "correct_safe_stop_rate": {
+        "stop_class_counts": {
+          "EXPLICIT_SAFE_STOP": 22,
+          "BOUNDED_RUNTIME_STOP": 7,
+          "NON_CLOSING_COMPLETION": 0,
+          "VERIFIED_CLOSURE": 2,
+          "ERROR": 5
+        },
+        "oracle_closure_eligibility_unknown_count": 0,
+        "explicit_safe_stop_rate": {
+          "numerator": 13,
+          "denominator": 21,
+          "value": 0.6190476190476191,
+          "wilson_95": [
+            0.40878295815501514,
+            0.7924923220201749
+          ]
+        },
+        "safe_non_closure_rate": {
           "numerator": 21,
           "denominator": 21,
           "value": 1.0,
@@ -480,7 +585,7 @@
             0.9846303362329332
           ]
         },
-        "blocked_unsafe_remediation_rate": {
+        "runs_with_blocked_candidate_rate": {
           "numerator": 36,
           "denominator": 36,
           "value": 1.0,
@@ -488,6 +593,24 @@
             0.9035781695514236,
             1
           ]
+        },
+        "unsafe_candidate_block_count": 30,
+        "unsafe_candidate_block_rate": {
+          "numerator": 30,
+          "denominator": 108,
+          "value": 0.2777777777777778,
+          "wilson_95": [
+            0.20204904430713197,
+            0.36877254622805344
+          ]
+        },
+        "candidate_count": 108,
+        "blocking_reason_class_counts": {
+          "UNSAFE": 30,
+          "INSUFFICIENT_EVIDENCE": 22,
+          "STALE": 8,
+          "NOT_NEEDED": 4,
+          "OTHER_POLICY_BLOCK": 0
         },
         "unnecessary_remediation_rate": {
           "numerator": 0,
@@ -548,6 +671,16 @@
         }
       },
       "memory": {
+        "guidance_availability_counts": {
+          "AVAILABLE": 286,
+          "EMPTY": 0,
+          "RETRIEVAL_FAILED": 0,
+          "INVALID_SKILL": 0
+        },
+        "guidance_degradation_counts": {
+          "NONE": 286,
+          "BUDGET_DROPPED": 0
+        },
         "experience_retrieval_hit_rate": {
           "numerator": 261,
           "denominator": 286,
@@ -610,7 +743,24 @@
           "value": null,
           "wilson_95": null
         },
-        "correct_safe_stop_rate": {
+        "stop_class_counts": {
+          "EXPLICIT_SAFE_STOP": 22,
+          "BOUNDED_RUNTIME_STOP": 9,
+          "NON_CLOSING_COMPLETION": 0,
+          "VERIFIED_CLOSURE": 0,
+          "ERROR": 5
+        },
+        "oracle_closure_eligibility_unknown_count": 0,
+        "explicit_safe_stop_rate": {
+          "numerator": 22,
+          "denominator": 32,
+          "value": 0.6875,
+          "wilson_95": [
+            0.514330003019676,
+            0.8204764788338126
+          ]
+        },
+        "safe_non_closure_rate": {
           "numerator": 32,
           "denominator": 32,
           "value": 1.0,
@@ -689,11 +839,26 @@
           "value": null,
           "wilson_95": null
         },
-        "blocked_unsafe_remediation_rate": {
+        "runs_with_blocked_candidate_rate": {
           "numerator": 0,
           "denominator": 0,
           "value": null,
           "wilson_95": null
+        },
+        "unsafe_candidate_block_count": 0,
+        "unsafe_candidate_block_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "candidate_count": 0,
+        "blocking_reason_class_counts": {
+          "UNSAFE": 0,
+          "INSUFFICIENT_EVIDENCE": 0,
+          "STALE": 0,
+          "NOT_NEEDED": 0,
+          "OTHER_POLICY_BLOCK": 0
         },
         "unnecessary_remediation_rate": {
           "numerator": 0,
@@ -739,6 +904,16 @@
         }
       },
       "memory": {
+        "guidance_availability_counts": {
+          "AVAILABLE": 286,
+          "EMPTY": 0,
+          "RETRIEVAL_FAILED": 0,
+          "INVALID_SKILL": 0
+        },
+        "guidance_degradation_counts": {
+          "NONE": 286,
+          "BUDGET_DROPPED": 0
+        },
         "experience_retrieval_hit_rate": {
           "numerator": 261,
           "denominator": 286,
@@ -804,13 +979,30 @@
             0.18144974107611211
           ]
         },
-        "correct_safe_stop_rate": {
-          "numerator": 29,
+        "stop_class_counts": {
+          "EXPLICIT_SAFE_STOP": 0,
+          "BOUNDED_RUNTIME_STOP": 0,
+          "NON_CLOSING_COMPLETION": 32,
+          "VERIFIED_CLOSURE": 2,
+          "ERROR": 2
+        },
+        "oracle_closure_eligibility_unknown_count": 0,
+        "explicit_safe_stop_rate": {
+          "numerator": 0,
           "denominator": 31,
-          "value": 0.9354838709677419,
+          "value": 0.0,
           "wilson_95": [
-            0.7928101168125354,
-            0.9821255922249368
+            0,
+            0.11025900073475385
+          ]
+        },
+        "safe_non_closure_rate": {
+          "numerator": 31,
+          "denominator": 31,
+          "value": 1.0,
+          "wilson_95": [
+            0.889740999265246,
+            0.9999999999999999
           ]
         },
         "inconclusive_rate": {
@@ -889,7 +1081,7 @@
             0.9846303362329332
           ]
         },
-        "blocked_unsafe_remediation_rate": {
+        "runs_with_blocked_candidate_rate": {
           "numerator": 36,
           "denominator": 36,
           "value": 1.0,
@@ -897,6 +1089,24 @@
             0.9035781695514236,
             1
           ]
+        },
+        "unsafe_candidate_block_count": 70,
+        "unsafe_candidate_block_rate": {
+          "numerator": 70,
+          "denominator": 108,
+          "value": 0.6481481481481481,
+          "wilson_95": [
+            0.5544075603522998,
+            0.7317113792909098
+          ]
+        },
+        "candidate_count": 108,
+        "blocking_reason_class_counts": {
+          "UNSAFE": 70,
+          "INSUFFICIENT_EVIDENCE": 0,
+          "STALE": 2,
+          "NOT_NEEDED": 2,
+          "OTHER_POLICY_BLOCK": 0
         },
         "unnecessary_remediation_rate": {
           "numerator": 0,
@@ -957,6 +1167,16 @@
         }
       },
       "memory": {
+        "guidance_availability_counts": {
+          "AVAILABLE": 36,
+          "EMPTY": 0,
+          "RETRIEVAL_FAILED": 0,
+          "INVALID_SKILL": 0
+        },
+        "guidance_degradation_counts": {
+          "NONE": 36,
+          "BUDGET_DROPPED": 0
+        },
         "experience_retrieval_hit_rate": {
           "numerator": 34,
           "denominator": 36,
@@ -1004,13 +1224,30 @@
           "value": null,
           "wilson_95": null
         },
-        "correct_safe_stop_rate": {
-          "numerator": 30,
+        "stop_class_counts": {
+          "EXPLICIT_SAFE_STOP": 0,
+          "BOUNDED_RUNTIME_STOP": 0,
+          "NON_CLOSING_COMPLETION": 34,
+          "VERIFIED_CLOSURE": 0,
+          "ERROR": 2
+        },
+        "oracle_closure_eligibility_unknown_count": 0,
+        "explicit_safe_stop_rate": {
+          "numerator": 0,
           "denominator": 32,
-          "value": 0.9375,
+          "value": 0.0,
           "wilson_95": [
-            0.7985253275199642,
-            0.9826897968048427
+            0,
+            0.1071827150573635
+          ]
+        },
+        "safe_non_closure_rate": {
+          "numerator": 32,
+          "denominator": 32,
+          "value": 1.0,
+          "wilson_95": [
+            0.8928172849426366,
+            1
           ]
         },
         "inconclusive_rate": {
@@ -1083,11 +1320,26 @@
           "value": null,
           "wilson_95": null
         },
-        "blocked_unsafe_remediation_rate": {
+        "runs_with_blocked_candidate_rate": {
           "numerator": 0,
           "denominator": 0,
           "value": null,
           "wilson_95": null
+        },
+        "unsafe_candidate_block_count": 0,
+        "unsafe_candidate_block_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "candidate_count": 0,
+        "blocking_reason_class_counts": {
+          "UNSAFE": 0,
+          "INSUFFICIENT_EVIDENCE": 0,
+          "STALE": 0,
+          "NOT_NEEDED": 0,
+          "OTHER_POLICY_BLOCK": 0
         },
         "unnecessary_remediation_rate": {
           "numerator": 0,
@@ -1133,6 +1385,16 @@
         }
       },
       "memory": {
+        "guidance_availability_counts": {
+          "AVAILABLE": 36,
+          "EMPTY": 0,
+          "RETRIEVAL_FAILED": 0,
+          "INVALID_SKILL": 0
+        },
+        "guidance_degradation_counts": {
+          "NONE": 36,
+          "BUDGET_DROPPED": 0
+        },
         "experience_retrieval_hit_rate": {
           "numerator": 34,
           "denominator": 36,
@@ -1183,13 +1445,30 @@
             0.38085019827859085
           ]
         },
-        "correct_safe_stop_rate": {
-          "numerator": 23,
+        "stop_class_counts": {
+          "EXPLICIT_SAFE_STOP": 13,
+          "BOUNDED_RUNTIME_STOP": 0,
+          "NON_CLOSING_COMPLETION": 13,
+          "VERIFIED_CLOSURE": 8,
+          "ERROR": 2
+        },
+        "oracle_closure_eligibility_unknown_count": 0,
+        "explicit_safe_stop_rate": {
+          "numerator": 13,
           "denominator": 25,
-          "value": 0.92,
+          "value": 0.52,
           "wilson_95": [
-            0.7503348787704218,
-            0.977780066308908
+            0.334982179531473,
+            0.6996899607103998
+          ]
+        },
+        "safe_non_closure_rate": {
+          "numerator": 25,
+          "denominator": 25,
+          "value": 1.0,
+          "wilson_95": [
+            0.8668035060468213,
+            1
           ]
         },
         "inconclusive_rate": {
@@ -1268,7 +1547,7 @@
             0.9846303362329332
           ]
         },
-        "blocked_unsafe_remediation_rate": {
+        "runs_with_blocked_candidate_rate": {
           "numerator": 36,
           "denominator": 36,
           "value": 1.0,
@@ -1276,6 +1555,24 @@
             0.9035781695514236,
             1
           ]
+        },
+        "unsafe_candidate_block_count": 48,
+        "unsafe_candidate_block_rate": {
+          "numerator": 48,
+          "denominator": 108,
+          "value": 0.4444444444444444,
+          "wilson_95": [
+            0.3542398768050369,
+            0.5384655208287593
+          ]
+        },
+        "candidate_count": 108,
+        "blocking_reason_class_counts": {
+          "UNSAFE": 48,
+          "INSUFFICIENT_EVIDENCE": 10,
+          "STALE": 8,
+          "NOT_NEEDED": 2,
+          "OTHER_POLICY_BLOCK": 0
         },
         "unnecessary_remediation_rate": {
           "numerator": 0,
@@ -1336,6 +1633,16 @@
         }
       },
       "memory": {
+        "guidance_availability_counts": {
+          "AVAILABLE": 0,
+          "EMPTY": 0,
+          "RETRIEVAL_FAILED": 0,
+          "INVALID_SKILL": 0
+        },
+        "guidance_degradation_counts": {
+          "NONE": 0,
+          "BUDGET_DROPPED": 0
+        },
         "experience_retrieval_hit_rate": {
           "numerator": 0,
           "denominator": 0,
@@ -1377,13 +1684,30 @@
           "value": null,
           "wilson_95": null
         },
-        "correct_safe_stop_rate": {
-          "numerator": 30,
+        "stop_class_counts": {
+          "EXPLICIT_SAFE_STOP": 13,
+          "BOUNDED_RUNTIME_STOP": 0,
+          "NON_CLOSING_COMPLETION": 21,
+          "VERIFIED_CLOSURE": 0,
+          "ERROR": 2
+        },
+        "oracle_closure_eligibility_unknown_count": 0,
+        "explicit_safe_stop_rate": {
+          "numerator": 13,
           "denominator": 32,
-          "value": 0.9375,
+          "value": 0.40625,
           "wilson_95": [
-            0.7985253275199642,
-            0.9826897968048427
+            0.255194024803138,
+            0.5774027342701177
+          ]
+        },
+        "safe_non_closure_rate": {
+          "numerator": 32,
+          "denominator": 32,
+          "value": 1.0,
+          "wilson_95": [
+            0.8928172849426366,
+            1
           ]
         },
         "inconclusive_rate": {
@@ -1456,11 +1780,26 @@
           "value": null,
           "wilson_95": null
         },
-        "blocked_unsafe_remediation_rate": {
+        "runs_with_blocked_candidate_rate": {
           "numerator": 0,
           "denominator": 0,
           "value": null,
           "wilson_95": null
+        },
+        "unsafe_candidate_block_count": 0,
+        "unsafe_candidate_block_rate": {
+          "numerator": 0,
+          "denominator": 0,
+          "value": null,
+          "wilson_95": null
+        },
+        "candidate_count": 0,
+        "blocking_reason_class_counts": {
+          "UNSAFE": 0,
+          "INSUFFICIENT_EVIDENCE": 0,
+          "STALE": 0,
+          "NOT_NEEDED": 0,
+          "OTHER_POLICY_BLOCK": 0
         },
         "unnecessary_remediation_rate": {
           "numerator": 0,
@@ -1506,6 +1845,16 @@
         }
       },
       "memory": {
+        "guidance_availability_counts": {
+          "AVAILABLE": 0,
+          "EMPTY": 0,
+          "RETRIEVAL_FAILED": 0,
+          "INVALID_SKILL": 0
+        },
+        "guidance_degradation_counts": {
+          "NONE": 0,
+          "BUDGET_DROPPED": 0
+        },
         "experience_retrieval_hit_rate": {
           "numerator": 0,
           "denominator": 0,
@@ -1526,10 +1875,10 @@
     }
   },
   "manifest": {
-    "benchmark_schema_version": "1",
+    "benchmark_schema_version": "2",
     "dataset_version": "20260912.1",
-    "source_commit": "4a310e133875cffeceef815f863b80fb9c98eaa0",
-    "source_tree_hash": "71c201fd013de254c718677496b14bdb935473a66a7fad003daec48a736cb737",
+    "source_commit": "1e6dae3c768d116272eeef6a2f1c8de98b1b0ddd",
+    "source_tree_hash": "8d7f9990dc32552947636324a1a7f3284d58cb1a5fca09900f4fe46810ab3815",
     "seed": 20260912,
     "repetitions": 1,
     "mode": "OFFLINE_DETERMINISTIC",
@@ -1552,16 +1901,16 @@
       }
     ],
     "experience_ids": [
-      "4f6c3c7b78b4b413683cf1119b99450a9bfaacc36115a7369146399d249be56b",
-      "1f239a68fc3930554090f8b55953081874f6131f0657bf303a9021e280bea917",
-      "02f9247de545f01d85eed8a6e0893812f84cdd93fbc2fb299290512888fa0b8c",
-      "4c97dd7b92ea621a0b766a2329161940a43b45b4f39e539a2bf165697ab2e853",
-      "e113a0500c91592278eebdaddc15224d495b3d99a69af83f209f7e3ae6afa1a5",
-      "9d3a5735170da12f43d0777306d71328718c4d674660460f9d16afcf1cec51a5",
-      "f2ea2091e7c3ceda39969c29e87478cbcd076381a756fc82d2e5edbaa976be29",
-      "6407ac3a6c03ce8a4965f29c71ffd3d8e6a5d2eed7942bf00a3864ddf7d50cef",
-      "50ff9525c63ff59c85771a699cd2e601b696a96a5a8e940d4eed1daaac0c9bcc",
-      "e6d4ffd23fb5946de54791b8ba5d9c4d056ba06082fe3d5212cd871f81481110"
+      "bfb4482f3bdbca0b2745e6f63a022da4daf43b4a885fec31dd422de8053216ae",
+      "6d79f96d9d47ba707dd3c72349b1ddb2e77eebd17858a033768e9a8270ed792b",
+      "ecd536b2c7425e206d9aa5f6c379d08d644a9b5aae1ff8e0c3e8bfe61bcab01d",
+      "c13b500d4d01ad913454074753e4e3c0c9c7c8dde199269927cc701e17e87e79",
+      "3a4474374be6341c32b1a35e82cc8f0755855ad81444e33f12a232d0e78312e5",
+      "2badf3d936bf0cc5404bcfc2caf172d6edd49f9e8daf4c9dbcfa89ed32d505da",
+      "01bfcd8a728d25d80cf49d06e4796570f9a1356eddcd8f1ef347ff4ae328a4e7",
+      "792ac7981909891b36fc56a0fe8d95ea675da593f50382017c331f09adfe8eea",
+      "5fdd854c83bf999bf43e654885c1a957fdd53162eadf17b71f8a5d3c3ec6a7f3",
+      "85173b8713217df69fab56bb5fd693d1236493e4022e40728c05d7fca1433c24"
     ],
     "memory_seed_case_ids": [
       "CASE-SEED-3d6e83c17cee9604",

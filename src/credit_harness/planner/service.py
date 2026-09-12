@@ -10,7 +10,7 @@ from .validator import CandidateValidator
 from .policy import HardPolicyFilter
 from .ranking import DeterministicActionRanker
 from .audit import InMemoryPlannerAuditStore, PlannerAuditRecord
-from credit_harness.memory.models import GuidanceBuildStatus as GS
+from credit_harness.memory.models import GuidanceBuildStatus as GS, GuidanceDegradation as GD
 
 
 class PlannerService:
@@ -22,10 +22,12 @@ class PlannerService:
     def plan(self, snapshot: ReasoningContextSnapshot, *, guidance=None) -> PlannerDecision:
         renderer = ModelInputRenderer()
         build_status = GS.EMPTY
+        degradation = GD.NONE
         if guidance is None and self.guidance_provider is not None:
             try:
                 guidance = self.guidance_provider.build(snapshot)
                 build_status = getattr(self.guidance_provider, "last_status", GS.EMPTY)
+                degradation = getattr(self.guidance_provider, "last_degradation", GD.NONE)
             except Exception:
                 guidance = None
                 build_status = GS.RETRIEVAL_FAILED
@@ -35,7 +37,7 @@ class PlannerService:
         elif guidance is not None:
             build_status = GS.INVALID_SKILL
         guidance_refs = dict(guidance_fingerprint=bundle.guidance_fingerprint,
-            guidance_build_status=build_status,
+            guidance_build_status=build_status, guidance_degradation=degradation,
             skill_refs=tuple(s.skill for s in bundle.organizational_guidance.active_skills) if bundle.organizational_guidance else (),
             experience_refs=tuple(e.experience_id for e in bundle.historical_guidance.verified_experiences) if bundle.historical_guidance else ())
         input_hash = digest(bundle.model_dump(mode="json"))

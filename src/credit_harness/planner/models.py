@@ -14,7 +14,7 @@ from credit_harness.context.models import (
 )
 from credit_harness.context.structured_values import ContextReference, OpaqueSubjectRef
 from credit_harness.identity.models import FinancialSubject
-from credit_harness.memory.models import OrganizationalGuidanceSection, HistoricalGuidanceSection, SkillRef, GuidanceBuildStatus
+from credit_harness.memory.models import OrganizationalGuidanceSection, HistoricalGuidanceSection, SkillRef, GuidanceBuildStatus, GuidanceDegradation
 from .metadata import PlannerModelMetadata
 
 PLANNER_SCHEMA_VERSION = "1"
@@ -193,6 +193,7 @@ class PlannerDecision(Model):
     skill_refs: tuple[SkillRef, ...] = ()
     experience_refs: tuple[Hash, ...] = ()
     guidance_build_status: GuidanceBuildStatus = GuidanceBuildStatus.EMPTY
+    guidance_degradation: GuidanceDegradation = GuidanceDegradation.NONE
 
 
 class PlannerUnavailable(RuntimeError):

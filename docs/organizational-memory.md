@@ -161,7 +161,7 @@ Cold / Guided 是刻意可检查的 Fake 对比 fixture，不是模型质量实�
 
 ## 验收结果
 
-以下是 Step 11 的历史验收快照，示例 JSON 也保留原版本。Step 12 已将 Experience 新写入 schema 升为 v2：`observed_evidence_types` 替代原字段名，v1 的序列化与内容哈希保持兼容；Planner Decision/Audit 增加 GuidanceBuildStatus。新的对照实验和全量验收见 [Benchmark 文档](benchmark.md)。
+以下是 Step 11 的历史验收快照，示例 JSON 也保留原版本。Step 12 已将 Experience 新写入 schema 升为 v2：`observed_evidence_types` 替代原字段名，v1 的序列化与内容哈希保持兼容；Planner Decision/Audit 增加 GuidanceBuildStatus；Step 12.1 另加 GuidanceDegradation，分别记录是否可用与是否发生预算裁剪。新的对照实验和全量验收见 [Benchmark 文档](benchmark.md)。
 
 本阶段新增 65 个测试实例，总计 979 个；以下为冻结功能代码的实际结果：
 

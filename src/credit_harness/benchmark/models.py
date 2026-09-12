@@ -3,7 +3,7 @@ from typing import Any
 from pydantic import Field
 from credit_harness.domain.models import Model
 
-BENCHMARK_SCHEMA_VERSION = "1"
+BENCHMARK_SCHEMA_VERSION = "2"
 DATASET_VERSION = "20260912.1"
 TOOL_BUDGET = 24
 

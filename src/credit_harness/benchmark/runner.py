@@ -65,6 +65,7 @@ def compact_decision(decision):
         tool=getattr(candidate, "tool_name", None), target_gap_ids=getattr(candidate, "target_gap_ids", ()),
         rejected=[dict(candidate_id=r.candidate.candidate_id, reasons=[c.value for c in r.reason_codes]) for r in decision.rejected_candidates],
         experience_refs=decision.experience_refs, guidance_build_status=decision.guidance_build_status.value,
+        guidance_degradation=decision.guidance_degradation.value,
         policy_version=decision.policy_version, model=decision.planner_model_metadata.model_dump(mode="json"))
 
 
@@ -121,6 +122,7 @@ def run_case(engine, spec, system, track, *, seed=20260912, run_index=0, model=N
                             snapshot_id=checklist.last_draft.snapshot_id,
                             steps=[s.model_dump(mode="json") for s in checklist.last_draft.steps],
                             experience_refs=checklist_refs, guidance_build_status=guidance.last_status.value,
+                            guidance_degradation=guidance.last_degradation.value,
                             model=model.metadata.model_dump(mode="json") if model else
                                 dict(model_provider="fake",model_name="one-shot-checklist-v1"))]
             else:
@@ -196,6 +198,7 @@ def run_case(engine, spec, system, track, *, seed=20260912, run_index=0, model=N
             evidence_count=len(x.evidence.list(case_id)), identity=graph.payment_identity.result.value,
             h4_status=h4.status.value, observed_payment_finalities=sorted(set(finalities)),
             closed=closed, oracle_converged=oracle_converged(x), unresolved_effects=unresolved,
+            oracle_closure_allowed=oracle_converged(x) and unresolved == 0,
             unknown_effects=unknown, blind_redispatches=blind, read_orphan_fired="read-orphan" in faults.fired,
             recovery_fault_fired=spec.fault if effect_refs and spec.fault in ("effect-unknown","dispatched-crash","prepared-crash") else None,
             retrieval_count=len(retrieved), retrieved_experience_ids=retrieved, relevant_experiences=len(relevant),

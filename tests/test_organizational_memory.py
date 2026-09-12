@@ -77,6 +77,69 @@ def guidance_setup(x):
     return InvestigationGuidanceService(x.skills, VerifiedExperienceRetriever(x.memory))
 
 
+def test_guidance_without_compaction_is_available_not_degraded(factory):
+    x = factory(); provider = guidance_setup(x)
+    assert provider.build(context(x)) is not None
+    assert provider.last_status == GuidanceBuildStatus.AVAILABLE
+    assert provider.last_degradation == GuidanceDegradation.NONE
+
+
+def test_guidance_budget_compaction_records_budget_dropped(factory, monkeypatch):
+    import credit_harness.memory.guidance as module
+    _, c, snap, original = historical_guidance(factory)
+    provider = InvestigationGuidanceService(c.skills, VerifiedExperienceRetriever(c.memory))
+    limit = module.MAX_GUIDANCE_CHARS
+    monkeypatch.setattr(module, "MAX_GUIDANCE_CHARS", len(original.model_dump_json()) - 1)
+    compact = provider.build(snap)
+    assert compact is not None
+    assert len(compact.verified_experiences) < len(original.verified_experiences)
+    assert provider.last_status == GuidanceBuildStatus.AVAILABLE
+    assert provider.last_degradation == GuidanceDegradation.BUDGET_DROPPED
+    assert compact.active_skills == original.active_skills
+    monkeypatch.setattr(module, "MAX_GUIDANCE_CHARS", limit)
+    assert provider.build(snap) == original
+    assert provider.last_degradation == GuidanceDegradation.NONE
+
+
+def test_budget_drop_still_preserves_all_safety_invariants(factory, monkeypatch):
+    import credit_harness.memory.guidance as module
+    x = factory(); provider = guidance_setup(x); snap = context(x)
+    original = provider.build(snap)
+    assert sum(len(s.evidence_strategy) for s in original.active_skills) > 1
+    monkeypatch.setattr(module, "MAX_STRATEGIES", 1)
+    compact = provider.build(snap)
+    assert compact is not None
+    assert provider.last_status == GuidanceBuildStatus.AVAILABLE
+    assert provider.last_degradation == GuidanceDegradation.BUDGET_DROPPED
+    assert [s.safety_invariants for s in compact.active_skills] == [s.safety_invariants for s in original.active_skills]
+
+
+def test_guidance_retrieval_failure_remains_distinct_from_budget_drop(factory, monkeypatch):
+    x = factory(); provider = guidance_setup(x)
+    def fail(*args):
+        raise RuntimeError("RAW_SECRET_ERROR")
+    monkeypatch.setattr(provider.retriever, "retrieve", fail)
+    planner = PlannerService(FakePlannerModel(scripted_draft), guidance_provider=provider)
+    decision = planner.plan(context(x))
+    assert decision.guidance_build_status == GuidanceBuildStatus.RETRIEVAL_FAILED
+    assert decision.guidance_degradation == GuidanceDegradation.NONE
+    assert "RAW_SECRET_ERROR" not in decision.model_dump_json()
+    assert "RAW_SECRET_ERROR" not in planner.audit.records[0].model_dump_json()
+
+
+def test_planner_audit_records_guidance_degradation(factory, monkeypatch):
+    import credit_harness.memory.guidance as module
+    x = factory(); provider = guidance_setup(x)
+    monkeypatch.setattr(module, "MAX_STRATEGIES", 1)
+    planner = PlannerService(FakePlannerModel(scripted_draft), guidance_provider=provider)
+    decision = planner.plan(context(x))
+    audit = planner.audit.records[0]
+    assert decision.guidance_build_status == audit.guidance_build_status == GuidanceBuildStatus.AVAILABLE
+    assert decision.guidance_degradation == audit.guidance_degradation == GuidanceDegradation.BUDGET_DROPPED
+    from credit_harness.benchmark.runner import compact_decision
+    assert compact_decision(decision)["guidance_degradation"] == "BUDGET_DROPPED"
+
+
 @pytest.mark.parametrize("status", [s for s in CaseStatus if s != CaseStatus.CLOSED_VERIFIED])
 def test_only_closed_verified_case_can_publish_experience(factory, status):
     x = factory()

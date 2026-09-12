@@ -38,6 +38,11 @@ class GuidanceBuildStatus(StrEnum):
     EMPTY = "EMPTY"
     RETRIEVAL_FAILED = "RETRIEVAL_FAILED"
     INVALID_SKILL = "INVALID_SKILL"
+    BUDGET_DROPPED = "BUDGET_DROPPED"  # Legacy audit reads only; builders use degradation.
+
+
+class GuidanceDegradation(StrEnum):
+    NONE = "NONE"
     BUDGET_DROPPED = "BUDGET_DROPPED"
 
 

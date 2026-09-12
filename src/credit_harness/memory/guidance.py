@@ -1,6 +1,6 @@
 from credit_harness.context.budget import digest
 from .models import (InvestigationGuidanceBundle, SkillRef, MemoryError, GuidanceInvariant,
-                     OrganizationalGuidanceSection, HistoricalGuidanceSection, GuidanceBuildStatus as S)
+                     OrganizationalGuidanceSection, HistoricalGuidanceSection, GuidanceBuildStatus as S, GuidanceDegradation as D)
 from .skills import SkillComposer
 from .retrieval import current_signature, applicable, symptom_matches
 
@@ -39,9 +39,11 @@ class InvestigationGuidanceService:
     def __init__(self, skills, retriever):
         self.skills, self.retriever = skills, retriever
         self.last_status = S.EMPTY
+        self.last_degradation = D.NONE
 
     def build(self, snapshot):
         self.last_status = S.INVALID_SKILL
+        self.last_degradation = D.NONE
         try:
             tenant = self.retriever.repository.tenant_id
             if self.skills.tenant_id != tenant:
@@ -58,9 +60,11 @@ class InvestigationGuidanceService:
                 strategies = s.evidence_strategy[:remaining]
                 remaining -= len(strategies)
                 selected.append(s.model_copy(update={"evidence_strategy": strategies}))
+            if sum(len(s.evidence_strategy) for s in selected) < sum(len(s.evidence_strategy) for s in composed):
+                self.last_degradation = D.BUDGET_DROPPED
             self.last_status = S.RETRIEVAL_FAILED
             experiences = self.retriever.retrieve(snapshot, signature)
-            self.last_status = S.BUDGET_DROPPED
+            self.last_status = S.EMPTY
             while True:
                 bundle = InvestigationGuidanceBundle(tenant_id=tenant, case_id=snapshot.case_id,
                     snapshot_id=snapshot.snapshot_id, active_skills=tuple(selected), verified_experiences=experiences,
@@ -70,7 +74,9 @@ class InvestigationGuidanceService:
                     break
                 if experiences:
                     experiences = experiences[:-1]
+                    self.last_degradation = D.BUDGET_DROPPED
                 elif any(s.evidence_strategy for s in selected):
+                    self.last_degradation = D.BUDGET_DROPPED
                     for i in range(len(selected) - 1, -1, -1):
                         if selected[i].evidence_strategy:
                             selected[i] = selected[i].model_copy(update={"evidence_strategy": selected[i].evidence_strategy[:-1]})
@@ -81,6 +87,7 @@ class InvestigationGuidanceService:
                 self.last_status = S.EMPTY
                 return None
             bundle = bundle.model_copy(update={"guidance_fingerprint": guidance_identity(bundle)})
+            self.last_status = S.INVALID_SKILL
             result = validate_guidance(bundle, snapshot)
             self.last_status = S.AVAILABLE
             return result
