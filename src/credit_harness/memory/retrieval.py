@@ -18,9 +18,9 @@ def known(value):
 
 
 def applicable(scope, signature):
-    for name in ("funding_partner", "asset_partner", "product_code"):
+    for name in ("funding_partner", "asset_partner", "product_code", "business_domain", "environment", "guarantee_partner"):
         expected = getattr(scope, name)
-        if expected is not None and expected != getattr(signature, name):
+        if expected is not None and expected != getattr(signature, name, None):
             return False
     return not scope.protocol_versions or signature.protocol_version in scope.protocol_versions
 
@@ -52,21 +52,28 @@ class VerifiedExperienceRetriever:
             # protocol is not guessed from the historical incident.
             if signature.protocol_version and experience.protocol_context and signature.protocol_version not in experience.protocol_context:
                 continue
-            features = tuple(f for f in SimilarityFeature if known(getattr(signature, f.value))
-                and getattr(signature, f.value) == getattr(experience.incident_signature, f.value))
-            if not features:
-                continue
-            # Discrete weighted overlap only. Neither denominator nor probability.
-            score = sum(3 if f in (SimilarityFeature.REQUEST_TRANSPORT_STATUS, SimilarityFeature.SCHEMA_MISMATCH)
-                        else 1 for f in features)
-            # Cross-case projection intentionally has no source Case, Evidence,
-            # identity tokens, ToolQuery, external reference, actor or signature.
-            pattern = experience.incident_signature.model_copy(update={
-                "funding_partner": None, "asset_partner": None, "product_code": None})
-            result.append(ExperienceCapsule(experience_id=experience.experience_id, verified_outcome_path=experience.outcome_path,
-                similarity_features=features, retrieval_score=score, observed_pattern=pattern,
-                observed_evidence_claim_types=experience.observed_evidence_types,
-                observed_tool_sequence=tuple(s.tool for s in experience.investigation_sequence[:24]),
-                verified_safety_lessons=tuple(s.lesson for s in experience.safety_lessons),
-                historical_error_codes=experience.observed_symptoms.error_codes[:4]))
+            capsule = StructuredExperienceReranker().capsule(experience, signature)
+            if capsule.similarity_features:
+                result.append(capsule)
         return tuple(sorted(result, key=lambda c: (-c.retrieval_score, c.experience_id))[:top_k])
+
+
+class StructuredExperienceReranker:
+    """Discrete historical overlap; never a probability or current fact."""
+
+    def capsule(self, experience, signature):
+        features = tuple(f for f in SimilarityFeature if known(getattr(signature, f.value))
+            and getattr(signature, f.value) == getattr(experience.incident_signature, f.value))
+        # Discrete weighted overlap only. Neither denominator nor probability.
+        score = sum(3 if f in (SimilarityFeature.REQUEST_TRANSPORT_STATUS, SimilarityFeature.SCHEMA_MISMATCH)
+                else 1 for f in features)
+        # Cross-case projection intentionally has no source Case, Evidence,
+        # identity tokens, ToolQuery, external reference, actor or signature.
+        pattern = experience.incident_signature.model_copy(update={
+            "funding_partner": None, "asset_partner": None, "product_code": None})
+        return ExperienceCapsule(experience_id=experience.experience_id, verified_outcome_path=experience.outcome_path,
+            similarity_features=features, retrieval_score=score, observed_pattern=pattern,
+            observed_evidence_claim_types=experience.observed_evidence_types,
+            observed_tool_sequence=tuple(s.tool for s in experience.investigation_sequence[:24]),
+            verified_safety_lessons=tuple(s.lesson for s in experience.safety_lessons),
+            historical_error_codes=experience.observed_symptoms.error_codes[:4])

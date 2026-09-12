@@ -6,9 +6,11 @@
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。
 
-Step 14 / 14.1 已增加 [System Registry 与 Case Route Revision](docs/system-registry.md)：Registry 不可变版本、Case 路由 revision 链、真实协议 Evidence 驱动的 UNKNOWN→KNOWN、来源权威规则，以及执行前旧快照重验。资金来源表示我司资金接入记录与合作方正式接口，支付终态仅接受明确登记的合法权威来源。配置 Registry 的调查与 Verification 路径共用受限解析，凭据和实际 adapter 留在服务器端。运行 `python -m scripts.demo_registry` 可查看 S6 协议推进、Messages 解锁、旧快照 stale 和来源追溯。尚未进入 Vector / Embedding 或真实资金操作。
+Step 14 / 14.1 已增加 [System Registry 与 Case Route Revision](docs/system-registry.md)：Registry 不可变版本、Case 路由 revision 链、真实协议 Evidence 驱动的 UNKNOWN→KNOWN、来源权威规则，以及执行前旧快照重验。资金来源表示我司资金接入记录与合作方正式接口，支付终态仅接受明确登记的合法权威来源。配置 Registry 的调查与 Verification 路径共用受限解析，凭据和实际 adapter 留在服务器端。运行 `python -m scripts.demo_registry` 可查看 S6 协议推进、Messages 解锁、旧快照 stale 和来源追溯。Registry 本身不做语义检索；真实资金操作尚未接入。
 
-Step 14.2/14.2.1 新增独立 [Registry Administration Console](docs/registry-admin-console.md)：SSO identity boundary、服务端 RBAC、四眼审批、Draft/版本 Diff、只读 Case Impact、原子激活 CAS、审计回滚和公司系统主档。Excel 显式支持双 Sheet、分组 forward-fill、共享系统及冲突预览；资料 Inventory Revision 与 Registry Version 独立，source 通过 company_system_code 人工关联。前端 `/admin/registry` 与调查权限分离；运行 `python -m scripts.serve_registry_admin --local` 启动 synthetic 管理 API。真实文件只允许通过 `LOCAL_REAL_INVENTORY_XLSX` 本地可选统计测试验证，不提交或复制到公开 fixtures；Excel 不会生成 Agent 权威配置。未开始 Vector / Embedding。
+Step 14.2/14.2.1 新增独立 [Registry Administration Console](docs/registry-admin-console.md)：SSO identity boundary、服务端 RBAC、四眼审批、Draft/版本 Diff、只读 Case Impact、原子激活 CAS、审计回滚和公司系统主档。Excel 显式支持双 Sheet、分组 forward-fill、共享系统及冲突预览；资料 Inventory Revision 与 Registry Version 独立，source 通过 company_system_code 人工关联。前端 `/admin/registry` 与调查权限分离；运行 `python -m scripts.serve_registry_admin --local` 启动 synthetic 管理 API。真实文件只允许通过 `LOCAL_REAL_INVENTORY_XLSX` 本地可选统计测试验证，不提交或复制到公开 fixtures；Excel 不会生成 Agent 权威配置。公司 Inventory 不进入 Embedding。
+
+Step 15 新增 [PostgreSQL + pgvector Hybrid Retrieval](docs/hybrid-vector-retrieval.md)：只对 ACTIVE Skill / Verified Experience 的封闭脱敏投影索引，先按主表状态、tenant、业务 scope 和时间过滤，再执行真实 pgvector cosine Top 20 与确定性重排，最终仍限 4 Skill / 3 Experience / 12,000 字符。索引作业具有租约、幂等、持久退避与原子模型空间切换；失败只撤下可选 Guidance。历史经验不能作为当前 Evidence 或执行授权。运行 `python -m scripts.benchmark_retrieval --skills 30 --experiences 3000` 可复现 synthetic 比例规模实验；默认 Fake 不证明真实语义质量。
 
 Step 13 已增加 [Durable Case Orchestration](docs/orchestration.md)：WAIT／ESCALATE 与工作项原子交接，租约和 Case revision CAS 控制恢复，新的 Agent Run 从当前 Evidence 重建 Snapshot。正常／恢复的 APPLIED 交给独立验证工作；Evaluator 仍只读，PASS 仍由 VerifiedClosureService 关闭。运行 `python -m scripts.demo_orchestration --scenario wait-resume`，也可选择 `effect-verification` 或 `escalation-resolution`。全部使用本地 synthetic fixture，无真实资金副作用。
 

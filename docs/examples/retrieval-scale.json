@@ -1,0 +1,67 @@
+{
+  "generated_at": "2026-09-12T18:27:20.255141+00:00",
+  "database": "postgresql",
+  "embedding_provider": "deterministic-fake",
+  "model": "hashed-vocabulary-1",
+  "synthetic_expansions": true,
+  "independent_verified_seed_cases": 1,
+  "counts": {
+    "organizational_skills": 30,
+    "verified_incident_experiences": 3000,
+    "skill_vector_index": 30,
+    "experience_vector_index": 3000,
+    "retrieval_embedding_index_jobs": 3030
+  },
+  "corpus_ratio": "30/1000 skills; 3000/100000 experiences",
+  "indexing_seconds": 120.416,
+  "query_count": 20,
+  "vector_recall": {
+    "median_ms": 83.249,
+    "p95_ms": 106.105
+  },
+  "rerank": {
+    "median_ms": 141.817,
+    "p95_ms": 291.863
+  },
+  "total_retrieval": {
+    "median_ms": 237.131,
+    "p95_ms": 394.388
+  },
+  "guidance_context_chars_max": 10948,
+  "stable_selection": true,
+  "current_not_executed_preserved": true,
+  "latest_telemetry": {
+    "embedding_space": "ab42d3accb5ee8169d18a45d2f46a76fb8aea00daab964f10998aedbc40e3fcd",
+    "hard_filter_candidate_count": 2424,
+    "vector_candidate_count": 40,
+    "reranked_count": 40,
+    "selected_skill_ids": [
+      "synthetic-skill-00004",
+      "synthetic-skill-00008",
+      "synthetic-skill-00012",
+      "synthetic-skill-00016"
+    ],
+    "selected_experience_ids": [
+      "0089279a76b7ff8718e6160a26187593d08d120c438d4fa6c8cab9e745be61c3",
+      "00d96e4186fa65df059af931ff4c9279157306d83f584facf9f3d48972abd0ba",
+      "00e9785a85acf08bd580d18f77563ea3e6ad17572bbb50d21034f4a7dbddcfa2"
+    ],
+    "degradation": "NONE",
+    "vector_latency_ms": 95.62540001934394,
+    "rerank_latency_ms": 132.04850000329316,
+    "latency_ms": 237.46249999385327
+  },
+  "semantic_benchmark": {
+    "provider": "deterministic-fake",
+    "model": "hashed-vocabulary-1",
+    "evidence_level": "ENGINEERING_ONLY_NOT_SEMANTIC_VALIDATION",
+    "sample_count": 3,
+    "expected_ranks": [
+      3,
+      2,
+      3
+    ],
+    "paraphrase_recall_at_1": 0.0,
+    "warning": "A three-pair synthetic sample is not a production quality estimate; fake embeddings cannot establish semantic quality."
+  }
+}

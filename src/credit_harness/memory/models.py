@@ -12,6 +12,7 @@ from credit_harness.hypotheses.models import HypothesisId, PriorityClass
 from credit_harness.identity.models import IdentityMatch
 from credit_harness.remediation.models import RemediationActionType
 from credit_harness.authorization.models import EffectStatus
+from credit_harness.registry.models import BusinessDomain, Environment
 
 EXPERIENCE_SCHEMA_VERSION = "2"
 GUIDANCE_SCHEMA_VERSION = "1"
@@ -94,6 +95,21 @@ class SkillScope(Model):
     asset_partner: OpaqueSubjectRef | None = None
     product_code: OpaqueSubjectRef | None = None
     protocol_versions: tuple[StructuredVersion, ...] = ()
+    # Trusted business applicability, not semantic text. Omitted values mean an
+    # explicitly generic skill; scoped historical experiences retain their scope.
+    business_domain: "BusinessDomain | None" = None
+    environment: "Environment | None" = None
+    guarantee_partner: OpaqueSubjectRef | None = None
+    applicable_since: AwareDatetime | None = None
+    applicable_until: AwareDatetime | None = None
+
+    @model_serializer(mode="wrap")
+    def preserve_existing_scope_identity(self, handler):
+        result = handler(self)
+        for name in ("business_domain", "environment", "guarantee_partner", "applicable_since", "applicable_until"):
+            if result.get(name) is None:
+                result.pop(name, None)
+        return result
 
 
 class IncidentSignature(Model):

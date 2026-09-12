@@ -38,8 +38,11 @@ def signature_from_facts(facts, identity=IdentityMatch.UNKNOWN):
 
 
 class VerifiedExperiencePublisher:
-    def __init__(self, repository):
+    def __init__(self, repository, *, registry=None):
         self.repository, self.cases = repository, repository.cases
+        self.registry = registry
+        if registry is not None and registry.tenant_id != self.cases.tenant_id:
+            raise MemoryError("experience registry tenant mismatch")
 
     def publish(self, case_id):
         try:
@@ -51,6 +54,16 @@ class VerifiedExperiencePublisher:
                 if old:
                     return checked_experience(old, self.cases.tenant_id)
                 experience = self._project(source)
+                if self.registry is not None:
+                    # Freeze trusted route metadata into the immutable primary
+                    # experience. Registry descriptions never enter embeddings.
+                    route = self.registry.route(case_id, session)
+                    scope = SkillScope(business_domain=route.business_domain, environment=route.environment,
+                        funding_partner=route.funding_partner, asset_partner=route.asset_partner,
+                        guarantee_partner=route.guarantee_partner, product_code=route.product_code,
+                        protocol_versions=(route.protocol_version,) if route.protocol_version else ())
+                    experience = experience.model_copy(update={"partner_context": scope})
+                    experience = experience.model_copy(update={"experience_id": experience_identity(experience)})
                 self.repository._insert(session, experience)
                 return experience
         except (ValidationError, ValueError, TypeError, KeyError):

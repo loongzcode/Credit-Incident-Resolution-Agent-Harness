@@ -37,8 +37,9 @@ class InvestigationGuidanceService:
 
     Neither this service nor its consumers publish facts or change business state.
     """
-    def __init__(self, skills, retriever):
+    def __init__(self, skills, retriever, *, selection_provider=None):
         self.skills, self.retriever = skills, retriever
+        self.selection_provider = selection_provider
         self._legacy_result = ContextVar("guidance_result", default=GuidanceBuildResult(bundle=None, status=S.EMPTY, degradation=D.NONE))
 
     @property
@@ -63,8 +64,14 @@ class InvestigationGuidanceService:
                 raise MemoryError("guidance tenant mismatch")
             signature = current_signature(snapshot)
             self.retriever.repository.cases.get(snapshot.case_id)
-            matching = [s for s in self.skills.active() if applicable(s.scope, signature)
-                        and symptom_matches(s.applies_when, signature)]
+            if self.selection_provider is not None:
+                status = S.RETRIEVAL_FAILED
+                selection = self.selection_provider.select(snapshot)
+                matching = selection.skills
+                status = S.INVALID_SKILL
+            else:
+                matching = [s for s in self.skills.active() if applicable(s.scope, signature)
+                            and symptom_matches(s.applies_when, signature)]
             # Validate ALL overlays before compaction so a dropped conflicting
             # skill cannot silently change safety composition.
             composed = SkillComposer().compose(matching)
@@ -76,7 +83,7 @@ class InvestigationGuidanceService:
             if sum(len(s.evidence_strategy) for s in selected) < sum(len(s.evidence_strategy) for s in composed):
                 degradation = D.BUDGET_DROPPED
             status = S.RETRIEVAL_FAILED
-            experiences = self.retriever.retrieve(snapshot, signature)
+            experiences = selection.experiences if self.selection_provider is not None else self.retriever.retrieve(snapshot, signature)
             status = S.EMPTY
             while True:
                 bundle = InvestigationGuidanceBundle(tenant_id=tenant, case_id=snapshot.case_id,

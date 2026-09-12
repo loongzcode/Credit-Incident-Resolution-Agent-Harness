@@ -57,7 +57,7 @@ Step 10 的小 hardening：`SQLApprovalStore.decide_approval` 在同一 Case 锁
 
 历史 signature 中每个症状取调查路径上首次 CURRENT + COMPLETE 的相应 Evidence；`payment_finality_at_detection` 表达首次实际观察到的支付结果，**不声称受理 Case 当时已经知道**。Unknown 不填补。当前 Signature 从经过 seal 校验的 ReasoningContextSnapshot 取得，拒绝调用者提供与 Snapshot 不符的资金状态。
 
-当前 Case 没有明确 funding/asset partner role 或 product 的输入字段；不能从 JD、ScenarioId 或 protocol subject 的名字猜角色。因此本版这些字段为 None。Scope schema 与组合器已支持 General / Partner / Product overlay，只有存在匹配的结构化上下文时才能使用具体 scope。
+Step 11 旧 fixture 的 partner/product 保持 None，不从订单、ScenarioId 或协议 subject 名字猜角色。Step 15 的 Hybrid 路径从可信 Registry CaseRouteContext 获取过滤条件；发布器配置 Registry 后把 route scope 固化到主经验。SkillScope 增加 domain、environment、guarantee partner 与适用时间，未设置的新字段不改变旧 payload 内容身份。
 
 调查序列严格按持久 CaseCall sequence；scope 中订单是 tenant 内哈希 token，保留版本/生效时间。EvidenceOriginRow 关联每次调用的 claim types，首次出现的 Evidence ID 计入 new evidence yield，重复关联不再次计为新 Evidence。这是 observed path，不是未来必须遵循的顺序。未生成 `ineffective_queries`，因为一个 Case 不能证明某查询普遍浪费。
 
@@ -89,7 +89,7 @@ SkillComposer 稳定排序并保留各自 advisory strategy，不做后加载覆
 - known 症状相同才贡献离散 overlap 分数；UNKNOWN 不算匹配。Timeout/schema flag 权重 3，其他匹配字段 1。
 - 按 retrieval_score 降序、experience_id 升序，最多 3 条。
 
-这是相似度排序，**不是**资金概率或 Hypothesis confidence。首版使用 SQL tenant/index + Python 确定性投影，无 Vector DB、Embedding、RAG 平台。内存中处理同 tenant ACTIVE 集合适用于当前 POC，跨大量历史的分页/候选召回优化未宣称完成。
+这是相似度排序，**不是**资金概率或 Hypothesis confidence。以上为保留的 Step 11 结构化基线。Step 15 将 overlap 提取为 `StructuredExperienceReranker`，新增主表过滤 → pgvector Top 20 → Gap-aware 重排的可选生产路径；接入、索引升级与安全边界见 [Hybrid Retrieval](hybrid-vector-retrieval.md)。
 
 ## Guidance Bundle、Trust 和 Planner 接入
 
