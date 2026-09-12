@@ -1,6 +1,6 @@
-# Step 14.2 — Production System Registry Administration Console
+# Step 14.2.1 — Company Inventory & Registry Administration Integrity
 
-管理后台建立独立的人类配置治理边界，沿用 Step 14/14.1 Registry 和 Case Route，不让 Agent 编辑平台配置。所有本地身份、系统与测试 Excel 均为 synthetic。真实公司 SSO credential、真实金融接口和真实公司工作簿未接入。
+管理后台建立独立的人类配置治理边界，沿用 Step 14/14.1 Registry 和 Case Route，不让 Agent 编辑平台配置。支持公司双 Sheet 实际表头结构；公开测试中的身份、系统描述和功能均为 synthetic。真实公司 SSO credential、真实金融接口未接入；真实文件已通过本地 opt-in 只读统计测试，未导入公开 fixture 或本地演示数据库。
 
 ```text
 公司 SSO Access Token
@@ -65,7 +65,9 @@ SSO 浏览器登录、PKCE 和 refresh 由企业已选定客户端负责，注�
 | Cancel | DRAFT / SUBMITTED | CANCELED |
 | Supersede | DRAFT / SUBMITTED / APPROVED | SUPERSEDED |
 
-只有 CONFIGURATION DRAFT 可以编辑。每次编辑通过 RegistryAdmin.register 生成不可变 candidate 版本，Active 不变。提交、审批、拒绝及激活都重验 base；不符返回 STALE_CHANGE_REQUEST。每次变更还要求 expected_revision，状态或 CR revision 不符返回 conflict，终态不能重新编辑或激活。
+只有 CONFIGURATION DRAFT 可以编辑。每次编辑通过 RegistryAdmin.register 生成不可变 candidate 版本，Active 不变。提交、审批、拒绝及激活都重验 base；不符返回 STALE_CHANGE_REQUEST。每次变更还要求 expected_revision，状态或 CR revision 不符返回 conflict，终态不能重新编辑或激活。Draft 和回滚引用原版本 hash，不因模型新增可选字段而重新序列化历史版本。
+
+Transition 支持 decision_comment：approve 可选，reject 去空白后必填；上限 2000 字，拒绝 HTML 尖括号和不合法控制字符。只允许 approve/reject 携带意见。ChangeRequest 的 approval_comment / rejection_reason 与 Audit 的 decision_comment 在同一事务保存。前端弹窗提供纯文本输入，空拒绝原因不能提交；后端独立验证，不依赖按钮状态。意见不是秘密存储位置，也不会进入模型上下文。
 
 管理写事务锁 tenant Registry head 后执行 CR 状态 CAS。真正激活仍调用现有 `RegistryAdmin.activate(expected_version=...)`。RegistryAdmin 新增可选 caller-owned Session，因此 Registry publication/head CAS、CR 状态和 Admin Audit 在 **同一事务**提交；任何中途异常全部回滚。原进程内调用方式继续可用，没有通过 HTTP 暴露其原始入口。
 
@@ -85,33 +87,62 @@ SSO 浏览器登录、PKCE 和 refresh 由企业已选定客户端负责，注�
 
 ## Impact Analysis
 
-Impact 是纯读；返回 affected_active_case_count、Case IDs digest、partner/product 范围、capability types、invalidated_snapshot_count、pending work count，以及分页 Case drill-down。不会把所有 Case ID 放入摘要，不修改 Case、Snapshot、Work 或路由。
+Impact 是纯读；返回 affected_active_case_count、Case IDs digest、partner/product 范围、changed_capability_types、runtime_revalidation_scope、invalidated_snapshot_count、pending work count，以及分页 Case drill-down。不会把所有 Case ID 放入摘要，不修改 Case、Snapshot、Work 或路由。
 
-第一版明确采用 `CONSERVATIVE_REGISTRY_VERSION_FENCE`：现有 Runtime 用全局 Registry version 做保守重验，因此一次配置版本变化会影响当前 tenant 所有已绑定路由的非终态 Case，即使部分能力资格未变。快照统计仅计 base version 的相关历史快照；待办包含 PENDING/READY/CLAIMED/BLOCKED。Impact 是分析时刻的估计，不是冻结执行承诺；页面明确显示 base 是否仍有效。真正激活后，既有 Runtime 自然返回 STALE_CAPABILITY 并重建 Context。
+runtime_revalidation_scope 在 Registry 版本变化时为 `ALL_ACTIVE_REGISTERED_CASES`，未变化时为 `NONE`。现有 Runtime 用全局 Registry version 做保守重验，因此一次配置版本变化会影响当前 tenant 所有已绑定路由的非终态 Case，即使部分能力资格未变。changed_capability_types 仅列实际新增/删除/修改的能力、其 authority rule 变化及 source 运行配置变化所关联的类型；名称、owner 或 company binding 变化不伪装成所有能力类型都发生改变。删除的能力类型从 before 取值，不受是否有活跃 Case 影响。两字段不能混用。
+
+快照统计仅计 base version 的相关历史快照；待办包含 PENDING/READY/CLAIMED/BLOCKED。Impact 是分析时刻的估计，不是冻结执行承诺；页面明确显示 base 是否仍有效。真正激活 Registry 后，既有 Runtime 自然返回 STALE_CAPABILITY 并重建 Context。
 
 纯库存资料更新不改变 Registry definition/hash，故不导致业务能力快照失效。没有注册 Route 的 legacy Case 不计入本版 Registry fence。
 
 ## Excel：公司资料与能力配置两层
 
-`CompanySystemInventory` 忠实保存 system_code、system_name、system_category、description、main_functions。source_metadata 保存 EXCEL、原文件名/hash、sheet!row、imported_at/imported_by。原始工作簿不改写、不进入模型上下文。
+`CompanySystemRecord` 保存 system_code、system_name、system_type_label、description、main_functions。嵌套 `CompanySystemMembership` 保存 system_code、inventory_group 和 source_metadata；每份来源保留 EXCEL、原文件名/hash、sheet!row、imported_at/imported_by。一个主档可以拥有多个组及来源。原始工作簿不改写、不复制到 tests 或 Git，不进入模型上下文。
 
 支持 `.xlsx` 上传，包括需求中的中文文件名。明确表头别名如下（第一行必须是表头，不猜测自由文本）：
 
 | 字段 | 支持的常见表头 |
 |---|---|
-| system_code | system_code / 系统编码 / 系统英文名 / 系统英文名称 / 英文名称 |
+| system_code | system_code / 系统简称 / 系统编码 / 系统英文名 / 系统英文名称 / 英文名称 |
 | system_name | system_name / 系统名称 / 系统中文名 / 系统中文名称 / 中文名称 |
-| system_category | system_category / 系统分类 / 系统类别 |
-| description | description / 系统简介 / 简介 / 系统描述 |
-| main_functions | main_functions / 主要功能 / 主要功能说明 |
+| inventory_group | inventory_group / 系统分类 / 系统类别 / legacy system_category |
+| system_type_label | system_type_label / 类型 |
+| description | description / 系统简要 / 系统简介 / 简介 / 系统描述 |
+| main_functions | main_functions / 系统主要功能 / 系统功能 / 主要功能 / 主要功能说明 |
 
-code/name 必需，其余可以为空。实际公司文件没有提供，因此本次使用上述文件名的 synthetic 工作簿做测试；未宣称已经解析或导入公司的真实资料。若真实资料列名不同，需要显式扩充映射，不用模型猜字段。
+code/name 必需；类型只来自“类型”列，缺失则留空。一个字段命中多个表头时拒绝 AMBIGUOUS_HEADERS，不猜哪个优先。“九里云系统”和“融担系统”Sheet 的系统分类按非空值 forward-fill，首行也为空时使用 Sheet title；同名组与 Sheet 冲突返回 INVALID_INVENTORY_GROUP。merged cell 的空单元格按同样规则处理。通用旧 Sheet 可使用显式分组，但不会把它当作类型。
 
-上传→受限解析→added/changed/unchanged/invalid preview→用户确认→INVENTORY Draft→审批→激活库存版本。Preview 不修改 Registry 或 active inventory；确认也只创建 Draft。Inventory CR 使用独立 inventory base revision，并校验 Registry base，避免同时导入覆盖。重复确认同一个 preview 是幂等的。审批详情展示待导入资料及来源；旧库存 snapshot 永久保留，导入是按 system_code 合并，不删除工作簿未包含的资料。
+同 code 的名称、类型、简介、功能完全一致时，保留一个 master 并追加 memberships。不同内容返回 CONFLICTING_SYSTEM_DEFINITION 和 source refs；不做最后一行覆盖，含冲突 Preview 不能 Confirm，必须人工修正来源后重传。需求中的 66 条来源减去 aut/sso 各自第二份重复定义，得到 64 个主档、2 个共享系统；这组统计已由结构相同且内容 synthetic 的测试验证，不能替代真实文件验收。
+
+上传→受限解析→source_rows/unique_systems/shared_systems/groups、added/changed/unchanged/conflicts/invalid Preview→确认→INVENTORY Draft→审批→激活资料版本。shared_systems 是共享 code 列表，UI 显示其数量。Preview 和 Confirm 不修改 Active。Inventory CR 使用独立 base_inventory_revision，并保留 Registry base freshness 检查；重复 Confirm 幂等。重新导入时按业务内容及组判断变化，来源时间/hash 不伪装成业务字段变化。按 code 合并，不删除未包含的系统或其他组 membership；输入已有组的来源由新版本替换，旧 InventoryVersion 仍保留。
+
+纯 Inventory 激活只 CAS 更新 InventoryHead 并写 InventoryVersion、CR 状态和 `INVENTORY_ACTIVATED` 审计（含前后 inventory revision），全部同事务。它不调用 RegistryAdmin.activate、不新增 Registry REGISTERED/ACTIVATED 事件，也不改变 Registry hash 或使业务快照过期。Registry head 的原有事务锁仍用于并发治理，但无版本修改。历史 Step 14.2 flat inventory 通过只读兼容投影，把旧系统分类保留为组、未知类型留空，不改写历史 JSON。
+
+## 公司主档与 Registry source 显式绑定
+
+`SystemDefinition.company_system_code` 是可选、人工填写的主档简称，一个公司系统可以关联多个 source instance，各自拥有 partner/product/protocol/channel。Admin 编辑时验证 code 已在当前 tenant 的 Active Inventory 中；未知 code 拒绝，名称相似不参与绑定。关联改动经过 Registry Draft/审批/激活，原始资料导入不产生关联。旧 Registry 没有该字段时按 None 读取，持久化历史 body/hash 保持不变。
+
+`GET /systems` 以所有 Active CompanySystemRecord 为主列表，显示类型、所属组、Agent source count、capability count 和配置状态，未配置系统也可分页查看。支持 system_code、system_name、system_type_label、inventory_group、configuration_status、has_capability 筛选。NOT_CONFIGURED 表示没有显式 source；PARTIALLY_CONFIGURED 表示有关联 source 但至少一个没有 capability；CONFIGURED 表示所有关联 source 都有 capability。此状态表示配置完整度，不表示当前路由可用性或执行授权，DISABLED/过期仍由 Runtime 检查。
+
+详情将“公司原始资料”（简介、功能、组、来源文件及 sheet/row）和“Agent 能力配置”（sources、Tool、Claims、Authority、Partner/Product/Protocol、Channel/Status）分别展示，没有能力时明确提示“尚未配置 Agent 能力”。没有主档的既有 Registry sources 仍可在 Registry 版本与 Draft 配置中查看，不会从 source 名称虚构公司主档。
 
 Excel 的 authority、Tool、WRITE 等额外列不会被映射。AgentCapabilityConfiguration 仍由独立 RegistryDefinition 管理，只有显式人工配置和审批才能更新。系统名称“支付系统”不证明任何 Claim 权威性，导入不能自动绑定 PAYMENT_FINALITY。
 
-上传限制为 XLSX 5 MB、解压总量 25 MB、300 个 ZIP entries、5000 数据行、100 列；拒绝宏、公式、损坏 ZIP、重复编码和无效行。openpyxl 以只读模式解析，关闭 external link 保留，使用 defusedxml；读取/解析异常统一返回安全错误。存在 invalid 行就不能确认，不静默丢弃问题资料。HTTP 请求体另限制 6 MB。
+上传限制为 XLSX 5 MB、解压总量 25 MB、300 个 ZIP entries、整个 Workbook 5000 数据行、100 列；拒绝宏、公式、外部 workbook links/外部 hyperlink relationships、损坏 ZIP、冲突定义和无效行。openpyxl 以只读模式解析，使用 defusedxml；读取/解析异常统一返回安全错误。同 code 的相同定义合法共享；存在 invalid 或 conflicts 才阻止确认，不静默丢弃问题资料。HTTP 请求体另限制 6 MB。
+
+## 本地真实文件验收与保密
+
+真实工作簿不提交 Git、不复制到 tests fixture、不输出原始清单/简介/功能。`.gitignore` 额外忽略指定中文文件名；这只是防误加保护，不能替代企业仓库治理。公开测试用同样两个 Sheet、merged/blank 分组、表头以及 66/64/2 结构的全 synthetic 工作簿，未复制真实系统描述。
+
+默认跳过 `tests/test_local_real_inventory.py`。只有显式设置环境变量才读取本地原文件；不上传、不调用 Admin API、不保存 Preview/主档，也不执行任何模型操作。输出仅包含计数、hash、预期共享 code 是否存在和错误码摘要，不输出文件路径或单元格内容：
+
+```powershell
+$env:LOCAL_REAL_INVENTORY_XLSX='C:\private\系统中英文名对照及简介-v20240715bylibo.xlsx'
+.venv\Scripts\python -m pytest tests/test_local_real_inventory.py -q -s
+Remove-Item Env:LOCAL_REAL_INVENTORY_XLSX
+```
+
+正常统计要求 2 sheets、66 source rows、64 unique systems、共享 code 包含 aut/sso，且无 invalid/conflicts。本次在本地找到指定工作簿后，仅对单独测试进程设置该变量，统计验收为 1 passed：2 sheets、66 rows、64 unique systems、2 shared systems、aut/sso 校验通过、0 invalid、0 conflict。日志 `.local/step1421-local-real.log` 只含统计/hash/错误摘要；完整常规套件仍默认跳过该 opt-in 用例。文件 SHA-256：`fd14f73cc60d548b529db6e320a55f509a1695f95fc16651aa56cbdb8c0ebd86`。真实内容未进入 API Preview 持久化、演示数据库或公开测试文件。
 
 ## Secret / CSRF 边界
 
@@ -125,7 +156,7 @@ System credential_ref 仅服务器保存，GET 默认 `[MASKED]`；PATCH 只接�
 
 新增 registry_change_requests、registry_admin_audit、registry_inventory_heads、registry_inventory_versions、registry_inventory_previews。原 Registry 版本、head、来源与 Case revision 表继续使用。
 
-Audit 记录 CREATE_DRAFT、EDIT_DRAFT、IMPORT_PREVIEW、IMPORT_CONFIRMED、SUBMITTED、APPROVED、REJECTED、ACTIVATED、ROLLBACK_REQUESTED、ROLLED_BACK、CANCELED、SUPERSEDED，以及 actor、time、request_id、before/after version、CR ID。Admin Audit 没有 PATCH/DELETE API；应用仅 append，历史版本也不修改。平台 DBA 的数据库权限治理属于部署职责，不把应用 append-only 冒充不可篡改 WORM 存储。没有在日志/Audit 保存 token、真实 credential 或模型私有推理。
+Audit 记录 CREATE_DRAFT、EDIT_DRAFT、IMPORT_PREVIEW、IMPORT_CONFIRMED、SUBMITTED、APPROVED、REJECTED、ACTIVATED、INVENTORY_ACTIVATED、ROLLBACK_REQUESTED、ROLLED_BACK、CANCELED、SUPERSEDED，以及 actor、time、request_id、before/after version、CR ID。INVENTORY_ACTIVATED 额外记录前后 Inventory Revision，审批/拒绝记录有界纯文本 decision_comment。Admin Audit 没有 PATCH/DELETE API；应用仅 append，历史版本也不修改。平台 DBA 的数据库权限治理属于部署职责，不把应用 append-only 冒充不可篡改 WORM 存储。没有在日志/Audit 保存 token、真实 credential 或模型私有推理。
 
 ## API 概览
 
@@ -166,7 +197,7 @@ npm run build
 
 没有实现自建密码、完整企业 IAM、真实公司 SSO 凭据、Vault/KMS、动态插件、Vector/Embedding、Multi-Agent、LangGraph 或 Money Movement。OIDC/反向代理配置与公司 SSO 联调仍是部署工作；本地和离线测试不等于完成公司生产上线。
 
-## 本次实际验收记录
+## Step 14.2 历史验收记录
 
 新增 42 项管理后台测试；Step 14.1 的 1299 项既有后端测试保留，总计 1341 项。修复了独立后台测试暴露的 Recovery→Ledger 表元数据导入顺序依赖，仅增加声明式表依赖，不改变副作用行为。
 
@@ -182,3 +213,27 @@ npm run build
 实际日志位于 `.local/step142-standalone-final.log`、`.local/step142-standalone-pg-final.log`、`.local/step142-final-full-sqlite.log`、`.local/step142-final-full-postgres.log`、`.local/step142-ui-final-verified.log`、`.local/step142-ui-build-final.log`。SQLite 跳过 1 项 PostgreSQL 专用测试和 2 项可选在线 LLM 测试；PostgreSQL 只跳过这 2 项在线 LLM 测试。两组后端全量各有 3 条既有 Starlette/AnyIO 弃用提示。
 
 前端在后端并行测试期间两次出现超时；测试数据库完成检查点并关闭后，以 `npm test -- --maxWorkers=1 --no-file-parallelism` 独立复跑全部通过，没有放宽断言或超时。离线治理 Demo 的实际 CR/Impact/Diff/Audit 输出为 `.local/step142-demo.json`。本次浏览器验收只创建和提交 synthetic Draft，没有进行真实金融操作。
+
+
+## Step 14.2.1 验收记录
+
+本次新增 38 项 synthetic Inventory 后端用例、1 项默认跳过的本地真实文件统计测试和 8 项前端用例。现有后台回归仅按新语义调整拒绝原因、Membership 来源路径、冲突分类和 Impact 字段；四眼、权限、CAS、原子审计、Runtime 重验等原断言保留。
+
+| 验证 | 结果 |
+|---|---|
+| SQLite Inventory + Admin + Registry + Route | 145 passed；可选真实文件另 1 skipped，66.44s |
+| PostgreSQL Inventory + Admin + Registry + Route | 145 passed，82.72s |
+| 两库并发覆盖 | 上述定向集分别包含 5 项并发 CAS 测试：Inventory、Registry、Route、Admin 激活、Admin 审批 |
+| Frontend（含 Investigation Console） | 39 passed，36.40s |
+| Production build | TypeScript + Vite 通过，保留大于 500 kB bundle 提示 |
+| SQLite full | 1376 passed / 4 skipped / 3 warnings，916.02s |
+| PostgreSQL full | 1377 passed / 3 skipped / 3 warnings，764.12s |
+| LOCAL_REAL_INVENTORY_XLSX 单独 opt-in | 1 passed，0.44s；只读统计，无复制/上传/内容输出 |
+
+定向日志：`.local/step1421-targeted-sqlite-final.log`、`.local/step1421-targeted-postgres.log`。前端及构建：`.local/step1421-frontend.log`、`.local/step1421-build.log`。全量：`.local/step1421-full-sqlite.log`、`.local/step1421-full-postgres.log`。
+
+浏览器验收使用独立 synthetic 数据库：主列表展示未配置系统；筛选 aut 显示两个所属组、两个显式 source 和两个 capability；详情实际展示原始简介、功能、两份 sheet/row 来源与独立 Agent 配置。验收页面和临时服务已关闭。统计与 Inventory 激活事件的本地输出为 `.local/step1421-synthetic-summary.json`，明确标注 SYNTHETIC（66 source rows / 64 unique systems / 2 shared systems）。
+
+新增 company_system_code 为可选 JSON 字段；Inventory/CR/Audit 沿用原有 JSON 表结构，无新增 SQL 列。旧 Registry 内容先按持久化原始字节验证 hash，再通过模型补缺省值；旧 Inventory 使用读取兼容层，禁止就地改写历史版本。本阶段没有启动 Step 15，没有 Vector、Embedding、Multi-Agent、LangGraph、Money Movement 或求职包装。
+
+两组全量各收集 1380 项。SQLite 默认跳过 PostgreSQL 专用测试、两个在线 LLM 测试和本地真实文件 opt-in；PostgreSQL 跳过后面三项。真实文件已另行设置环境变量独立验收通过，因此默认跳过不表示真实 schema 尚未验证。三个 warning 是既有 Starlette/AnyIO 弃用提示在测试控制进程和两个 worker 中重复出现。

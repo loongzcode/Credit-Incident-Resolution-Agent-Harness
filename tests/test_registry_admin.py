@@ -58,7 +58,7 @@ def draft(x, user="editor", edited=True):
 
 def act(x, cr, action, user):
     return request(x, "POST", f'/change-requests/{cr["change_request_id"]}/{action}', user=user,
-                   json=dict(expected_revision=cr["revision"]))
+                   json=dict(expected_revision=cr["revision"], **({"decision_comment": "synthetic rejection reason"} if action == "reject" else {})))
 
 
 def approved(x, cr=None):
@@ -198,7 +198,7 @@ def test_impact_includes_removed_capability_type(console):
         title=cr["title"], reason=cr["reason"], definition=definition))
     assert r.status_code == 200, r.text
     impact = request(x, "GET", f'/change-requests/{cr["change_request_id"]}/impact').json()
-    assert "READ_ACCOUNTING_ENTRY" in impact["affected_capability_types"]
+    assert "READ_ACCOUNTING_ENTRY" in impact["changed_capability_types"]
 
 
 def workbook(extra=None):
@@ -231,13 +231,13 @@ def test_excel_import_preserves_capabilities_and_cannot_create_authority_or_writ
     assert x.repo.current() == before
     row = request(x, "GET", "/inventory").json()["items"][0]
     assert "authority" not in row and "WRITE" not in row
-    assert row["source_metadata"]["source_row_ref"].endswith("!2")
-    assert len(row["source_metadata"]["source_file_hash"]) == 64
+    assert row["memberships"][0]["source_metadata"]["source_row_ref"].endswith("!2")
+    assert len(row["memberships"][0]["source_metadata"]["source_file_hash"]) == 64
 
 
 def test_excel_invalid_rows_cannot_confirm(console):
     x = console; p = import_preview(x, workbook(["PAY-DEMO", "duplicate"])).json()
-    assert p["invalid"]
+    assert p["conflicts"]
     assert request(x, "POST", "/import/confirm", json=dict(preview_id=p["preview_id"], title="x", reason="x")).status_code == 422
 
 

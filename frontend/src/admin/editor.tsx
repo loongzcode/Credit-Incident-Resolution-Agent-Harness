@@ -87,6 +87,7 @@ function SystemEditor({ definition, catalog, onChange }: { definition: Definitio
       <label>System ID<Input value={system.system_id} disabled={!!system.credential_ref} onChange={e=>{const id=e.target.value;onChange({...definition,
         systems:definition.systems.map(s=>s===system?{...s,system_id:id}:s),capabilities:definition.capabilities.map(c=>c.system_id===system.system_id?{...c,system_id:id}:c)});}} /></label>
       <label>系统名称<Input aria-label="系统名称" value={system.display_name} onChange={e => update('display_name', e.target.value)} /></label>
+      <label>公司系统简称（显式绑定）<Input aria-label="公司系统简称绑定" value={system.company_system_code||''} maxLength={100} placeholder="留空表示未绑定；须填写已激活主档简称" onChange={e=>update('company_system_code',e.target.value||null)}/></label>
       <label>System type<Select value={system.system_type} options={options(catalog.system_types)} onChange={v => update('system_type', v)} /></label>
       <label>Source channel<Select value={system.source_channel} options={options(catalog.source_channels)} onChange={v => update('source_channel', v)} /></label>
       <label>Owner team<Input value={system.owner_team} onChange={e => update('owner_team', e.target.value)} /></label>

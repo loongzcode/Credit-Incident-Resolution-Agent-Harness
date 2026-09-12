@@ -36,6 +36,7 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-ra"
 markers = [
+    "local_inventory: optional local confidential workbook statistics only; LOCAL_REAL_INVENTORY_XLSX required",
     "postgres: requires TEST_POSTGRES_URL pointing to a dedicated test database",
     "llm: optional live provider test; RUN_LLM_TESTS=1, OPENAI_API_KEY and PLANNER_MODEL required",
 ]

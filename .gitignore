@@ -14,3 +14,5 @@ frontend/node_modules/
 frontend/dist/
 frontend/*.tsbuildinfo
 frontend/.env.local
+# Confidential company inventory must never become a public fixture.
+系统中英文名对照及简介-v20240715bylibo.xlsx

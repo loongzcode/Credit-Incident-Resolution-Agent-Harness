@@ -135,6 +135,8 @@ class RoutingScope(Model):
 
 class SystemDefinition(EffectiveDefinition):
     system_id: Ref
+    # Explicit human-managed master-data binding; never inferred from a name.
+    company_system_code: Ref | None = None
     display_name: Annotated[str, Field(min_length=1, max_length=120)]
     system_type: SystemType
     source_channel: SourceChannel

@@ -1,6 +1,6 @@
 from enum import StrEnum
 from typing import Annotated, Literal
-from pydantic import AwareDatetime, Field, JsonValue
+from pydantic import AwareDatetime, Field, JsonValue, field_validator, model_validator
 from credit_harness.domain.models import Model
 from credit_harness.registry.models import (SystemDefinition, CapabilityDefinition, ClaimAuthorityRule, Hash, Ref)
 
@@ -56,6 +56,16 @@ class EditDraft(Model):
 
 class Transition(Model):
     expected_revision: int = Field(ge=1)
+    decision_comment: str | None = Field(default=None, max_length=2000)
+
+    @field_validator("decision_comment")
+    @classmethod
+    def plain_comment(cls, value):
+        if value is not None:
+            if "<" in value or ">" in value or any(ord(c) < 32 and c not in "\n\t\r" for c in value):
+                raise ValueError("decision comments must be plain text")
+            return value.strip() or None
+        return value
 
 
 class RollbackRequest(CreateDraft):
@@ -71,13 +81,31 @@ class SourceMetadata(Model):
     imported_by: str = Field(max_length=200)
 
 
-class CompanySystemInventory(Model):
+class CompanySystemMembership(Model):
+    system_code: Ref
+    inventory_group: str = Field(min_length=1, max_length=300)
+    source_metadata: SourceMetadata
+
+
+class CompanySystemRecord(Model):
     system_code: Ref
     system_name: Annotated[str, Field(min_length=1, max_length=300)]
-    system_category: str = Field(max_length=300)
+    system_type_label: str = Field(max_length=300)
     description: str = Field(max_length=10000)
     main_functions: str = Field(max_length=10000)
-    source_metadata: SourceMetadata
+    memberships: tuple[CompanySystemMembership, ...] = Field(min_length=1, max_length=5000)
+
+    @model_validator(mode="after")
+    def membership_binding(self):
+        if any(m.system_code != self.system_code for m in self.memberships):
+            raise ValueError("membership must bind the same company system")
+        return self
+
+
+class AgentConfigurationStatus(StrEnum):
+    NOT_CONFIGURED = "NOT_CONFIGURED"
+    PARTIALLY_CONFIGURED = "PARTIALLY_CONFIGURED"
+    CONFIGURED = "CONFIGURED"
 
 
 class ChangeRequest(Model):
@@ -99,6 +127,8 @@ class ChangeRequest(Model):
     approved_at: AwareDatetime | None = None
     rejected_by: str | None = None
     rejected_at: AwareDatetime | None = None
+    approval_comment: str | None = None
+    rejection_reason: str | None = None
     activated_by: str | None = None
     activated_at: AwareDatetime | None = None
 

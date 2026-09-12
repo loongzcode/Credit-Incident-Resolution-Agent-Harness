@@ -6,7 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.security import HTTPBearer
 from pydantic import ValidationError
 from .identity import IdentityError, LocalIdentityProvider
-from .models import (AdminError, CreateDraft, EditDraft, Transition, RollbackRequest, ImportConfirm)
+from .models import (AdminError, CreateDraft, EditDraft, Transition, RollbackRequest, ImportConfirm, AgentConfigurationStatus)
 from .impact import analyze
 from credit_harness.registry.models import RegistryError
 
@@ -103,19 +103,17 @@ def create_admin_app(service, identity_provider, *, allowed_origins=(), local_mo
                    for t in ToolCapabilityCatalog.entries])
 
     @app.get(prefix + "/systems")
-    def systems(page: int = Query(1, ge=1), size: int = Query(20, ge=1, le=100), user=Depends(actor)):
-        data = service.read(user, "definition")["systems"]
-        return dict(items=data[(page-1)*size:page*size], total=len(data))
+    def systems(page: int = Query(1, ge=1), size: int = Query(20, ge=1, le=100),
+                system_code: str | None = Query(None, max_length=100), system_name: str | None = Query(None, max_length=300),
+                system_type_label: str | None = Query(None, max_length=300), inventory_group: str | None = Query(None, max_length=300),
+                configuration_status: AgentConfigurationStatus | None = None, has_capability: bool | None = None, user=Depends(actor)):
+        return service.company_systems(user, page=page, size=size, system_code=system_code, system_name=system_name,
+            system_type_label=system_type_label, inventory_group=inventory_group,
+            configuration_status=configuration_status, has_capability=has_capability)
 
     @app.get(prefix + "/systems/{system_id}")
     def system(system_id: str, user=Depends(actor)):
-        data = service.read(user, "definition")
-        found = next((s for s in data["systems"] if s["system_id"] == system_id), None)
-        if found is None:
-            raise AdminError("SYSTEM_NOT_FOUND", 404)
-        caps = [c for c in data["capabilities"] if c["system_id"] == system_id]
-        return dict(system=found, capabilities=caps,
-                    authority=[r for r in data["authority_rules"] if r["capability_id"] in {c["capability_id"] for c in caps}])
+        return service.company_systems(user, code=system_id)
 
     @app.get(prefix + "/versions")
     def versions(page: int = Query(1, ge=1), size: int = Query(20, ge=1, le=100), user=Depends(actor)):
@@ -155,7 +153,8 @@ def create_admin_app(service, identity_provider, *, allowed_origins=(), local_mo
 
     @app.post(prefix + "/change-requests/{cr_id}/{action}")
     def transition(cr_id: str, action: str, body: Transition, request: Request, user=Depends(actor)):
-        return service.transition(user, cr_id, action, body.expected_revision, request.state.request_id)
+        return service.transition(user, cr_id, action, body.expected_revision, request.state.request_id,
+                                  decision_comment=body.decision_comment)
 
     @app.get(prefix + "/inventory")
     def inventory(page: int = Query(1, ge=1), size: int = Query(20, ge=1, le=100), user=Depends(actor)):
