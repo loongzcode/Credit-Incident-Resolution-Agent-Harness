@@ -1,0 +1,45 @@
+name: release-candidate
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: harness_test
+          POSTGRES_PASSWORD: synthetic-ci-only
+          POSTGRES_DB: harness_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U harness_test -d harness_test"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      TEST_POSTGRES_URL: postgresql+psycopg://harness_test:synthetic-ci-only@127.0.0.1:5432/harness_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22', cache: npm, cache-dependency-path: frontend/package-lock.json}
+      - run: pip install -c requirements.lock -e '.[llm,test-parallel]'
+      - run: sudo apt-get update && sudo apt-get install -y postgresql-client-16
+      - run: PGPASSWORD=synthetic-ci-only psql -h 127.0.0.1 -U harness_test -d harness_test -c 'CREATE EXTENSION IF NOT EXISTS vector'
+      - run: npm ci --prefix frontend
+      - run: python -m scripts.verify_release
+      - name: Build same-source images
+        run: |
+          docker build --target api --build-arg VCS_REF=$(git rev-parse HEAD) -t credit-harness-api:$(git rev-parse HEAD) .
+          docker build --target worker --build-arg VCS_REF=$(git rev-parse HEAD) -t credit-harness-worker:$(git rev-parse HEAD) .
+          docker build -f deploy/frontend.Dockerfile -t credit-harness-frontend:$(git rev-parse HEAD) .
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-verification
+          path: |
+            .local/release/*/release-verification.json
+            .local/release/*/*.xml
+            .local/release/*/*.log
+          include-hidden-files: true

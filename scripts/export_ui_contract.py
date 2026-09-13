@@ -2,8 +2,10 @@
 import json
 from pathlib import Path
 
-from credit_harness.api.ui import create_ui_app
+from credit_harness.api.ui import create_production_ui_app, create_ui_app
 
 if __name__ == "__main__":
     target = Path(__file__).resolve().parents[1] / "frontend" / "openapi.json"
-    target.write_text(json.dumps(create_ui_app({}).openapi(), indent=2) + "\n", encoding="utf-8")
+    target.write_text(json.dumps(create_production_ui_app({}).openapi(), indent=2) + "\n", encoding="utf-8")
+
+    target.with_name("openapi-legacy.json").write_text(json.dumps(create_ui_app({}).openapi(), indent=2) + "\n", encoding="utf-8")

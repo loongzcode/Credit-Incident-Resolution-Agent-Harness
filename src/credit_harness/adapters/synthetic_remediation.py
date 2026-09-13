@@ -31,6 +31,9 @@ class SyntheticTaskRow(Base):
 
 
 def create_synthetic_effect_schema(engine):
+    from credit_harness.production.schema import runtime_managed
+    if runtime_managed(engine):
+        return  # schema version is validated by the production startup gate
     Base.metadata.create_all(engine, tables=[SyntheticEffectRow.__table__, SyntheticTaskRow.__table__])
 
 

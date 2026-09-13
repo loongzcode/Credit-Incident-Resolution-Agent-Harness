@@ -77,6 +77,9 @@ def open_engine(url: str) -> Engine:
 
 
 def create_schema(engine: Engine) -> None:
+    from credit_harness.production.schema import runtime_managed
+    if runtime_managed(engine):
+        return  # schema version is validated by the production startup gate
     """Additive bootstrap, including Step 2.5 provenance columns on existing DBs."""
     from .migrations import add_dispatch_correlation_columns
 

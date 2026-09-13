@@ -51,6 +51,9 @@ class VectorRepository:
         self.sources, self.engine = sources, sources.engine
 
     def create_space(self, provider, now):
+        from credit_harness.production.schema import runtime_managed
+        if runtime_managed(self.engine):
+            raise RetrievalError("space creation requires migration/index administrator")
         fields = dict(provider=provider.provider, model_id=provider.model_id, dimension=provider.dimension,
             projection_version=PROJECTION_VERSION, normalization_version=NORMALIZATION_VERSION,
             embedding_contract_version=provider.embedding_contract_version)
@@ -124,6 +127,27 @@ class VectorRepository:
             row.status = "ACTIVE"
             head.active_space = space_id
 
+    def rollback_space(self, space_id, provider, *, actor, now):
+        if not actor or len(actor) > 128:
+            raise RetrievalError("audited administrator required")
+        from credit_harness.production.tables import SpaceAdminAuditRow
+        with Session(self.engine) as session, session.begin():
+            session.execute(update(SpaceHeadRow).where(SpaceHeadRow.singleton == 1).values(singleton=1))
+            head = session.get(SpaceHeadRow, 1)
+            row = session.get(SpaceRow, space_id)
+            space = self.read_space(row)
+            if space.status != SpaceStatus.RETIRED or not head or not head.active_space:
+                raise RetrievalError("rollback requires a retired complete space")
+            self.validate_provider(space, provider)
+            self.assert_complete(session, space, all_tenants=True)
+            old = head.active_space
+            session.execute(update(SpaceRow).where(SpaceRow.status == "ACTIVE").values(status="RETIRED"))
+            row.status = "ACTIVE"
+            head.active_space = space_id
+            session.add(SpaceAdminAuditRow(audit_id=digest(dict(action="ROLLBACK", old=old,
+                new=space_id, actor=actor, time=now.isoformat())), action="ROLLBACK", actor=actor,
+                from_space=old, to_space=space_id, created_at=now.timestamp()))
+
     @staticmethod
     def validate_provider(space, provider):
         if (space.provider, space.model_id, space.dimension, space.embedding_contract_version,
@@ -149,7 +173,12 @@ class VectorRepository:
         current = self.read_space(session.get(SpaceRow, space.space_id))
         if current.status != SpaceStatus.ACTIVE or current != space or not 1 <= top_k <= 20:
             raise RetrievalError("invalid recall space or budget")
-        self.assert_complete(session, space)
+        from credit_harness.production.schema import runtime_managed
+        if runtime_managed(self.engine):
+            from credit_harness.production.completeness import require_ready
+            require_ready(session, self.sources.tenant_id, space.space_id)
+        else:
+            self.assert_complete(session, space)
         return normalize(vector, space.dimension)
 
 
@@ -162,6 +191,7 @@ class PgVectorRepository(VectorRepository):
     def search(self, kind, space, scope, case_id, vector, top_k=20):
         row = vector_table(kind)
         with Session(self.engine) as session:
+            session.connection().exec_driver_sql("SET LOCAL statement_timeout = '3000ms'")
             vector = self._admit(session, space, vector, top_k)
             # Iterative scans keep filtered ANN recall useful. SQL eligibility is
             # applied before returned candidates; final primary checks run again.

@@ -44,4 +44,7 @@ class GuidanceAuditRow(Base):
 
 
 def create_memory_schema(engine):
+    from credit_harness.production.schema import runtime_managed
+    if runtime_managed(engine):
+        return  # schema version is validated by the production startup gate
     Base.metadata.create_all(engine, tables=[ExperienceRow.__table__, SkillRow.__table__, GuidanceAuditRow.__table__])

@@ -87,6 +87,9 @@ def synchronize_effect(session, ledger):
 
 
 def create_recovery_schema(engine):
+    from credit_harness.production.schema import runtime_managed
+    if runtime_managed(engine):
+        return  # schema version is validated by the production startup gate
     from sqlalchemy import select, update
     from sqlalchemy.orm import Session
     from credit_harness.authorization.tables import EffectRow

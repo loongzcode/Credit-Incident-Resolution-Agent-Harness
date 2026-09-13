@@ -3,7 +3,7 @@
     "case_id": "CASE-JD202609100001",
     "internal_order_id": "JD202609100001",
     "status": "INVESTIGATING",
-    "updated_at": "2026-09-12T20:06:30.793640Z",
+    "updated_at": "2026-09-13T04:21:17.078579Z",
     "budget": {
       "max_tool_calls": 20,
       "used_tool_calls": 6
@@ -42,7 +42,7 @@
           "E-476373129ba1f15df7a92153e101b824413f85108738385a16c398cbcf9ab75d"
         ],
         "evidence_id": "E-476373129ba1f15df7a92153e101b824413f85108738385a16c398cbcf9ab75d",
-        "observation_id": "82e6bfef-5318-4f39-9fe1-cf32a677b761",
+        "observation_id": "66671d8e-c454-482d-a2b9-1baee541b5c4",
         "event_time": null,
         "strength": "HINT",
         "extractor_version": "4"
@@ -71,7 +71,7 @@
           "E-9f33c05bf41ddb6091f5a085dfb771cad8763b0035452de5323c0e6b5dc752cb"
         ],
         "evidence_id": "E-9f33c05bf41ddb6091f5a085dfb771cad8763b0035452de5323c0e6b5dc752cb",
-        "observation_id": "4e7fd948-e9af-4a86-b0b2-2f94af8958a1",
+        "observation_id": "ca1a2cd6-1297-4f16-a1d2-a869dc550cbd",
         "event_time": null,
         "strength": "HINT",
         "extractor_version": "4"
@@ -100,7 +100,7 @@
           "E-a90262a9d7715f0ea0890573837e876ea71f2c01243dffb7f910b5cc2e21bc95"
         ],
         "evidence_id": "E-a90262a9d7715f0ea0890573837e876ea71f2c01243dffb7f910b5cc2e21bc95",
-        "observation_id": "bef85752-3ad6-4534-9466-68a8a8c20418",
+        "observation_id": "ab9d03c0-34a9-4099-82cf-964bbaaa6f09",
         "event_time": null,
         "strength": "HINT",
         "extractor_version": "4"
@@ -129,7 +129,7 @@
           "E-d19137a7d380ec59e1464f06db744f7d8bfbc66e0bdb73a2e66738ee62648384"
         ],
         "evidence_id": "E-d19137a7d380ec59e1464f06db744f7d8bfbc66e0bdb73a2e66738ee62648384",
-        "observation_id": "36873587-217a-4729-a1cd-c9a783460f85",
+        "observation_id": "a2921fcb-b992-4a16-9b96-a8738df8da22",
         "event_time": null,
         "strength": "HINT",
         "extractor_version": "4"
@@ -158,7 +158,7 @@
           "E-dcac828ef6eaffc35cfd2ef24b4e5fd704dec6700bd69b836d2633de8ba0c4e2"
         ],
         "evidence_id": "E-dcac828ef6eaffc35cfd2ef24b4e5fd704dec6700bd69b836d2633de8ba0c4e2",
-        "observation_id": "9223fea3-df28-49e8-9575-882cd8d1055c",
+        "observation_id": "eb23c3d1-c596-42ad-bd5c-5bce3c6b4cac",
         "event_time": null,
         "strength": "HINT",
         "extractor_version": "4"
@@ -187,7 +187,7 @@
           "E-e0706496a72b56b443c978fd1a201982b1f311faab3ce32f2d8384d91535f85e"
         ],
         "evidence_id": "E-e0706496a72b56b443c978fd1a201982b1f311faab3ce32f2d8384d91535f85e",
-        "observation_id": "da17f9f6-8ed7-4332-a015-ecc553bff084",
+        "observation_id": "eb1319db-7061-44f7-9510-6f736a61f57e",
         "event_time": null,
         "strength": "HINT",
         "extractor_version": "4"
@@ -552,7 +552,7 @@
     ]
   },
   "context": {
-    "snapshot_id": "eafea46356b3f4ddd51071ccd8cd79efc9018984edc90423ecaf6a78f32664ec",
+    "snapshot_id": "431efe7452b2827782c9de9201511d36ed16744ef313919d7a0a5d73d69fdb68",
     "section_trust": {
       "task": "TRUSTED_CONTROL",
       "financial_subject": "TRUSTED_CONTROL",
@@ -575,10 +575,10 @@
     "context_policy_version": "5",
     "hypothesis_rule_version": "5",
     "assembled_at": "2026-09-10T01:31:25Z",
-    "case_fingerprint": "06b95e13e314e677d2da5f5f9a8bb6dce2f8d13d279bf3d45af72f8f85fb62b0",
-    "evidence_fingerprint": "ef49fcf93fa1f99b3a54c616773afda412b5d5ffa9418633921556dba42f7e4b",
-    "hypothesis_input_fingerprint": "ea1d411aa7295b8210b0dea44b7de67915c8121739aace0be196754776ee7c33",
-    "hypothesis_graph_fingerprint": "e34ace46537698617058f4eabbc78b07a7326bf0983bad50bbf3171a1bb9db93",
+    "case_fingerprint": "94fbc0a544377a0a77387920101a476d16d392270c26b3ceeee932fff04ab337",
+    "evidence_fingerprint": "e5a3ee6aa7963b06633178e1020a20c84dcfac2b4aaf2cc8f153411b08529cc9",
+    "hypothesis_input_fingerprint": "6f85be71749582ecc0761b955b6db2bc59aa3eb7090fa35b7b72e90f1fb312b4",
+    "hypothesis_graph_fingerprint": "27caad6cdde9f21b1b14d1f9a398f70a840f4e92ab45dbb5fabd12fd51083eee",
     "policy_fingerprint": "24cb022450336d746ec22395b92577a9f1c2d24ddd5ac1fdbdc3450c9e7f3824",
     "task": {
       "goal": "确认 JD202609100001 的真实放款状态，识别三方链路未收敛原因，在当前阶段只进行调查，不执行任何生产修复。",
@@ -1174,22 +1174,22 @@
     }
   },
   "frame": {
-    "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+    "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
     "case_id": "CASE-JD202609100001",
-    "case_revision": "2026-09-12T20:06:30.793640Z",
-    "evidence_fingerprint": "49960787f8220624b32142157d566e1dcc82fe90afa9623c18a16ac7af065e9d",
+    "case_revision": "2026-09-13T04:21:17.078579Z",
+    "evidence_fingerprint": "70e99bc2f6e440cb1b68e46c1a444349e7b9183bf9fb21becfe41925fff4a41e",
     "registry_version": null,
     "route_revision": null,
     "latest_agent_run": null,
-    "assembled_at": "2026-09-12T20:06:31.030206Z",
+    "assembled_at": "2026-09-13T04:21:17.186051Z",
     "route_summary": [],
     "investigation_allowed": true,
     "current_evidence_total": 0,
     "case_summary": {
       "case_id": "CASE-JD202609100001",
-      "internal_order_id": "ORDER-5cd9f7e42f58bb065d50",
+      "internal_order_id": "ORDER-67411a376e17320e50ba",
       "status": "INVESTIGATING",
-      "updated_at": "2026-09-12T20:06:30.793640Z",
+      "updated_at": "2026-09-13T04:21:17.078579Z",
       "budget": {
         "max_tool_calls": 20,
         "used_tool_calls": 6
@@ -1197,9 +1197,9 @@
       "financial_subject": {
         "expected_principal_minor": 2000000,
         "currency": "CNY",
-        "customer_ref": "CUS-45e839b67f37a9eeb165",
-        "expected_beneficiary_ref": "BEN-5203ac0212415f345369",
-        "expected_account_ref": "ACC-c511d78af90647ddb14d"
+        "customer_ref": "CUS-9d95539ede8e3b7401f6",
+        "expected_beneficiary_ref": "BEN-4a544600f4a75291e449",
+        "expected_account_ref": "ACC-572f6305f2d1b88d2b53"
       }
     },
     "financial_truth": [
@@ -1688,9 +1688,9 @@
           "value": "TIMEOUT",
           "subject": {
             "kind": "ORDER",
-            "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+            "identifier": "SUBJECT-5b57b34d61d1f081cce6",
             "field": null,
-            "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+            "internal_order_id": "ORDER-67411a376e17320e50ba"
           },
           "business_time": "2026-09-10T09:31:25+08:00",
           "observed_at": "2026-09-10T09:31:25+08:00",
@@ -1707,7 +1707,7 @@
             "E-9f33c05bf41ddb6091f5a085dfb771cad8763b0035452de5323c0e6b5dc752cb"
           ],
           "evidence_id": "E-9f33c05bf41ddb6091f5a085dfb771cad8763b0035452de5323c0e6b5dc752cb",
-          "observation_id": "4e7fd948-e9af-4a86-b0b2-2f94af8958a1",
+          "observation_id": "ca1a2cd6-1297-4f16-a1d2-a869dc550cbd",
           "event_time": null,
           "strength": "HINT",
           "extractor_version": "4"
@@ -1717,9 +1717,9 @@
           "value": "NOT_FOUND",
           "subject": {
             "kind": "ORDER",
-            "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+            "identifier": "SUBJECT-5b57b34d61d1f081cce6",
             "field": null,
-            "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+            "internal_order_id": "ORDER-67411a376e17320e50ba"
           },
           "business_time": "2026-09-10T09:30:00+08:00",
           "observed_at": "2026-09-10T09:31:10+08:00",
@@ -1736,7 +1736,7 @@
             "E-dcac828ef6eaffc35cfd2ef24b4e5fd704dec6700bd69b836d2633de8ba0c4e2"
           ],
           "evidence_id": "E-dcac828ef6eaffc35cfd2ef24b4e5fd704dec6700bd69b836d2633de8ba0c4e2",
-          "observation_id": "9223fea3-df28-49e8-9575-882cd8d1055c",
+          "observation_id": "eb23c3d1-c596-42ad-bd5c-5bce3c6b4cac",
           "event_time": null,
           "strength": "HINT",
           "extractor_version": "4"
@@ -1746,9 +1746,9 @@
           "value": "TIMEOUT",
           "subject": {
             "kind": "ORDER",
-            "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+            "identifier": "SUBJECT-5b57b34d61d1f081cce6",
             "field": null,
-            "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+            "internal_order_id": "ORDER-67411a376e17320e50ba"
           },
           "business_time": "2026-09-10T09:30:55+08:00",
           "observed_at": "2026-09-10T09:30:55+08:00",
@@ -1765,7 +1765,7 @@
             "E-e0706496a72b56b443c978fd1a201982b1f311faab3ce32f2d8384d91535f85e"
           ],
           "evidence_id": "E-e0706496a72b56b443c978fd1a201982b1f311faab3ce32f2d8384d91535f85e",
-          "observation_id": "da17f9f6-8ed7-4332-a015-ecc553bff084",
+          "observation_id": "eb1319db-7061-44f7-9510-6f736a61f57e",
           "event_time": null,
           "strength": "HINT",
           "extractor_version": "4"
@@ -1775,9 +1775,9 @@
           "value": "NOT_FOUND",
           "subject": {
             "kind": "ORDER",
-            "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+            "identifier": "SUBJECT-5b57b34d61d1f081cce6",
             "field": null,
-            "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+            "internal_order_id": "ORDER-67411a376e17320e50ba"
           },
           "business_time": "2026-09-10T09:30:00+08:00",
           "observed_at": "2026-09-10T09:30:40+08:00",
@@ -1794,7 +1794,7 @@
             "E-476373129ba1f15df7a92153e101b824413f85108738385a16c398cbcf9ab75d"
           ],
           "evidence_id": "E-476373129ba1f15df7a92153e101b824413f85108738385a16c398cbcf9ab75d",
-          "observation_id": "82e6bfef-5318-4f39-9fe1-cf32a677b761",
+          "observation_id": "66671d8e-c454-482d-a2b9-1baee541b5c4",
           "event_time": null,
           "strength": "HINT",
           "extractor_version": "4"
@@ -1804,9 +1804,9 @@
           "value": "TIMEOUT",
           "subject": {
             "kind": "ORDER",
-            "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+            "identifier": "SUBJECT-5b57b34d61d1f081cce6",
             "field": null,
-            "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+            "internal_order_id": "ORDER-67411a376e17320e50ba"
           },
           "business_time": "2026-09-10T09:30:25+08:00",
           "observed_at": "2026-09-10T09:30:25+08:00",
@@ -1823,7 +1823,7 @@
             "E-d19137a7d380ec59e1464f06db744f7d8bfbc66e0bdb73a2e66738ee62648384"
           ],
           "evidence_id": "E-d19137a7d380ec59e1464f06db744f7d8bfbc66e0bdb73a2e66738ee62648384",
-          "observation_id": "36873587-217a-4729-a1cd-c9a783460f85",
+          "observation_id": "a2921fcb-b992-4a16-9b96-a8738df8da22",
           "event_time": null,
           "strength": "HINT",
           "extractor_version": "4"
@@ -1833,9 +1833,9 @@
           "value": "NOT_FOUND",
           "subject": {
             "kind": "ORDER",
-            "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+            "identifier": "SUBJECT-5b57b34d61d1f081cce6",
             "field": null,
-            "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+            "internal_order_id": "ORDER-67411a376e17320e50ba"
           },
           "business_time": "2026-09-10T09:30:00+08:00",
           "observed_at": "2026-09-10T09:30:10+08:00",
@@ -1852,7 +1852,7 @@
             "E-a90262a9d7715f0ea0890573837e876ea71f2c01243dffb7f910b5cc2e21bc95"
           ],
           "evidence_id": "E-a90262a9d7715f0ea0890573837e876ea71f2c01243dffb7f910b5cc2e21bc95",
-          "observation_id": "bef85752-3ad6-4534-9466-68a8a8c20418",
+          "observation_id": "ab9d03c0-34a9-4099-82cf-964bbaaa6f09",
           "event_time": null,
           "strength": "HINT",
           "extractor_version": "4"
@@ -1860,25 +1860,26 @@
       ],
       "total": 6,
       "eligibility_denied_count": 0,
-      "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+      "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
       "next_cursor": null
     },
     "timeline": {
-      "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+      "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
       "items": [
         {
-          "trace_id": "CASECREATED-8c4bdc6effad585d006c",
+          "trace_id": "CASECREATED-fa679cf85feae8895f7d",
           "kind": "CaseCreated",
-          "occurred_at": "2026-09-12T20:06:30.293566Z",
+          "occurred_at": "2026-09-13T04:21:16.910387Z",
           "status": "CREATED",
           "fields": [],
           "evidence_refs": [],
           "related_refs": [],
           "warning": null,
-          "historical": false
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
         },
         {
-          "trace_id": "OBSERVATION-33d33c56121fb5761082",
+          "trace_id": "OBSERVATION-f64aacaca82e3de9214d",
           "kind": "Observation",
           "occurred_at": "2026-09-10T09:31:25+08:00",
           "status": "TIMEOUT",
@@ -1892,13 +1893,14 @@
             "E-9f33c05bf41ddb6091f5a085dfb771cad8763b0035452de5323c0e6b5dc752cb"
           ],
           "related_refs": [
-            "CALL_TOOL-ff6f3a3cf83397e23dab"
+            "CALL_TOOL-dd5559b249713209de8a"
           ],
           "warning": null,
-          "historical": false
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
         },
         {
-          "trace_id": "EVIDENCEPUBLISHED-c72e6c093af30c5444cd",
+          "trace_id": "EVIDENCEPUBLISHED-bc7225b7d11eff6fbb59",
           "kind": "EvidencePublished",
           "occurred_at": "2026-09-10T09:31:25+08:00",
           "status": "PUBLISHED",
@@ -1913,10 +1915,11 @@
           ],
           "related_refs": [],
           "warning": null,
-          "historical": false
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
         },
         {
-          "trace_id": "OBSERVATION-e473b523f0ff4defdefa",
+          "trace_id": "OBSERVATION-a4553766017661af54c8",
           "kind": "Observation",
           "occurred_at": "2026-09-10T09:31:10+08:00",
           "status": "NOT_FOUND",
@@ -1930,13 +1933,14 @@
             "E-dcac828ef6eaffc35cfd2ef24b4e5fd704dec6700bd69b836d2633de8ba0c4e2"
           ],
           "related_refs": [
-            "CALL_TOOL-bb91cfab179f9e654096"
+            "CALL_TOOL-8c278c5449f51cc28611"
           ],
           "warning": null,
-          "historical": false
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
         },
         {
-          "trace_id": "EVIDENCEPUBLISHED-13a2c8b6725277e696f1",
+          "trace_id": "EVIDENCEPUBLISHED-4d7b895e4234e3fd37a5",
           "kind": "EvidencePublished",
           "occurred_at": "2026-09-10T09:31:10+08:00",
           "status": "PUBLISHED",
@@ -1951,10 +1955,11 @@
           ],
           "related_refs": [],
           "warning": null,
-          "historical": false
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
         },
         {
-          "trace_id": "OBSERVATION-263157775b2e4cfa3314",
+          "trace_id": "OBSERVATION-d8dd38712c7148d02bba",
           "kind": "Observation",
           "occurred_at": "2026-09-10T09:30:55+08:00",
           "status": "TIMEOUT",
@@ -1968,13 +1973,14 @@
             "E-e0706496a72b56b443c978fd1a201982b1f311faab3ce32f2d8384d91535f85e"
           ],
           "related_refs": [
-            "CALL_TOOL-35498d6faa9daccc340b"
+            "CALL_TOOL-bd020854ed11796dd793"
           ],
           "warning": null,
-          "historical": false
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
         },
         {
-          "trace_id": "EVIDENCEPUBLISHED-a95924b35671afe444f5",
+          "trace_id": "EVIDENCEPUBLISHED-0d22b218f56bc87ff84e",
           "kind": "EvidencePublished",
           "occurred_at": "2026-09-10T09:30:55+08:00",
           "status": "PUBLISHED",
@@ -1989,10 +1995,11 @@
           ],
           "related_refs": [],
           "warning": null,
-          "historical": false
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
         },
         {
-          "trace_id": "OBSERVATION-2f605ec617a10f953247",
+          "trace_id": "OBSERVATION-d425efbfdc70396ebe2a",
           "kind": "Observation",
           "occurred_at": "2026-09-10T09:30:40+08:00",
           "status": "NOT_FOUND",
@@ -2006,13 +2013,14 @@
             "E-476373129ba1f15df7a92153e101b824413f85108738385a16c398cbcf9ab75d"
           ],
           "related_refs": [
-            "CALL_TOOL-46b8baebc5726786048c"
+            "CALL_TOOL-ff4eef668c8aade43399"
           ],
           "warning": null,
-          "historical": false
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
         },
         {
-          "trace_id": "EVIDENCEPUBLISHED-bd2ea9758753067f7887",
+          "trace_id": "EVIDENCEPUBLISHED-781b5e63df83ccff9c5f",
           "kind": "EvidencePublished",
           "occurred_at": "2026-09-10T09:30:40+08:00",
           "status": "PUBLISHED",
@@ -2027,10 +2035,11 @@
           ],
           "related_refs": [],
           "warning": null,
-          "historical": false
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
         },
         {
-          "trace_id": "OBSERVATION-83b7e473058b3b1d9a0a",
+          "trace_id": "OBSERVATION-aa4513ef108b9d0b52c5",
           "kind": "Observation",
           "occurred_at": "2026-09-10T09:30:25+08:00",
           "status": "TIMEOUT",
@@ -2044,170 +2053,27 @@
             "E-d19137a7d380ec59e1464f06db744f7d8bfbc66e0bdb73a2e66738ee62648384"
           ],
           "related_refs": [
-            "CALL_TOOL-8778f3bddb09a5299375"
+            "CALL_TOOL-963a5c275ffce383cb99"
           ],
           "warning": null,
-          "historical": false
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
         }
       ],
       "total": 19,
-      "next_cursor": "10.aa64048853d0edb09fc3eded71d758306430d9e1bd167b303dde960de898aee7"
+      "next_cursor": "10.6c3ead9d5653532966c6b0ea5af0603820d8f5db5d26959bab746b3c720a715f"
     },
     "planner_trace": {
-      "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+      "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
       "items": [],
       "total": 0,
       "next_cursor": null
     },
     "tool_trace": {
-      "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+      "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
       "items": [
         {
-          "trace_id": "CALL_TOOL-ff6f3a3cf83397e23dab",
-          "kind": "CALL_TOOL",
-          "occurred_at": null,
-          "status": "OBSERVED",
-          "fields": [
-            {
-              "name": "tool",
-              "value": "get_payment_transaction"
-            },
-            {
-              "name": "sequence",
-              "value": "6"
-            },
-            {
-              "name": "observation_status",
-              "value": "TIMEOUT"
-            },
-            {
-              "name": "observed_at",
-              "value": "2026-09-10T09:31:25+08:00"
-            },
-            {
-              "name": "claim_types",
-              "value": "SOURCE_LOOKUP_STATUS"
-            }
-          ],
-          "evidence_refs": [
-            "E-9f33c05bf41ddb6091f5a085dfb771cad8763b0035452de5323c0e6b5dc752cb"
-          ],
-          "related_refs": [
-            "OBSERVATION-33d33c56121fb5761082"
-          ],
-          "warning": "Dispatch timestamp was not recorded",
-          "historical": false
-        },
-        {
-          "trace_id": "CALL_TOOL-bb91cfab179f9e654096",
-          "kind": "CALL_TOOL",
-          "occurred_at": null,
-          "status": "OBSERVED",
-          "fields": [
-            {
-              "name": "tool",
-              "value": "get_fund_order"
-            },
-            {
-              "name": "sequence",
-              "value": "5"
-            },
-            {
-              "name": "observation_status",
-              "value": "NOT_FOUND"
-            },
-            {
-              "name": "observed_at",
-              "value": "2026-09-10T09:31:10+08:00"
-            },
-            {
-              "name": "claim_types",
-              "value": "SOURCE_LOOKUP_STATUS"
-            }
-          ],
-          "evidence_refs": [
-            "E-dcac828ef6eaffc35cfd2ef24b4e5fd704dec6700bd69b836d2633de8ba0c4e2"
-          ],
-          "related_refs": [
-            "OBSERVATION-e473b523f0ff4defdefa"
-          ],
-          "warning": "Dispatch timestamp was not recorded",
-          "historical": false
-        },
-        {
-          "trace_id": "CALL_TOOL-8778f3bddb09a5299375",
-          "kind": "CALL_TOOL",
-          "occurred_at": null,
-          "status": "OBSERVED",
-          "fields": [
-            {
-              "name": "tool",
-              "value": "get_payment_transaction"
-            },
-            {
-              "name": "sequence",
-              "value": "2"
-            },
-            {
-              "name": "observation_status",
-              "value": "TIMEOUT"
-            },
-            {
-              "name": "observed_at",
-              "value": "2026-09-10T09:30:25+08:00"
-            },
-            {
-              "name": "claim_types",
-              "value": "SOURCE_LOOKUP_STATUS"
-            }
-          ],
-          "evidence_refs": [
-            "E-d19137a7d380ec59e1464f06db744f7d8bfbc66e0bdb73a2e66738ee62648384"
-          ],
-          "related_refs": [
-            "OBSERVATION-83b7e473058b3b1d9a0a"
-          ],
-          "warning": "Dispatch timestamp was not recorded",
-          "historical": false
-        },
-        {
-          "trace_id": "CALL_TOOL-51ca194cb3cd6c3f0f5d",
-          "kind": "CALL_TOOL",
-          "occurred_at": null,
-          "status": "OBSERVED",
-          "fields": [
-            {
-              "name": "tool",
-              "value": "get_fund_order"
-            },
-            {
-              "name": "sequence",
-              "value": "1"
-            },
-            {
-              "name": "observation_status",
-              "value": "NOT_FOUND"
-            },
-            {
-              "name": "observed_at",
-              "value": "2026-09-10T09:30:10+08:00"
-            },
-            {
-              "name": "claim_types",
-              "value": "SOURCE_LOOKUP_STATUS"
-            }
-          ],
-          "evidence_refs": [
-            "E-a90262a9d7715f0ea0890573837e876ea71f2c01243dffb7f910b5cc2e21bc95"
-          ],
-          "related_refs": [
-            "OBSERVATION-a807eca28931ebc42aa4"
-          ],
-          "warning": "Dispatch timestamp was not recorded",
-          "historical": false
-        },
-        {
-          "trace_id": "CALL_TOOL-46b8baebc5726786048c",
+          "trace_id": "CALL_TOOL-ff4eef668c8aade43399",
           "kind": "CALL_TOOL",
           "occurred_at": null,
           "status": "OBSERVED",
@@ -2237,13 +2103,51 @@
             "E-476373129ba1f15df7a92153e101b824413f85108738385a16c398cbcf9ab75d"
           ],
           "related_refs": [
-            "OBSERVATION-2f605ec617a10f953247"
+            "OBSERVATION-d425efbfdc70396ebe2a"
           ],
           "warning": "Dispatch timestamp was not recorded",
-          "historical": false
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
         },
         {
-          "trace_id": "CALL_TOOL-35498d6faa9daccc340b",
+          "trace_id": "CALL_TOOL-dd5559b249713209de8a",
+          "kind": "CALL_TOOL",
+          "occurred_at": null,
+          "status": "OBSERVED",
+          "fields": [
+            {
+              "name": "tool",
+              "value": "get_payment_transaction"
+            },
+            {
+              "name": "sequence",
+              "value": "6"
+            },
+            {
+              "name": "observation_status",
+              "value": "TIMEOUT"
+            },
+            {
+              "name": "observed_at",
+              "value": "2026-09-10T09:31:25+08:00"
+            },
+            {
+              "name": "claim_types",
+              "value": "SOURCE_LOOKUP_STATUS"
+            }
+          ],
+          "evidence_refs": [
+            "E-9f33c05bf41ddb6091f5a085dfb771cad8763b0035452de5323c0e6b5dc752cb"
+          ],
+          "related_refs": [
+            "OBSERVATION-f64aacaca82e3de9214d"
+          ],
+          "warning": "Dispatch timestamp was not recorded",
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
+        },
+        {
+          "trace_id": "CALL_TOOL-bd020854ed11796dd793",
           "kind": "CALL_TOOL",
           "occurred_at": null,
           "status": "OBSERVED",
@@ -2273,59 +2177,171 @@
             "E-e0706496a72b56b443c978fd1a201982b1f311faab3ce32f2d8384d91535f85e"
           ],
           "related_refs": [
-            "OBSERVATION-263157775b2e4cfa3314"
+            "OBSERVATION-d8dd38712c7148d02bba"
           ],
           "warning": "Dispatch timestamp was not recorded",
-          "historical": false
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
+        },
+        {
+          "trace_id": "CALL_TOOL-963a5c275ffce383cb99",
+          "kind": "CALL_TOOL",
+          "occurred_at": null,
+          "status": "OBSERVED",
+          "fields": [
+            {
+              "name": "tool",
+              "value": "get_payment_transaction"
+            },
+            {
+              "name": "sequence",
+              "value": "2"
+            },
+            {
+              "name": "observation_status",
+              "value": "TIMEOUT"
+            },
+            {
+              "name": "observed_at",
+              "value": "2026-09-10T09:30:25+08:00"
+            },
+            {
+              "name": "claim_types",
+              "value": "SOURCE_LOOKUP_STATUS"
+            }
+          ],
+          "evidence_refs": [
+            "E-d19137a7d380ec59e1464f06db744f7d8bfbc66e0bdb73a2e66738ee62648384"
+          ],
+          "related_refs": [
+            "OBSERVATION-aa4513ef108b9d0b52c5"
+          ],
+          "warning": "Dispatch timestamp was not recorded",
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
+        },
+        {
+          "trace_id": "CALL_TOOL-8c278c5449f51cc28611",
+          "kind": "CALL_TOOL",
+          "occurred_at": null,
+          "status": "OBSERVED",
+          "fields": [
+            {
+              "name": "tool",
+              "value": "get_fund_order"
+            },
+            {
+              "name": "sequence",
+              "value": "5"
+            },
+            {
+              "name": "observation_status",
+              "value": "NOT_FOUND"
+            },
+            {
+              "name": "observed_at",
+              "value": "2026-09-10T09:31:10+08:00"
+            },
+            {
+              "name": "claim_types",
+              "value": "SOURCE_LOOKUP_STATUS"
+            }
+          ],
+          "evidence_refs": [
+            "E-dcac828ef6eaffc35cfd2ef24b4e5fd704dec6700bd69b836d2633de8ba0c4e2"
+          ],
+          "related_refs": [
+            "OBSERVATION-a4553766017661af54c8"
+          ],
+          "warning": "Dispatch timestamp was not recorded",
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
+        },
+        {
+          "trace_id": "CALL_TOOL-7d00bc46c356e0087bde",
+          "kind": "CALL_TOOL",
+          "occurred_at": null,
+          "status": "OBSERVED",
+          "fields": [
+            {
+              "name": "tool",
+              "value": "get_fund_order"
+            },
+            {
+              "name": "sequence",
+              "value": "1"
+            },
+            {
+              "name": "observation_status",
+              "value": "NOT_FOUND"
+            },
+            {
+              "name": "observed_at",
+              "value": "2026-09-10T09:30:10+08:00"
+            },
+            {
+              "name": "claim_types",
+              "value": "SOURCE_LOOKUP_STATUS"
+            }
+          ],
+          "evidence_refs": [
+            "E-a90262a9d7715f0ea0890573837e876ea71f2c01243dffb7f910b5cc2e21bc95"
+          ],
+          "related_refs": [
+            "OBSERVATION-54ada260dfff49a6ea11"
+          ],
+          "warning": "Dispatch timestamp was not recorded",
+          "historical": false,
+          "trace_trust_class": "CURRENT_OPERATIONAL"
         }
       ],
       "total": 6,
       "next_cursor": null
     },
     "registry_source_trace": {
-      "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+      "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
       "items": [],
       "total": 0,
       "next_cursor": null
     },
     "route_trace": {
-      "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+      "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
       "items": [],
       "total": 0,
       "next_cursor": null
     },
     "knowledge_retrieval_trace": {
-      "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+      "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
       "items": [],
       "total": 0,
       "next_cursor": null
     },
     "work_trace": {
-      "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+      "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
       "items": [],
       "total": 0,
       "next_cursor": null
     },
     "side_effect_trace": {
-      "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+      "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
       "items": [],
       "total": 0,
       "next_cursor": null
     },
     "recovery_trace": {
-      "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+      "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
       "items": [],
       "total": 0,
       "next_cursor": null
     },
     "evaluation_trace": {
-      "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+      "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
       "items": [],
       "total": 0,
       "next_cursor": null
     },
     "closure_trace": {
-      "frame_id": "12a106271195a5ca3e08dcfc62fd25d8e96a2e7cf336b87576af4e60e9356d8d",
+      "frame_id": "47748fc3dac291506f84c04aeab02dd37e619792a3dcb22f53c6afb2a7979340",
       "items": [],
       "total": 0,
       "next_cursor": null

@@ -26,7 +26,7 @@ export function TracePanel({ page, frame, section, onEvidence }: { page: TracePa
     {!current.items.length && <Empty description="当前快照尚无持久化记录" />}
     {current.items.map(item => <article className="trace-event" key={item.trace_id}>
       <header><Tag>{displayLabel(item.kind)}</Tag><StatusTag value={item.status} /><time>{item.occurred_at ? timeText(item.occurred_at) : '未记录时间'}</time></header>
-      {item.historical && <Tag color="purple">历史资料 · 不属于当前证据</Tag>}
+      {item.trace_trust_class && item.trace_trust_class !== "CURRENT_OPERATIONAL" && <Tag color="purple">{displayLabel(item.trace_trust_class)}</Tag>}
       {item.warning && <Alert type="warning" title={displayLabel(item.warning)} />}
       <Descriptions size="small" column={2} items={item.fields.map(f => ({key:f.name, label:fieldLabel(f.name), children:displayLabel(f.value)}))} />
       <div className="trace-evidence">{item.evidence_refs.map(ref => <Button key={ref} size="small" type="link" onClick={() => onEvidence(ref)}>{ref.slice(0, 18)}…</Button>)}</div>

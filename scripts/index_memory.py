@@ -16,7 +16,9 @@ from credit_harness.retrieval.indexer import EmbeddingIndexer
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("prepare", "work", "activate"))
+    parser.add_argument("command", choices=("prepare", "work", "activate", "rollback"))
+    parser.add_argument("--production", action="store_true", help="require migrated DB and index administration identity")
+    parser.add_argument("--actor", help="audited administrator identifier for rollback")
     parser.add_argument("--tenant", required=True)
     parser.add_argument("--space-id")
     parser.add_argument("--provider", choices=("fake", "openai"), default="fake")
@@ -24,11 +26,16 @@ def main():
     args = parser.parse_args()
     if args.command != "prepare" and not args.space_id: parser.error("--space-id required")
     if args.max_jobs < 1: parser.error("--max-jobs must be positive")
-    engine = open_engine(os.environ["SIM_DATABASE_URL"])
+    if args.command == 'rollback' and not args.actor: parser.error('--actor required for rollback')
+    engine = open_engine(os.environ['MIGRATION_DATABASE_URL' if args.production else 'SIM_DATABASE_URL'])
     try:
         sources = MemorySources(SQLSkillRepository(engine, args.tenant), SQLExperienceRepository(CaseRepository(engine, args.tenant)))
         repo = PgVectorRepository(sources)
-        create_retrieval_schema(engine)
+        if args.production:
+            from credit_harness.production.app import schema_ready
+            if not schema_ready(engine): raise RuntimeError('DATABASE_SCHEMA_NOT_READY')
+        else:
+            create_retrieval_schema(engine)
         # Activation is deterministic administration and needs no Provider key.
         if args.command == "activate":
             repo.activate_space(args.space_id)
@@ -40,6 +47,10 @@ def main():
         else:
             provider = DeterministicFakeEmbeddingProvider()
         now = lambda: datetime.now(timezone.utc)
+        if args.command == 'rollback':
+            repo.rollback_space(args.space_id, provider, actor=args.actor, now=now())
+            print(json.dumps({'space_id': args.space_id, 'status':'ACTIVE', 'action':'ROLLBACK'}))
+            return
         worker = EmbeddingIndexer(repo, provider, clock=now)
         if args.command == "prepare":
             space = repo.create_space(provider, now())

@@ -1,11 +1,7 @@
 """Explicit human trace projection; never dump a stored runtime payload."""
 import re
-from hashlib import sha256
-from .models import TraceItem, TraceKind as K, TraceField
-
-
-def alias(value, prefix="REF"):
-    return prefix + "-" + sha256(str(value).encode()).hexdigest()[:20]
+from .privacy import alias
+from .models import TraceItem, TraceKind as K, TraceField, TraceTrustClass as Trust
 
 
 def display(value):
@@ -23,10 +19,13 @@ def fields(payload, names):
     return tuple(TraceField(name=n, value=display(payload[n])) for n in names if n in payload)
 
 
-def entry(kind, identity, status, payload, names=(), *, at=None, refs=(), related=(), warning=None, historical=False):
+def entry(kind, identity, status, payload, names=(), *, at=None, refs=(), related=(), warning=None, historical=False, trust=None):
     return TraceItem(trace_id=alias(identity, kind.value.upper()), kind=kind, status=display(status),
         occurred_at=at, fields=fields(payload, names), evidence_refs=tuple(refs),
-        related_refs=tuple(related), warning=warning, historical=historical)
+        related_refs=tuple(related), warning=warning, historical=historical, trace_trust_class=trust or (
+            Trust.ORGANIZATIONAL_GUIDANCE if status == "ORGANIZATIONAL_GUIDANCE" else
+            Trust.VERIFIED_HISTORICAL_GUIDANCE if kind == K.KNOWLEDGE and historical else
+            Trust.HISTORICAL_EVALUATION if kind == K.EVALUATION and historical else Trust.CURRENT_OPERATIONAL))
 
 
 def planner_items(run):
@@ -59,7 +58,7 @@ def planner_items(run):
                 "skills": ", ".join(display(s["skill_id"]) + "@" + display(s["version"]) for s in d.get("skill_refs", ())),
                 "experiences": ", ".join(alias(e, "EXPERIENCE") for e in d.get("experience_refs", ()))}
             result.append(entry(K.KNOWLEDGE, d["decision_id"], "RECORDED", guidance, tuple(guidance),
-                at=d["created_at"], historical=True, warning="HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE"))
+                at=d["created_at"], warning="Guidance references; not current Evidence"))
         selected = (turn.get("selected_action") or {}).get("candidate", {})
         if turn.get("turn_outcome") in ("WAITING", "ESCALATED"):
             result.append(entry(K.WAIT if turn["turn_outcome"] == "WAITING" else K.ESCALATE,

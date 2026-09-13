@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/ui/cases/{case_id}/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Summary */
+        get: operations["get_summary_ui_cases__case_id__summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ui/cases/{case_id}/frame": {
         parameters: {
             query?: never;
@@ -242,107 +259,10 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/ui/cases/{case_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Case */
-        get: operations["get_case_ui_cases__case_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/ui/cases/{case_id}/evidence": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Evidence */
-        get: operations["get_evidence_ui_cases__case_id__evidence_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/ui/cases/{case_id}/hypotheses": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Hypotheses */
-        get: operations["get_hypotheses_ui_cases__case_id__hypotheses_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/ui/cases/{case_id}/reasoning-context": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Context */
-        get: operations["get_context_ui_cases__case_id__reasoning_context_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /**
-         * AuthorityLevel
-         * @enum {string}
-         */
-        AuthorityLevel: "AUTHORITATIVE" | "CORROBORATING" | "DIAGNOSTIC";
-        /** AvailableCapability */
-        AvailableCapability: {
-            capability_type: components["schemas"]["CapabilityType"];
-            tool_name: components["schemas"]["ToolName"];
-            /** Claim Types */
-            claim_types: components["schemas"]["ClaimType"][];
-            /** Authority */
-            authority: components["schemas"]["VisibleAuthority"][];
-            /**
-             * Cost Class
-             * @default LOW
-             */
-            cost_class: string;
-            /**
-             * Latency Class
-             * @default LOW
-             */
-            latency_class: string;
-        };
-        /**
-         * CapabilityType
-         * @enum {string}
-         */
-        CapabilityType: "ESTABLISH_PAYMENT_FINALITY" | "ESTABLISH_PAYMENT_IDENTITY" | "ESTABLISH_REQUEST_ASSOCIATION" | "READ_FUND_STATE" | "READ_GUARANTEE_STATE" | "READ_CALLBACK_RECEIPT" | "READ_MESSAGE_CONSUMPTION" | "READ_ASSET_STATE" | "READ_ASSET_DELIVERY" | "READ_ACCOUNTING_ENTRY" | "READ_PROTOCOL_SCHEMA";
         /** CaseBudget */
         CaseBudget: {
             /** Max Tool Calls */
@@ -352,24 +272,6 @@ export interface components {
              * @default 0
              */
             used_tool_calls: number;
-        };
-        /** CaseCapabilitySnapshot */
-        CaseCapabilitySnapshot: {
-            /** Snapshot Id */
-            snapshot_id: string;
-            /** Case Id */
-            case_id: string;
-            /** Registry Version */
-            registry_version: string;
-            /** Routing Context Fingerprint */
-            routing_context_fingerprint: string;
-            /** Available Capabilities */
-            available_capabilities: components["schemas"]["AvailableCapability"][];
-            /**
-             * Assembled At
-             * Format: date-time
-             */
-            assembled_at: string;
         };
         /**
          * CaseStatus
@@ -386,150 +288,11 @@ export interface components {
          * @enum {string}
          */
         Completeness: "COMPLETE" | "PARTIAL" | "UNKNOWN";
-        /** ContextBudget */
-        ContextBudget: {
-            /**
-             * Max Serialized Chars
-             * @default 60000
-             */
-            max_serialized_chars: number;
-            /**
-             * Max Fact Capsules
-             * @default 64
-             */
-            max_fact_capsules: number;
-            /**
-             * Max Hypothesis Capsules
-             * @default 16
-             */
-            max_hypothesis_capsules: number;
-            /**
-             * Max Gap Capsules
-             * @default 24
-             */
-            max_gap_capsules: number;
-            /**
-             * Max History Items
-             * @default 20
-             */
-            max_history_items: number;
-            /**
-             * Max Relation Ref Preview
-             * @default 4
-             */
-            max_relation_ref_preview: number;
-            /**
-             * Max Identity Transaction Preview
-             * @default 3
-             */
-            max_identity_transaction_preview: number;
-        };
-        /** ContextBudgetUsage */
-        ContextBudgetUsage: {
-            /** Serialized Chars */
-            serialized_chars: number;
-            /** Approximate Tokens */
-            approximate_tokens: number;
-            /** Fact Capsules */
-            fact_capsules: number;
-            /** Hypothesis Capsules */
-            hypothesis_capsules: number;
-            /** Gap Capsules */
-            gap_capsules: number;
-            /** History Items */
-            history_items: number;
-            limits: components["schemas"]["ContextBudget"];
-            /**
-             * Estimator
-             * @default unicode_chars_div_3_ceiling_v1
-             */
-            estimator: string;
-        };
-        /** ContextSectionTrust */
-        ContextSectionTrust: {
-            /**
-             * Task
-             * @default TRUSTED_CONTROL
-             * @constant
-             */
-            task: "TRUSTED_CONTROL";
-            /**
-             * Financial Subject
-             * @default TRUSTED_CONTROL
-             * @constant
-             */
-            financial_subject: "TRUSTED_CONTROL";
-            /**
-             * Safety Constraints
-             * @default TRUSTED_CONTROL
-             * @constant
-             */
-            safety_constraints: "TRUSTED_CONTROL";
-            /**
-             * Available Tools
-             * @default TRUSTED_CONTROL
-             * @constant
-             */
-            available_tools: "TRUSTED_CONTROL";
-            /**
-             * Capability Snapshot
-             * @default TRUSTED_CONTROL
-             * @constant
-             */
-            capability_snapshot: "TRUSTED_CONTROL";
-            /**
-             * Budget
-             * @default TRUSTED_CONTROL
-             * @constant
-             */
-            budget: "TRUSTED_CONTROL";
-            /**
-             * Current Facts
-             * @default UNTRUSTED_EXTERNAL_DATA
-             * @constant
-             */
-            current_facts: "UNTRUSTED_EXTERNAL_DATA";
-            /**
-             * History Digest
-             * @default UNTRUSTED_EXTERNAL_DATA
-             * @constant
-             */
-            history_digest: "UNTRUSTED_EXTERNAL_DATA";
-            /**
-             * Financial Identity
-             * @default DETERMINISTIC_DERIVED
-             * @constant
-             */
-            financial_identity: "DETERMINISTIC_DERIVED";
-            /**
-             * Active Hypotheses
-             * @default DETERMINISTIC_DERIVED
-             * @constant
-             */
-            active_hypotheses: "DETERMINISTIC_DERIVED";
-            /**
-             * Resolved Hypotheses Summary
-             * @default DETERMINISTIC_DERIVED
-             * @constant
-             */
-            resolved_hypotheses_summary: "DETERMINISTIC_DERIVED";
-            /**
-             * Open Evidence Gaps
-             * @default DETERMINISTIC_DERIVED
-             * @constant
-             */
-            open_evidence_gaps: "DETERMINISTIC_DERIVED";
-        };
         /**
          * Currency
          * @enum {string}
          */
         Currency: "CNY" | "USD";
-        /**
-         * EstimateClass
-         * @enum {string}
-         */
-        EstimateClass: "LOW" | "MEDIUM";
         /** EvidencePage */
         EvidencePage: {
             /** Items */
@@ -630,21 +393,6 @@ export interface components {
             /** Unavailable Reason */
             unavailable_reason?: string | null;
         };
-        /** GapCapsule */
-        GapCapsule: {
-            /** Gap Id */
-            gap_id: string;
-            /** Question */
-            question: string;
-            /** Required Claim Types */
-            required_claim_types: (components["schemas"]["ClaimType"] | components["schemas"]["UncollectedClaimType"])[];
-            priority: components["schemas"]["PriorityClass"];
-            status: components["schemas"]["GapStatus"];
-            /** Related Hypotheses */
-            related_hypotheses: components["schemas"]["HypothesisId"][];
-            /** Evidence Refs */
-            evidence_refs: string[];
-        };
         /**
          * GapStatus
          * @enum {string}
@@ -654,81 +402,6 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
-        };
-        /** HistoricalStateGroup */
-        HistoricalStateGroup: {
-            claim_type: components["schemas"]["ClaimType"];
-            subject: components["schemas"]["FactSubject"];
-            /** Protocol Version */
-            protocol_version: string | null;
-            /** First Observed Value */
-            first_observed_value: boolean | number | string;
-            /** Last Observed Value */
-            last_observed_value: boolean | number | string;
-            /**
-             * First Business Time
-             * Format: date-time
-             */
-            first_business_time: string;
-            /**
-             * Last Business Time
-             * Format: date-time
-             */
-            last_business_time: string;
-            last_freshness: components["schemas"]["Freshness"];
-            references: components["schemas"]["ReferenceRange"];
-        };
-        /** HistoryDigest */
-        HistoryDigest: {
-            /** Retry Window Start */
-            retry_window_start?: string | null;
-            /** Tool Calls Used */
-            tool_calls_used: number;
-            /** Evidence Count */
-            evidence_count: number;
-            /** Latest Observation Time */
-            latest_observation_time: string | null;
-            /** Repeated Lookup Groups */
-            repeated_lookup_groups: components["schemas"]["RepeatedLookupGroup"][];
-            /** State Transitions */
-            state_transitions: components["schemas"]["HistoricalStateGroup"][];
-            /**
-             * Lookup History Complete
-             * @default false
-             */
-            lookup_history_complete: boolean;
-        };
-        /** HypothesisCapsule */
-        HypothesisCapsule: {
-            hypothesis_id: components["schemas"]["HypothesisId"];
-            kind: components["schemas"]["HypothesisKind"];
-            /** Statement */
-            statement: string;
-            status: components["schemas"]["HypothesisStatus"];
-            /** Decisive Evidence Refs */
-            decisive_evidence_refs: string[];
-            /**
-             * Supporting Ref Preview
-             * @default []
-             */
-            supporting_ref_preview: string[];
-            /**
-             * Contradicting Ref Preview
-             * @default []
-             */
-            contradicting_ref_preview: string[];
-            /** Supporting Ref Count */
-            supporting_ref_count: number;
-            /** Contradicting Ref Count */
-            contradicting_ref_count: number;
-            /** Supporting Refs Digest */
-            supporting_refs_digest: string;
-            /** Contradicting Refs Digest */
-            contradicting_refs_digest: string;
-            /** Open Gap Ids */
-            open_gap_ids: string[];
-            /** Reason */
-            reason: string;
         };
         /** HypothesisDefinition */
         HypothesisDefinition: {
@@ -833,42 +506,6 @@ export interface components {
              */
             notice: string;
         };
-        /** LookupScope */
-        LookupScope: {
-            /** Internal Order Id */
-            internal_order_id: string;
-            /** Protocol Version */
-            protocol_version: string | null;
-            /** Effective At */
-            effective_at: string | null;
-        };
-        /**
-         * ObservationStatus
-         * @enum {string}
-         */
-        ObservationStatus: "OK" | "TIMEOUT" | "NOT_FOUND";
-        /** OmissionGroup */
-        OmissionGroup: {
-            reason: components["schemas"]["OmissionReason"];
-            /** Count */
-            count: number;
-            /** Evidence Ids Digest */
-            evidence_ids_digest: string;
-        };
-        /**
-         * OmissionReason
-         * @enum {string}
-         */
-        OmissionReason: "ELIGIBILITY_DENIED" | "REPEATED_LOOKUP" | "HISTORICAL_SUPERSEDED" | "IRRELEVANT_TO_ACTIVE_HYPOTHESES" | "SIZE_BUDGET" | "RELATION_COMPACTED" | "IDENTITY_COMPACTED";
-        /** OmittedEvidenceSummary */
-        OmittedEvidenceSummary: {
-            /** Total Evidence */
-            total_evidence: number;
-            /** Selected */
-            selected: number;
-            /** Omitted */
-            omitted: components["schemas"]["OmissionGroup"][];
-        };
         /** PaymentIdentityContext */
         PaymentIdentityContext: {
             result: components["schemas"]["IdentityMatch"];
@@ -896,145 +533,6 @@ export interface components {
          * @enum {string}
          */
         PriorityClass: "SAFETY_CRITICAL" | "DISCRIMINATING" | "SUPPORTING";
-        /** ReasoningContextSnapshot */
-        ReasoningContextSnapshot: {
-            /** Snapshot Id */
-            snapshot_id: string;
-            /**
-             * @default {
-             *       "task": "TRUSTED_CONTROL",
-             *       "financial_subject": "TRUSTED_CONTROL",
-             *       "safety_constraints": "TRUSTED_CONTROL",
-             *       "available_tools": "TRUSTED_CONTROL",
-             *       "capability_snapshot": "TRUSTED_CONTROL",
-             *       "budget": "TRUSTED_CONTROL",
-             *       "current_facts": "UNTRUSTED_EXTERNAL_DATA",
-             *       "history_digest": "UNTRUSTED_EXTERNAL_DATA",
-             *       "financial_identity": "DETERMINISTIC_DERIVED",
-             *       "active_hypotheses": "DETERMINISTIC_DERIVED",
-             *       "resolved_hypotheses_summary": "DETERMINISTIC_DERIVED",
-             *       "open_evidence_gaps": "DETERMINISTIC_DERIVED"
-             *     }
-             */
-            section_trust: components["schemas"]["ContextSectionTrust"];
-            /** Case Id */
-            case_id: string;
-            /** Internal Order Id */
-            internal_order_id: string;
-            /** Context Schema Version */
-            context_schema_version: string;
-            /** Eligibility Policy Version */
-            eligibility_policy_version: string;
-            /** Compaction Policy Version */
-            compaction_policy_version: string;
-            /** Context Policy Version */
-            context_policy_version: string;
-            /** Hypothesis Rule Version */
-            hypothesis_rule_version: string;
-            /**
-             * Assembled At
-             * Format: date-time
-             */
-            assembled_at: string;
-            /** Case Fingerprint */
-            case_fingerprint: string;
-            /** Evidence Fingerprint */
-            evidence_fingerprint: string;
-            /** Hypothesis Input Fingerprint */
-            hypothesis_input_fingerprint: string;
-            /** Hypothesis Graph Fingerprint */
-            hypothesis_graph_fingerprint: string;
-            /** Policy Fingerprint */
-            policy_fingerprint: string;
-            task: components["schemas"]["TaskContext"];
-            financial_subject: components["schemas"]["FinancialSubject"] | null;
-            financial_identity: components["schemas"]["PaymentIdentityContext"];
-            /** Current Facts */
-            current_facts: components["schemas"]["FactCapsule"][];
-            /** Active Hypotheses */
-            active_hypotheses: components["schemas"]["HypothesisCapsule"][];
-            /** Resolved Hypotheses Summary */
-            resolved_hypotheses_summary: components["schemas"]["ResolvedHypothesisSummary"][];
-            /** Open Evidence Gaps */
-            open_evidence_gaps: components["schemas"]["GapCapsule"][];
-            safety_constraints: components["schemas"]["SafetyContext"];
-            budget: components["schemas"]["RuntimeBudgetContext"];
-            /** Available Tools */
-            available_tools: components["schemas"]["ToolCapability"][];
-            capability_snapshot?: components["schemas"]["CaseCapabilitySnapshot"] | null;
-            history_digest: components["schemas"]["HistoryDigest"];
-            /** Selected Evidence Refs */
-            selected_evidence_refs: string[];
-            omitted_evidence_summary: components["schemas"]["OmittedEvidenceSummary"];
-            context_budget_usage: components["schemas"]["ContextBudgetUsage"];
-        };
-        /** ReferenceRange */
-        ReferenceRange: {
-            /** Count */
-            count: number;
-            /** First Ref */
-            first_ref: string;
-            /** Latest Ref */
-            latest_ref: string;
-            /** Range Digest */
-            range_digest: string;
-        };
-        /** RepeatedLookupGroup */
-        RepeatedLookupGroup: {
-            tool: components["schemas"]["ToolName"];
-            scope: components["schemas"]["LookupScope"];
-            status: components["schemas"]["ObservationStatus"];
-            /**
-             * First Observed At
-             * Format: date-time
-             */
-            first_observed_at: string;
-            /**
-             * Last Observed At
-             * Format: date-time
-             */
-            last_observed_at: string;
-            latest_freshness: components["schemas"]["Freshness"];
-            latest_completeness: components["schemas"]["Completeness"];
-            references: components["schemas"]["ReferenceRange"];
-            /**
-             * Latest Consecutive Count
-             * @default 0
-             */
-            latest_consecutive_count: number;
-        };
-        /** ResolvedHypothesisSummary */
-        ResolvedHypothesisSummary: {
-            hypothesis_id: components["schemas"]["HypothesisId"];
-            /** Statement */
-            statement: string;
-            status: components["schemas"]["HypothesisStatus"];
-            /** Decisive Evidence Refs */
-            decisive_evidence_refs: string[];
-        };
-        /** RuntimeBudgetContext */
-        RuntimeBudgetContext: {
-            /** Max Tool Calls */
-            max_tool_calls: number;
-            /** Used Tool Calls */
-            used_tool_calls: number;
-            /** Remaining Tool Calls */
-            remaining_tool_calls: number;
-            /** Investigation Allowed */
-            investigation_allowed: boolean;
-        };
-        /** SafetyContext */
-        SafetyContext: {
-            /** Invariants */
-            invariants: components["schemas"]["SafetyInvariant"][];
-            /** Forbidden Actions */
-            forbidden_actions: string[];
-        };
-        /**
-         * SafetyInvariant
-         * @enum {string}
-         */
-        SafetyInvariant: "NO_NEW_FINANCIAL_INTENT" | "UNKNOWN_IS_NOT_FAILED" | "TOOL_SUCCESS_IS_NOT_BUSINESS_OUTCOME" | "REQUIRE_COMPLETE_PAYMENT_IDENTITY" | "READ_ONLY_INVESTIGATION" | "NO_SELF_DECLARED_CASE_SUCCESS" | "EVIDENCE_REFERENCES_REQUIRED";
         /**
          * SourceKind
          * @enum {string}
@@ -1045,54 +543,11 @@ export interface components {
          * @enum {string}
          */
         SubjectKind: "ORDER" | "FUND_REQUEST" | "TRANSACTION" | "CALLBACK" | "MESSAGE" | "PROTOCOL";
-        /** TaskContext */
-        TaskContext: {
-            /** Goal */
-            goal: string;
-            /** Success Criteria */
-            success_criteria: string[];
-            /** Stop Conditions */
-            stop_conditions: string[];
-            /** Escalation Conditions */
-            escalation_conditions: string[];
-            /** Forbidden Outcomes */
-            forbidden_outcomes: string[];
-        };
-        /** ToolCapability */
-        ToolCapability: {
-            tool_name: components["schemas"]["ToolName"];
-            /** Description */
-            description: string;
-            /** Produces Claim Types */
-            produces_claim_types: components["schemas"]["ClaimType"][];
-            /**
-             * Contributes Requirements
-             * @default []
-             */
-            contributes_requirements: components["schemas"]["UncollectedClaimType"][];
-            /** @default READ_ONLY */
-            risk_class: components["schemas"]["ToolRisk"];
-            data_classification: components["schemas"]["ToolDataClass"];
-            /** @default LOW */
-            estimated_cost_class: components["schemas"]["EstimateClass"];
-            /** @default LOW */
-            estimated_latency_class: components["schemas"]["EstimateClass"];
-        };
-        /**
-         * ToolDataClass
-         * @enum {string}
-         */
-        ToolDataClass: "BUSINESS" | "BUSINESS_RULE" | "TOKENIZED_FINANCIAL_IDENTITY";
         /**
          * ToolName
          * @enum {string}
          */
         ToolName: "get_asset_order" | "get_guarantee_order" | "get_fund_order" | "get_payment_transaction" | "get_loan_note" | "get_callback_gateway" | "get_callback_raw" | "get_messages" | "get_accounting" | "get_request_trace" | "get_asset_delivery" | "get_protocol";
-        /**
-         * ToolRisk
-         * @enum {string}
-         */
-        ToolRisk: "READ_ONLY";
         /** TraceField */
         TraceField: {
             /** Name */
@@ -1131,6 +586,8 @@ export interface components {
              * @default false
              */
             historical: boolean;
+            /** @default CURRENT_OPERATIONAL */
+            trace_trust_class: components["schemas"]["TraceTrustClass"];
         };
         /**
          * TraceKind
@@ -1147,6 +604,22 @@ export interface components {
             total: number;
             /** Next Cursor */
             next_cursor?: string | null;
+        };
+        /**
+         * TraceTrustClass
+         * @enum {string}
+         */
+        TraceTrustClass: "CURRENT_OPERATIONAL" | "ORGANIZATIONAL_GUIDANCE" | "VERIFIED_HISTORICAL_GUIDANCE" | "HISTORICAL_EVALUATION" | "CLOSURE_BOUND_CURRENT_EVALUATION";
+        /** UIBasicCase */
+        UIBasicCase: {
+            /** Case Id */
+            case_id: string;
+            status: components["schemas"]["CaseStatus"];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /** UICase */
         UICase: {
@@ -1195,15 +668,6 @@ export interface components {
             strength: components["schemas"]["EvidenceStrength"];
             /** Extractor Version */
             extractor_version: string;
-        };
-        /** UIEvidenceList */
-        UIEvidenceList: {
-            /** Items */
-            items: components["schemas"]["UIEvidence"][];
-            /** Total */
-            total: number;
-            /** Eligibility Denied Count */
-            eligibility_denied_count: number;
         };
         /** UIGap */
         UIGap: {
@@ -1278,17 +742,6 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
-        /** VisibleAuthority */
-        VisibleAuthority: {
-            claim_type: components["schemas"]["ClaimType"];
-            authority_level: components["schemas"]["AuthorityLevel"];
-            /** Subject Binding Required */
-            subject_binding_required: boolean;
-            /** Identity Binding Required */
-            identity_binding_required: boolean;
-            freshness_requirement: components["schemas"]["Freshness"];
-            completeness_requirement: components["schemas"]["Completeness"];
-        };
     };
     responses: never;
     parameters: never;
@@ -1298,6 +751,37 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    get_summary_ui_cases__case_id__summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UIBasicCase"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_frame_ui_cases__case_id__frame_get: {
         parameters: {
             query?: never;
@@ -1770,130 +1254,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TracePage"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_case_ui_cases__case_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                case_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UICase"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_evidence_ui_cases__case_id__evidence_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                case_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UIEvidenceList"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_hypotheses_ui_cases__case_id__hypotheses_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                case_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UIHypothesisGraph"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_context_ui_cases__case_id__reasoning_context_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                case_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ReasoningContextSnapshot"];
                 };
             };
             /** @description Validation Error */

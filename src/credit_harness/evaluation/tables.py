@@ -21,4 +21,7 @@ class CaseClosureRow(Base):
 
 
 def create_evaluation_schema(engine):
+    from credit_harness.production.schema import runtime_managed
+    if runtime_managed(engine):
+        return  # schema version is validated by the production startup gate
     Base.metadata.create_all(engine, tables=[EvaluationReportRow.__table__, CaseClosureRow.__table__])

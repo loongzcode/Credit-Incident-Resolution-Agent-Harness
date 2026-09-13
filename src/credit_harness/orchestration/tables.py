@@ -54,5 +54,8 @@ class EvaluationHandoffRow(Base):
 
 
 def create_orchestration_schema(engine):
+    from credit_harness.production.schema import runtime_managed
+    if runtime_managed(engine):
+        return  # schema version is validated by the production startup gate
     Base.metadata.create_all(engine, tables=[OrchestrationStateRow.__table__, WorkItemRow.__table__,
         SignalRow.__table__, OrchestrationAuditRow.__table__, ResumedRunRow.__table__, EvaluationHandoffRow.__table__])

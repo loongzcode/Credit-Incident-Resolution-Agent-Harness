@@ -1,5 +1,6 @@
 // Presentation only: keep wire enums, identifiers and original evidence values intact.
 const labels: Record<string, string> = {
+  AUDITED: '已保存审计', input_hash: '输入指纹', output_hash: '输出指纹',
   UNKNOWN: '未知', MATCH: '一致', MISMATCH: '不一致', CONFIRMED: '已确认',
   SUPPORTED: '有证据支持', POSSIBLE: '可能', ELIMINATED: '已排除',
   SAFETY_CRITICAL: '安全关键', DISCRIMINATING: '用于区分假设', SUPPORTING: '辅助支持',
@@ -56,7 +57,7 @@ const labels: Record<string, string> = {
   RegistrySource: '系统来源', KnowledgeRetrieval: '知识检索', WAIT: '等待', ESCALATE: '升级处理',
   CREATED: '已创建', PUBLISHED: '已发布', DISPATCHED: '已派发', ERROR: '异常', ROUTED: '已路由',
   TRUSTED_INITIAL: '可信初始配置', VERIFIED: '已验证', VALID: '有效', REJECTED: '已拒绝', RECORDED: '已记录',
-  ORGANIZATIONAL_GUIDANCE: '组织经验指导', VERIFIED_HISTORICAL_GUIDANCE: '已验证的历史指导',
+  ORGANIZATIONAL_GUIDANCE: '组织知识 · 调查指导', VERIFIED_HISTORICAL_GUIDANCE: '历史经验 · 不是当前证据', HISTORICAL_EVALUATION: '历史评估 · 需要重新验证', CLOSURE_BOUND_CURRENT_EVALUATION: '当前结案绑定的评估',
   READY: '就绪', CLAIMED: '已领取', BLOCKED: '已阻断', COMPLETED: '已完成', CANCELED: '已取消',
   PREPARED: '已准备', ACCEPTED: '已受理', APPLIED: '已应用', FAILED_CONFIRMED: '已确认失败',
   PASS: '通过', FAIL: '未通过', INCONCLUSIVE: '尚无定论', NOT_APPLICABLE: '不适用', IN_PROGRESS: '进行中',

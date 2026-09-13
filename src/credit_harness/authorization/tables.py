@@ -52,6 +52,9 @@ class AuthorizationAuditRow(Base):
 
 
 def create_authorization_schema(engine):
+    from credit_harness.production.schema import runtime_managed
+    if runtime_managed(engine):
+        return  # schema version is validated by the production startup gate
     Base.metadata.create_all(engine, tables=[AuthorizedIntentRow.__table__, ApprovalRow.__table__,
         CapabilityRow.__table__, CapabilitySignatureRow.__table__, EffectRow.__table__, AuthorizationAuditRow.__table__])
     from credit_harness.recovery.tables import create_recovery_schema

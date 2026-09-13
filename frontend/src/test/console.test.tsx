@@ -135,9 +135,6 @@ describe('error contracts and page integration', () => {
   });
 
   it('never generates tool execution, repair or chat controls; rejects stale context on refresh error', async () => {
-    vi.spyOn(caseApi, 'case').mockResolvedValue(s6.case);
-    vi.spyOn(caseApi, 'evidence').mockResolvedValue(s6.evidence);
-    vi.spyOn(caseApi, 'graph').mockResolvedValue(s6.graph);
     const context = vi.spyOn(caseApi, 'frame').mockResolvedValue(s6.frame);
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(<QueryClientProvider client={client}><MemoryRouter initialEntries={['/cases/CASE-JD202609100001']}><Routes><Route path="/cases/:caseId" element={<CaseInvestigation />} /></Routes></MemoryRouter></QueryClientProvider>);

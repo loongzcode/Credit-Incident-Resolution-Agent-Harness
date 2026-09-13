@@ -8,13 +8,13 @@ const frame = fixture.frame as InvestigationFrame;
 const noop = () => {};
 function trace(status: string, warning: string, historical = false, fields: {name:string;value:string}[] = []): TracePage {
   return {frame_id:frame.frame_id,total:1,next_cursor:null,items:[{trace_id:'TRACE-TEST',kind:'Evaluation',status,
-    occurred_at:frame.assembled_at,fields,evidence_refs:[],related_refs:[],warning,historical}]};
+    occurred_at:frame.assembled_at,fields,evidence_refs:[],related_refs:[],warning,historical,trace_trust_class:historical?"VERIFIED_HISTORICAL_GUIDANCE":"CURRENT_OPERATIONAL"}]};
 }
 
 describe('production trace semantics', () => {
   it('keeps historical guidance visibly separate from current evidence', () => {
     render(<TracePanel frame={frame} section="knowledge" page={trace('RECORDED','HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE',true)} onEvidence={noop} />);
-    expect(screen.getByText('历史资料 · 不属于当前证据')).toBeVisible();
+    expect(screen.getByText('历史经验 · 不是当前证据')).toBeVisible();
   });
   it('shows retrieval degradation and latency without a vector viewer', () => {
     render(<TracePanel frame={frame} section="knowledge" page={trace('RECORDED','Not current Evidence',true,[{name:'degradation',value:'VECTOR_UNAVAILABLE'},{name:'latency_ms',value:'12'}])} onEvidence={noop} />);

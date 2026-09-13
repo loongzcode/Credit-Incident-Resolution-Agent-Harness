@@ -90,6 +90,9 @@ class DispatchSourceRow(Base):
 
 
 def create_registry_schema(engine):
+    from credit_harness.production.schema import runtime_managed
+    if runtime_managed(engine):
+        return  # schema version is validated by the production startup gate
     Base.metadata.create_all(engine, tables=[RegistryVersionRow.__table__, RegistryHeadRow.__table__,
         SystemRow.__table__, CapabilityRow.__table__, AuthorityRow.__table__, RegistryAuditRow.__table__,
         RouteContextRow.__table__, CapabilitySnapshotRow.__table__, DispatchSourceRow.__table__,

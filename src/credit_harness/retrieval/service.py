@@ -64,7 +64,7 @@ class HybridRetrievalService:
                 telemetry["hard_filter_candidate_count"] += count
                 telemetry["vector_candidate_count"] += len(candidates)
                 t = perf_counter()
-                documents = tuple(self.sources.get(kind, c.document_id, c.source_version) for c in candidates)
+                documents = self.sources.batch_get(kind, candidates)
                 if any(d.content_hash != c.content_hash or not d.eligible(scope, snapshot.case_id)
                        for d, c in zip(documents, candidates)):
                     raise RetrievalError("stale retrieval projection")

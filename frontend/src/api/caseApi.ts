@@ -1,4 +1,6 @@
-import type { Case, Context, Evidence, EvidenceList, Graph, InvestigationFrame, TracePage, EvidencePage } from '../types';
+import type { Evidence, InvestigationFrame, TracePage, EvidencePage } from '../types';
+
+declare global { interface Window { investigationIdentity?: { getAccessToken: () => Promise<string> } } }
 
 export class ApiError extends Error {
   constructor(public status: number, public code: string) { super(code); }
@@ -6,7 +8,11 @@ export class ApiError extends Error {
 
 async function read<T>(path: string, signal?: AbortSignal): Promise<T> {
   let response: Response;
-  try { response = await fetch(path, { method: 'GET', signal, credentials: 'same-origin' }); }
+  try {
+    const token = await window.investigationIdentity?.getAccessToken();
+    response = await fetch(path, { method: 'GET', signal, credentials: 'same-origin',
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+  }
   catch (error) {
     if (error instanceof Error && error.name === 'AbortError') throw error;
     throw new ApiError(0, 'NETWORK_UNAVAILABLE');
@@ -25,10 +31,6 @@ export const caseApi = {
   evidenceDetail: (id: string, frameId: string, evidenceId: string, signal?: AbortSignal) => read<Evidence>(`${path(id)}/evidence-items/${encodeURIComponent(evidenceId)}?frame_id=${encodeURIComponent(frameId)}`, signal),
   evidencePage: (id: string, frameId: string, cursor: string) => read<EvidencePage>(`${path(id)}/evidence-page?frame_id=${encodeURIComponent(frameId)}&cursor=${encodeURIComponent(cursor)}`),
   trace: (id: string, frameId: string, section: string, cursor: string, signal?: AbortSignal) => read<TracePage>(`${path(id)}/${section}?frame_id=${encodeURIComponent(frameId)}&cursor=${encodeURIComponent(cursor)}`, signal),
-  case: (id: string, signal?: AbortSignal) => read<Case>(path(id), signal),
-  evidence: (id: string, signal?: AbortSignal) => read<EvidenceList>(`${path(id)}/evidence`, signal),
-  graph: (id: string, signal?: AbortSignal) => read<Graph>(`${path(id)}/hypotheses`, signal),
-  context: (id: string, signal?: AbortSignal) => read<Context>(`${path(id)}/reasoning-context`, signal),
 };
 
 export function errorMessage(error: Error): { title: string; detail: string } {

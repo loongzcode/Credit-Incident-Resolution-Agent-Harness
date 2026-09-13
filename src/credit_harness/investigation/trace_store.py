@@ -3,27 +3,40 @@
 Only explicit safe projections are persisted here. The UI cannot append.
 """
 from datetime import datetime, timezone
-from uuid import uuid4
-from sqlalchemy import JSON, String, ForeignKey
+from functools import wraps
+from credit_harness.context.budget import digest
+from .privacy import alias_scope
+from sqlalchemy import JSON, String, ForeignKey, Index
 from sqlalchemy.orm import Mapped, mapped_column, Session
 from credit_harness.persistence.store import Base
 from credit_harness.agent.models import AgentRunResult
 from credit_harness.retrieval.models import RetrievalTelemetry
 from .projection import planner_items, entry, alias
-from .models import TraceKind, TraceItem
+from .models import TraceKind, TraceItem, TraceTrustClass
 
 
 class InvestigationTraceRow(Base):
     __tablename__ = "investigation_safe_traces"
+    __table_args__ = (Index('ix_safe_trace_projection','projection_version'),)
     trace_id: Mapped[str] = mapped_column(String(80), primary_key=True)
     case_id: Mapped[str] = mapped_column(ForeignKey("investigation_cases.case_id"), index=True)
     tenant_id: Mapped[str] = mapped_column(String(128))
     payload: Mapped[dict] = mapped_column(JSON)
+    projection_version: Mapped[str] = mapped_column(String(16), server_default="1")
+
+
+def tenant_projection(method):
+    @wraps(method)
+    def scoped(self, *args, **kwargs):
+        with alias_scope(self.cases.tenant_id, self.alias_key):
+            return method(self, *args, **kwargs)
+    return scoped
 
 
 class SQLInvestigationTraceStore:
-    def __init__(self, cases):
+    def __init__(self, cases, *, alias_key=None):
         self.cases = cases
+        self.alias_key = alias_key
         self._records = []
 
     @property
@@ -33,8 +46,12 @@ class SQLInvestigationTraceStore:
         return tuple(self._records)
 
     def create_schema(self):
+        from credit_harness.production.schema import runtime_managed
+        if runtime_managed(self.cases.engine):
+            return
         InvestigationTraceRow.__table__.create(self.cases.engine, checkfirst=True)
 
+    @tenant_projection
     def record_guidance(self, snapshot, bundle):
         from credit_harness.memory.guidance import validate_guidance
         bundle = validate_guidance(bundle, snapshot)
@@ -73,11 +90,15 @@ class SQLInvestigationTraceStore:
                 warning="HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE", historical=True))
         self._save(snapshot.case_id, items)
 
+    @tenant_projection
     def append(self, result: AgentRunResult):
         result = AgentRunResult.model_validate(result.model_dump())
         self._save(result.case_id, planner_items(result.model_dump(mode="json")))
-        self._records.append(result)
+        from credit_harness.production.schema import runtime_managed
+        if not runtime_managed(self.cases.engine):
+            self._records.append(result)
 
+    @tenant_projection
     def record_planning(self, snapshot, decision, guidance=None):
         from credit_harness.planner.models import PlannerDecision
         decision = PlannerDecision.model_validate(decision.model_dump())
@@ -88,6 +109,7 @@ class SQLInvestigationTraceStore:
         if guidance is not None:
             self.record_guidance(snapshot, guidance)
 
+    @tenant_projection
     def record_retrieval(self, *, case_id, snapshot_id, telemetry: RetrievalTelemetry):
         telemetry = RetrievalTelemetry.model_validate(telemetry.model_dump())
         data = telemetry.model_dump()
@@ -95,18 +117,30 @@ class SQLInvestigationTraceStore:
         data["selected_experience_ids"] = ", ".join(alias(e, "EXPERIENCE") for e in telemetry.selected_experience_ids)
         data["selected_skill_ids"] = ", ".join(telemetry.selected_skill_ids)
         data["snapshot_id"] = snapshot_id
-        self._save(case_id, [entry(TraceKind.KNOWLEDGE, uuid4().hex, "RECORDED", data, tuple(data),
-            at=datetime.now(timezone.utc), historical=True,
-            warning="HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE")])
+        self._save(case_id, [entry(TraceKind.KNOWLEDGE, digest(dict(case=case_id, snapshot=snapshot_id, telemetry=data)), "RECORDED", data, tuple(data),
+            at=datetime.now(timezone.utc), historical=True, trust=TraceTrustClass.CURRENT_OPERATIONAL,
+            warning="Retrieval telemetry; not current Evidence")])
 
-    def _save(self, case_id, items):
-        with Session(self.cases.engine) as session, session.begin():
-            self.cases._row(session, case_id)
-            for item in items:
-                safe = TraceItem.model_validate(item.model_dump())
-                if session.get(InvestigationTraceRow, safe.trace_id) is None:
-                    session.add(InvestigationTraceRow(trace_id=safe.trace_id, case_id=case_id,
-                        tenant_id=self.cases.tenant_id, payload=safe.model_dump(mode="json")))
+    @tenant_projection
+    def record_turn(self, case_id, run_id, turn, session=None):
+        items = planner_items({"run_id": run_id, "turns": [turn.model_dump(mode="json")]})
+        self._save(case_id, items, session=session)
+
+    def _save(self, case_id, items, session=None):
+        if session is None:
+            with Session(self.cases.engine) as current, current.begin():
+                self._save(case_id, items, current)
+            return
+        self.cases._row(session, case_id)
+        from credit_harness.retrieval.indexer import insert_for
+        for item in items:
+            safe = TraceItem.model_validate(item.model_dump())
+            # Case isolation is part of storage identity, even if two Cases
+            # retrieve exactly the same organizational guidance.
+            identity = digest(dict(tenant=self.cases.tenant_id, case=case_id, trace=safe.trace_id))
+            session.execute(insert_for(self.cases.engine, InvestigationTraceRow).values(
+                trace_id=identity, case_id=case_id, tenant_id=self.cases.tenant_id,
+                payload=safe.model_dump(mode="json")).on_conflict_do_nothing(index_elements=["trace_id"]))
 
 
 class TracedGuidanceProvider:
@@ -125,3 +159,25 @@ class TracedGuidanceProvider:
         if result.bundle is not None:
             self.store.record_guidance(snapshot, result.bundle)
         return result
+
+
+class SQLSafePlannerAuditStore:
+    """Durable allowlist audit, without retaining full proposals in process memory."""
+    def __init__(self, traces):
+        self.traces = traces
+
+    def append(self, record):
+        from credit_harness.planner.audit import PlannerAuditRecord
+        record = PlannerAuditRecord.model_validate(record.model_dump())
+        names = ('snapshot_id','planner_schema_version','policy_version','ranking_version',
+            'model_input_schema_version','model_provider','model_name','input_hash','output_hash')
+        data = {name:getattr(record,name) for name in names}
+        candidate = record.selected_action.candidate if record.selected_action else None
+        data['selected_action'] = candidate.action_type.value if candidate else 'NONE'
+        data['rejection_codes'] = ', '.join(sorted({code.value for item in record.rejection_summary for code in item.reason_codes}))
+        # Counts only; provider responses/hidden reasoning are never persisted.
+        for name in ('input_tokens','output_tokens'):
+            data[name] = getattr(record.usage_metadata,name,None)
+        with alias_scope(self.traces.cases.tenant_id,self.traces.alias_key):
+            self.traces._save(record.case_id,[entry(TraceKind.PLANNER,'audit:'+record.decision_id,
+                'AUDITED',data,tuple(data),at=record.validated_at)])

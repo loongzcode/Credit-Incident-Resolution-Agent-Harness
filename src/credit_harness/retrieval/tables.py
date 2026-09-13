@@ -92,6 +92,9 @@ class IndexJobRow(RetrievalBase):
 
 
 def create_retrieval_schema(engine):
+    from credit_harness.production.schema import runtime_managed
+    if runtime_managed(engine):
+        return  # schema version is validated by the production startup gate
     if engine.dialect.name == "postgresql":
         with engine.begin() as connection:
             connection.exec_driver_sql("CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA public")

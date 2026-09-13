@@ -1,10 +1,11 @@
 import type { components } from './generated';
+import type { components as legacy } from './legacy-generated';
 type Schema = components['schemas'];
 export type Case = Schema['UICase'];
 export type Evidence = Schema['UIEvidence'];
-export type EvidenceList = Schema['UIEvidenceList'];
+export type EvidenceList = legacy['schemas']['UIEvidenceList'];
 export type Fact = Schema['FactCapsule'];
-export type Context = Schema['ReasoningContextSnapshot'];
+export type Context = legacy['schemas']['ReasoningContextSnapshot'];
 export type Identity = Schema['PaymentIdentityContext'];
 export type Graph = Schema['UIHypothesisGraph'];
 export type Hypothesis = Schema['UIHypothesisState'];

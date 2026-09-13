@@ -5,6 +5,9 @@ from credit_harness.evidence import tables as evidence_tables  # noqa: F401
 
 
 def create_harness_schema(engine):
+    from credit_harness.production.schema import runtime_managed
+    if runtime_managed(engine):
+        return  # schema version is validated by the production startup gate
     """Additive local bootstrap. Existing simulator tables must already exist."""
     from credit_harness.recovery.tables import ReadDispatchRecoveryRow, AgentCheckpointRow
     Base.metadata.create_all(engine, tables=[

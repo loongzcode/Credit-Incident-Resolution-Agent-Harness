@@ -172,7 +172,9 @@ class InvestigationAgentRuntime:
                 after_snapshot_id=current.snapshot_id, knowledge_progress=progress,
                 case_status_after=case.status, turn_outcome=outcome, attempts=tuple(attempts)))
             self.checkpoints.save(run_id, case_id, number, current.snapshot_id,
-                                  last.decision.decision_id if last else None, call_id, turn_stop)
+                                  last.decision.decision_id if last else None, call_id, turn_stop,
+                                  completed_turn=turns[-1], trace_store=self.trace_store
+                                  if hasattr(self.trace_store, "record_turn") else None)
             if turn_stop is not None:
                 stop = turn_stop
                 break

@@ -25,7 +25,10 @@ def job_model(row):
 
 
 class EmbeddingIndexer:
-    def __init__(self, repository, provider, *, clock):
+    def __init__(self, repository, provider, *, clock, lease_seconds=120):
+        if not 1 <= lease_seconds <= 600:
+            raise ValueError("invalid embedding lease")
+        self.lease_seconds = lease_seconds
         self.repository, self.provider, self.clock = repository, provider, clock
         self.sources, self.engine = repository.sources, repository.engine
 
@@ -69,7 +72,7 @@ class EmbeddingIndexer:
             token = uuid4().hex
             result = session.execute(update(IndexJobRow).where(IndexJobRow.job_id == job_id, eligible).values(
                 status="CLAIMED", attempt=IndexJobRow.attempt + 1, lease_token=token,
-                lease_until=timestamp(now + timedelta(seconds=120))))
+                lease_until=timestamp(now + timedelta(seconds=self.lease_seconds))))
             if result.rowcount != 1:
                 return None
             return job_model(session.get(IndexJobRow, job_id))

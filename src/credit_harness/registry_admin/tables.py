@@ -45,5 +45,8 @@ class ImportPreviewRow(Base):
 
 
 def create_admin_schema(engine):
+    from credit_harness.production.schema import runtime_managed
+    if runtime_managed(engine):
+        return  # schema version is validated by the production startup gate
     Base.metadata.create_all(engine, tables=[ChangeRow.__table__, AdminAuditRow.__table__, InventoryHeadRow.__table__,
         InventoryVersionRow.__table__, ImportPreviewRow.__table__])

@@ -9,7 +9,8 @@ from hashlib import sha256
 from hmac import digest as mac, compare_digest
 from secrets import token_bytes
 from threading import RLock
-from time import monotonic
+from time import monotonic, time
+from .privacy import alias_scope
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -50,12 +51,16 @@ REF_CLAIMS = {C.PAYMENT_TRANSACTION_ID, C.TRANSACTION_FUND_REQUEST_ID, C.LOAN_NO
 
 
 class InvestigationFrameService:
-    def __init__(self, repository, *, assembler=None, after_read=None, ttl=300, max_frames=32):
+    def __init__(self, repository, *, assembler=None, after_read=None, ttl=300, max_frames=32, cache=None, cursor_key=None, previous_cursor_key=None, alias_key=None):
         self.repository = repository
+        self.cache, self.alias_key = cache, alias_key
+        self.previous_cursor_key = previous_cursor_key
+        if any(key is not None and len(key) < 32 for key in (cursor_key, previous_cursor_key, alias_key)):
+            raise ValueError("frame keys require at least 32 bytes")
         self.assembler = assembler or ReasoningContextAssembler()
         self.after_read = after_read  # deterministic race testing, trusted constructor only
         self.ttl, self.max_frames = ttl, max_frames
-        self._cache, self._lock, self._secret = OrderedDict(), RLock(), token_bytes(32)
+        self._cache, self._lock, self._secret = OrderedDict(), RLock(), cursor_key or token_bytes(32)
 
     def _read(self, case_id):
         engine = self.repository.engine
@@ -124,11 +129,16 @@ class InvestigationFrameService:
             case, read, data, watermark = self._read(case_id)
             if self.after_read:
                 self.after_read()
-            frame, pages = self._project(case, read, data, watermark)
+            with alias_scope(case.tenant_id, self.alias_key):
+                frame, pages = self._project(case, read, data, watermark)
             if self._read(case_id)[3] != watermark:
                 continue
+            if self.cache is not None:
+                return self.cache.put(case.tenant_id, frame, pages, self.ttl)[0]
             with self._lock:
                 self._prune()
+                if frame.frame_id in self._cache:
+                    return self._cache[frame.frame_id][2]
                 self._cache[frame.frame_id] = (monotonic(), case_id, frame, pages)
                 while len(self._cache) > self.max_frames:
                     self._cache.popitem(last=False)
@@ -140,9 +150,9 @@ class InvestigationFrameService:
             if monotonic() - value[0] > self.ttl:
                 del self._cache[key]
 
-    def _cursor(self, frame_id, section, offset):
+    def _cursor(self, frame_id, section, offset, key=None):
         body = f"{frame_id}:{section}:{offset}"
-        return str(offset) + "." + mac(self._secret, body.encode(), "sha256").hex()
+        return str(offset) + "." + mac(key or self._secret, body.encode(), "sha256").hex()
 
     def _page(self, frame_id, section, items, offset=0, limit=40, denied=0):
         end = min(offset + limit, len(items))
@@ -158,24 +168,31 @@ class InvestigationFrameService:
         self.repository.cases.get(case_id)  # reauthorize even for a cached page
         with self._lock:
             self._prune()
-            cached = self._cache.get(frame_id)
+            cached = self._cached(case_id, frame_id)
             if not cached or cached[1] != case_id:
                 raise FrameStale("FRAME_EXPIRED")
             offset = 0
             if cursor:
                 try:
                     offset = int(cursor.split(".")[0])
-                    if offset < 0 or not compare_digest(cursor, self._cursor(frame_id, section, offset)):
+                    if offset < 0 or not any(compare_digest(cursor, self._cursor(frame_id, section, offset, key)) for key in (self._secret, self.previous_cursor_key) if key):
                         raise ValueError()
                 except ValueError:
                     raise FrameStale("INVALID_CURSOR") from None
-            return self._page(frame_id, section, cached[3][section], offset, limit)
+            return self._page(frame_id, section, cached[3][section], offset, limit,
+                denied=cached[2].evidence.eligibility_denied_count)
+
+    def _cached(self, case_id, frame_id):
+        if self.cache is None:
+            return self._cache.get(frame_id)
+        frame, pages = self.cache.get(self.repository.cases.tenant_id, case_id, frame_id)
+        return (0, case_id, frame, pages)
 
     def evidence_detail(self, case_id, frame_id, evidence_id):
         self.repository.cases.get(case_id)
         with self._lock:
             self._prune()
-            cached = self._cache.get(frame_id)
+            cached = self._cached(case_id, frame_id)
             if not cached or cached[1] != case_id:
                 raise FrameStale("FRAME_EXPIRED")
             item = next((e for e in cached[3]["evidence"] if e.evidence_id == evidence_id), None)
@@ -317,6 +334,17 @@ class InvestigationFrameService:
             add("recovery", entry(K.RECOVERY, r["call_id"], r["status"], {},
                 at=datetime.fromtimestamp(r["attempted_at"], timezone.utc), refs=tuple(r["recovered_evidence_refs"]),
                 related=(alias(r["call_id"], K.TOOL.value.upper()),)))
+        from .closure import checked_closure
+        from .models import TraceTrustClass as Trust
+        closure_reports = set()
+        for closure_row in data[CaseClosureRow.__tablename__]:
+            report_row = next((r for r in data[EvaluationReportRow.__tablename__]
+                if r["evaluation_run_id"] == closure_row["evaluation_run_id"]), None)
+            if report_row is None:
+                raise ContextEligibilityError("closure report missing")
+            record, closing_report = checked_closure(case, closure_row, report_row, read.fingerprint,
+                digest(data[EffectRow.__tablename__]), digest(read.calls))
+            closure_reports.add(closing_report.report_id)
         for r in data[EvaluationReportRow.__tablename__]:
             p = r["payload"]
             from credit_harness.evaluation.models import EvaluationReport
@@ -325,7 +353,7 @@ class InvestigationFrameService:
             if (report_identity(report) != r["report_id"] or report.case_id != case.case_id
                     or report.snapshot.tenant_id != case.tenant_id):
                 raise ContextEligibilityError("evaluation binding invalid")
-            is_current = (p["snapshot"]["evidence_fingerprint"] == read.fingerprint
+            is_current = report.report_id in closure_reports or (p["snapshot"]["evidence_fingerprint"] == read.fingerprint
                 and datetime.fromisoformat(p["snapshot"]["case_revision"]) == case.updated_at
                 and p["snapshot"]["side_effect_ledger_fingerprint"] == digest(data[EffectRow.__tablename__])
                 and p["snapshot"]["call_history_fingerprint"] == digest(read.calls)
@@ -337,13 +365,14 @@ class InvestigationFrameService:
                 add("evaluations", entry(K.EVALUATION, r["evaluation_run_id"] + dim["dimension"], dim["status"], values,
                     ("dimension", "report_ref", "overall_verdict", "reason_codes", "required_claims_missing", "requirements"),
                     at=p["created_at"], refs=tuple(dim["supporting_evidence_refs"]), historical=not is_current,
+                    trust=Trust.CLOSURE_BOUND_CURRENT_EVALUATION if report.report_id in closure_reports else None,
                     warning=None if is_current else "Historical evaluation; current state requires re-verification"))
         closed = False
         for r in data[CaseClosureRow.__tablename__]:
             p = r["payload"]
             report = next((e["payload"] for e in data[EvaluationReportRow.__tablename__] if e["evaluation_run_id"] == r["evaluation_run_id"]), None)
             if (case.status.value == "CLOSED_VERIFIED" and report and report["overall_verdict"] == "PASS"
-                    and report["report_id"] == r["report_id"] and p["evidence_fingerprint"] == read.fingerprint):
+                    and report["report_id"] in closure_reports):
                 closed = True
                 add("closure", entry(K.CLOSURE, r["closure_id"], "CLOSED_VERIFIED", {"outcome_path": report["outcome_path"]},
                     ("outcome_path",), at=p["closed_at"], related=(alias(report["report_id"], "REPORT"),),
@@ -358,7 +387,9 @@ class InvestigationFrameService:
                 "expected_account_ref": alias(subject.expected_account_ref, "ACC")})})
         if case.status.value == "CLOSED_VERIFIED" and not closed:
             raise ContextEligibilityError("verified closure binding missing")
-        frame_id = sha256((case.tenant_id + case.case_id + watermark).encode()).hexdigest()
+        epoch = str(int(time() // self.ttl)) if self.cache is not None else "local"
+        frame_id = digest(dict(tenant=case.tenant_id, case=case.case_id, watermark=watermark, epoch=epoch,
+            projection="17.1", alias_domain=alias("frame-domain")))
         for section in SECTIONS:
             pages[section] = tuple(sorted({i.trace_id: i for i in pages[section]}.values(),
                 key=lambda i: (i.occurred_at or datetime.min.replace(tzinfo=timezone.utc), i.trace_id), reverse=True))
@@ -377,7 +408,7 @@ class InvestigationFrameService:
             case_summary=summary, financial_truth=tuple(truths), financial_identity=identity, current_evidence=current[:100],
             hypotheses=UIHypothesisGraph(case_id=case.case_id, rule_version=graph.rule_version, definitions=graph.definitions,
                 hypotheses=tuple(UIHypothesisState(**h.model_dump()) for h in graph.hypotheses), open_gaps=tuple(UIGap(**g.model_dump()) for g in graph.open_gaps)),
-            gap_capabilities=gap_caps, evidence=self._page(frame_id, "evidence", evidence),
+            gap_capabilities=gap_caps, evidence=self._page(frame_id, "evidence", evidence, denied=len(read.evidence)-len(evidence)),
             **{name: self._page(frame_id, section, pages[section], limit=10 if section == "timeline" else 40)
                 for section, name in SECTIONS.items()})
         return frame, pages

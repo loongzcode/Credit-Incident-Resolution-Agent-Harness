@@ -5,7 +5,7 @@ The existing Harness credentials and write/dispatch routes are not mounted here.
 """
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -36,6 +36,12 @@ class UICase(Model):
     updated_at: AwareDatetime
     budget: CaseBudget
     financial_subject: FinancialSubject | None
+
+
+class UIBasicCase(Model):
+    case_id: OpaqueSubjectRef
+    status: CaseStatus
+    updated_at: AwareDatetime
 
 
 class UIEvidence(FactCapsule):
@@ -76,7 +82,8 @@ class UIHypothesisGraph(Model):
 def create_ui_app(bindings: dict[str, EvidenceRepository], *,
                   assembler: ReasoningContextAssembler | None = None,
                   permissions: dict[str, frozenset[str]] | None = None,
-                  include_legacy_diagnostics: bool = True) -> FastAPI:
+                  include_legacy_diagnostics: bool = True, frame_options=None,
+                  identity_provider=None, identity_access=None, identity_repository=None) -> FastAPI:
     app = FastAPI(title="Incident Investigation Console API", version="0.1.0")
     assembler = assembler or ReasoningContextAssembler()
     policy = assembler.eligibility
@@ -87,14 +94,35 @@ def create_ui_app(bindings: dict[str, EvidenceRepository], *,
     # Legacy bindings are already explicit investigation-only read grants.
     # Registry-admin credentials are never read or accepted by this app.
     grants = permissions if permissions is not None else {key: all_permissions for key in bindings}
-    services = {key: InvestigationFrameService(repo, assembler=assembler) for key, repo in bindings.items()}
+    services = {key: InvestigationFrameService(repo, assembler=assembler, **(frame_options or {})) for key, repo in bindings.items()}
     app.state.investigation_services = services
 
-    def authenticate(credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)]):
-        repository = bindings.get(token_hash(credentials.credentials)) if credentials else None
-        if repository is None:
+    if identity_repository is not None:
+        services["oidc"] = InvestigationFrameService(identity_repository, assembler=assembler, **(frame_options or {}))
+
+    def authenticate(request: Request, credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)]):
+        if not credentials:
             raise HTTPException(403, detail={"code": "ACCESS_DENIED"})
-        if not all_permissions <= grants.get(token_hash(credentials.credentials), frozenset()):
+        if identity_provider is not None:
+            try:
+                identity = identity_provider.authenticate(credentials.credentials)
+                allowed = identity_access.permissions(identity)
+                repository = identity_repository
+            except Exception:
+                raise HTTPException(403, detail={"code": "ACCESS_DENIED"}) from None
+        else:
+            key = token_hash(credentials.credentials)
+            repository, allowed = bindings.get(key), grants.get(key, frozenset())
+        section = request.url.path.rsplit("/", 1)[-1]
+        if section == "summary":
+            required = {"CASE_VIEW"}
+        elif section == "evidence-page" or "/evidence-items/" in request.url.path:
+            required = {"CASE_VIEW", "CASE_FINANCIAL_VIEW"}
+        elif section in ("planner-runs", "tools", "work", "knowledge", "sources", "routes"):
+            required = {"CASE_VIEW", "CASE_TRACE_VIEW"}
+        else:
+            required = all_permissions
+        if repository is None or not required <= allowed:
             raise HTTPException(403, detail={"code": "ACCESS_DENIED"})
         return repository
 
@@ -106,6 +134,14 @@ def create_ui_app(bindings: dict[str, EvidenceRepository], *,
 
     def service(repository):
         return next(s for s in services.values() if s.repository is repository)
+
+    @app.get("/ui/cases/{case_id}/summary", response_model=UIBasicCase)
+    def get_summary(case_id: str, repository: Repository):
+        def project():
+            case = repository.cases.get(case_id)
+            policy.validate_case(case)
+            return UIBasicCase(case_id=case.case_id, status=case.status, updated_at=case.updated_at)
+        return safe(project)
 
     @app.get("/ui/cases/{case_id}/frame", response_model=InvestigationFrame)
     def get_frame(case_id: str, repository: Repository):
@@ -208,7 +244,7 @@ def create_ui_app(bindings: dict[str, EvidenceRepository], *,
     return app
 
 
-def create_production_ui_app(bindings, *, permissions=None, assembler=None):
+def create_production_ui_app(bindings, *, permissions=None, assembler=None, **deployment):
     """Production browser surface: only Frame-bound safe projections."""
     return create_ui_app(bindings, permissions=permissions, assembler=assembler,
-        include_legacy_diagnostics=False)
+        include_legacy_diagnostics=False, **deployment)

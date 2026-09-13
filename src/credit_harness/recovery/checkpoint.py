@@ -26,7 +26,7 @@ class AgentCheckpointStore:
     def __init__(self, cases):
         self.cases = cases
 
-    def save(self, run_id, case_id, turn, snapshot_id, decision_id=None, call_id=None, stop_status=None):
+    def save(self, run_id, case_id, turn, snapshot_id, decision_id=None, call_id=None, stop_status=None, *, completed_turn=None, trace_store=None):
         checkpoint = DurableAgentCheckpoint(run_id=run_id, case_id=case_id, last_completed_turn=turn,
             last_snapshot_id=snapshot_id, last_decision_id=decision_id, last_call_id=call_id,
             stop_status=stop_status, updated_at=utc_now())
@@ -34,6 +34,8 @@ class AgentCheckpointStore:
         values["updated_at"] = checkpoint.updated_at.timestamp()
         with Session(self.cases.engine) as session, session.begin():
             self.cases._row(session, case_id)
+            if completed_turn is not None and trace_store is not None:
+                trace_store.record_turn(case_id, run_id, completed_turn, session=session)
             row = session.get(AgentCheckpointRow, run_id)
             if row is None:
                 session.add(AgentCheckpointRow(**values))

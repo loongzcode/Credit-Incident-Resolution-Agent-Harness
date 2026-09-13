@@ -2,6 +2,8 @@
 
 接管资深信贷生产支持工程师对“三方放款状态异常订单”的调查、受控修复、故障恢复和独立验收工作。
 
+Step 17 增加 [生产部署与运行手册](docs/production-operations.md)：Alembic 迁移、共享安全 Frame、OIDC 分区权限、持久化每轮 Trace、长期 Worker、检索 generation/回滚、健康检查、聚合指标、备份恢复演练，以及绑定最终提交 SHA 的发布门禁。生产入口与 synthetic 开发启动入口分离；仍不连接真实金融副作用。运行 `python -m scripts.verify_release` 从干净提交生成实际测试报告；容器、配置模板在 `deploy/`，架构决策在 [docs/adr](docs/adr/)。
+
 **当前状态：已实现 Simulator、Case Runtime、Evidence Store、Hypothesis、Context Boundary、LLM Planner、Step 6 只读调查循环、Step 7 修复建议与确定性预检、Step 8 持久化授权与 synthetic 非资金副作用边界、Step 9 Durable Recovery，Step 10 Independent Evaluator / Verified Closure，以及 Step 11 Skill Library / Verified Experience Memory。** 调查阶段每轮最多执行一个经验证及数据库 CAS 的只读 Tool。独立修复建议阶段仍只生成 PROPOSED Intent；可信授权服务重新预检后，执行器才允许一个受限的模拟消息/通知/任务效果。Recovery 对已发送但结果未知的效果只读查证，绝不重发。Evaluator 独立检查当前持久 Evidence、身份、三方状态、操作与恢复，只有新的 PASS 经事务重验和 Closure CAS 才能 CLOSED_VERIFIED。默认 Fake 离线运行，可选独立 OpenAI 结构化输出适配器；Evaluator 完全不使用 LLM。已验证关闭的 Case 可显式发布历史经验，供调查 Planner 使用；历史经验不能替代当前 Evidence。真实金融写入与自动修改 Skill 尚未实现。
 
 当前代码、完整目录、观测语义及启动命令见 [Simulator 实现文档](docs/simulator.md)。

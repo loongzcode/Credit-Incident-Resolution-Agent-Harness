@@ -40,6 +40,14 @@ class TraceField(Model):
     value: str
 
 
+class TraceTrustClass(StrEnum):
+    CURRENT_OPERATIONAL = "CURRENT_OPERATIONAL"
+    ORGANIZATIONAL_GUIDANCE = "ORGANIZATIONAL_GUIDANCE"
+    VERIFIED_HISTORICAL_GUIDANCE = "VERIFIED_HISTORICAL_GUIDANCE"
+    HISTORICAL_EVALUATION = "HISTORICAL_EVALUATION"
+    CLOSURE_BOUND_CURRENT_EVALUATION = "CLOSURE_BOUND_CURRENT_EVALUATION"
+
+
 class TraceItem(Model):
     trace_id: str
     kind: TraceKind
@@ -49,7 +57,8 @@ class TraceItem(Model):
     evidence_refs: tuple[str, ...] = ()
     related_refs: tuple[str, ...] = ()
     warning: str | None = None
-    historical: bool = False
+    historical: bool = False  # legacy display compatibility only
+    trace_trust_class: TraceTrustClass = TraceTrustClass.CURRENT_OPERATIONAL
 
 
 class TracePage(Model):

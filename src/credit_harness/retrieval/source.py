@@ -1,6 +1,6 @@
 """Trusted source adapter. Embedding workers never inspect live evidence/PII."""
 from dataclasses import dataclass
-from sqlalchemy import select, func
+from sqlalchemy import select, func, tuple_
 from sqlalchemy.orm import Session
 from credit_harness.memory.tables import SkillRow, ExperienceRow
 from credit_harness.memory.skills import checked_skill
@@ -101,6 +101,20 @@ class MemorySources:
             if row is not None and row.schema_version != version:
                 raise RetrievalError("source version changed")
         return self._document(row, kind)
+
+    def batch_get(self, kind, candidates):
+        if not candidates:
+            return ()
+        kind = D(kind)
+        table = SkillRow if kind == D.SKILL else ExperienceRow
+        id_col = table.skill_id if kind == D.SKILL else table.experience_id
+        version_col = table.version if kind == D.SKILL else table.schema_version
+        keys = [(c.document_id, c.source_version) for c in candidates]
+        with Session(self.engine) as session:
+            rows = session.scalars(select(table).where(table.tenant_id == self.tenant_id,
+                tuple_(id_col, version_col).in_(keys))).all()
+            by_key = {(getattr(r, id_col.key), getattr(r, version_col.key)): r for r in rows}
+            return tuple(self._document(by_key.get(key), kind) for key in keys)
 
     def active_documents(self, batch_size=250):
         # Administrative backfill only; query path never calls active()/scans JSON.

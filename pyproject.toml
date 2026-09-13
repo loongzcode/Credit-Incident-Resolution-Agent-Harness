@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "Evidence-bounded financial simulator for credit incident investigation"
 requires-python = ">=3.11"
 dependencies = [
+    "alembic>=1.16,<2",
     "pydantic>=2.10,<3",
     "SQLAlchemy>=2.0,<2.1",
     "psycopg[binary]>=3.2,<4",
