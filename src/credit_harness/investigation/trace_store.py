@@ -22,7 +22,7 @@ class InvestigationTraceRow(Base):
     case_id: Mapped[str] = mapped_column(ForeignKey("investigation_cases.case_id"), index=True)
     tenant_id: Mapped[str] = mapped_column(String(128))
     payload: Mapped[dict] = mapped_column(JSON)
-    projection_version: Mapped[str] = mapped_column(String(16), server_default="1")
+    projection_version: Mapped[str] = mapped_column(String(16), server_default="2")
 
 
 def tenant_projection(method):
@@ -140,7 +140,7 @@ class SQLInvestigationTraceStore:
             identity = digest(dict(tenant=self.cases.tenant_id, case=case_id, trace=safe.trace_id))
             session.execute(insert_for(self.cases.engine, InvestigationTraceRow).values(
                 trace_id=identity, case_id=case_id, tenant_id=self.cases.tenant_id,
-                payload=safe.model_dump(mode="json")).on_conflict_do_nothing(index_elements=["trace_id"]))
+                projection_version='2', payload=safe.model_dump(mode="json")).on_conflict_do_nothing(index_elements=["trace_id"]))
 
 
 class TracedGuidanceProvider:

@@ -66,6 +66,8 @@ Frame 仅存储 Step 16 allowlist 投影。JSONB 附带内容指纹、租户和 
 
 显式 `trace_trust_class` 区分当前操作、组织知识、已验证历史经验、历史评估、当前 Closure 绑定评估。旧 historical 字段只为兼容保留，前端不再用它决定知识类别。检索计时/引用汇总是操作记录；真正的 Skill 为组织知识，Experience 为历史指导。
 
+Trace projection v2 写入 tenant HMAC 别名。v1 已保存的 SHA 别名无法反推出原值，读取时使用独立 legacy 域重新 HMAC，避免继续展示可跨租户关联的旧摘要；原始审计行不改写。旧/新显示别名不作为关联业务事实的 witness。未知 projection version 拒绝展示。
+
 展示 Closure 前重新计算原有 closure identity，并验证全部 Case/Run/Report/Snapshot ID、Evidence/Ledger/Call 指纹、策略版本、合约版本和关闭时 Case revision。只有合法 Closure 绑定的那个 PASS Report 才显示为当前结案评估；Case 状态字符串和任意 PASS 不构成结案证明。
 
 生产 OpenAPI 来自 `create_production_ui_app`，旧 `/evidence`、`/hypotheses`、`/reasoning-context` 仅保存在 `openapi-legacy.json`。生成类型与静态检查分别比较两个契约，禁止把 compatibility API 当生产接口。

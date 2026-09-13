@@ -103,6 +103,33 @@ def test_tenant_scoped_alias_is_stable_and_private():
     assert '13800138000' not in a
 
 
+def test_legacy_persisted_sha_alias_is_rekeyed_on_frame_read(service):
+    from credit_harness.investigation.models import TraceItem,TraceField
+    old = 'EXPERIENCE-'+'a'*20
+    item = TraceItem(trace_id='KnowledgeRetrieval-'+'b'*20,kind=TraceKind.KNOWLEDGE,
+        status='RECORDED',fields=(TraceField(name='experience_alias',value=old),))
+    InvestigationTraceRow.__table__.create(service.repository.engine,checkfirst=True)
+    with Session(service.repository.engine) as s,s.begin():
+        s.add(InvestigationTraceRow(trace_id='legacy-row',case_id=CASE,tenant_id='demo',
+            projection_version='1',payload=item.model_dump(mode='json')))
+    frame = service.build(CASE)
+    assert old not in frame.model_dump_json() and item.trace_id not in frame.model_dump_json()
+    with Session(service.repository.engine) as s:
+        assert s.get(InvestigationTraceRow,'legacy-row').payload==item.model_dump(mode='json')
+
+
+def test_legacy_rekey_is_tenant_bound_and_current_projection_is_unchanged():
+    from credit_harness.investigation.projection import stored_trace
+    from credit_harness.investigation.models import TraceItem,TraceField
+    item = TraceItem(trace_id='legacy',kind=TraceKind.KNOWLEDGE,status='RECORDED',
+        fields=(TraceField(name='embedding_space',value='SPACE-'+'a'*20),))
+    with alias_scope('a',KEY): first = stored_trace(item.model_dump(),'1')
+    with alias_scope('b',KEY): second = stored_trace(item.model_dump(),'1')
+    assert first.trace_id!=second.trace_id and first.fields!=second.fields
+    assert stored_trace(item.model_dump(),'2')==item
+    with pytest.raises(ValueError): stored_trace(item.model_dump(),'unrecognized')
+
+
 @pytest.mark.parametrize('permission,allowed,denied', [
     ('CASE_TRACE_VIEW', 'tools', 'evidence-page'),
     ('CASE_FINANCIAL_VIEW', 'evidence-page', 'tools')])

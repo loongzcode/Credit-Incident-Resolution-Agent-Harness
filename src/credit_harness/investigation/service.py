@@ -38,7 +38,7 @@ from credit_harness.registry.tables import (RegistryHeadRow, RegistryVersionRow,
     RouteRevisionRow, RouteContextRow, DispatchSourceRow)
 from .models import (InvestigationFrame, EvidencePage, TracePage, FrameStale,
     FinancialTruth, GapCapability, TraceKind as K, TraceItem)
-from .projection import entry, alias, planner_items, display, fields
+from .projection import entry, alias, planner_items, display, fields, stored_trace
 from .trace_store import InvestigationTraceRow
 
 SECTIONS = {"timeline": "timeline", "planner-runs": "planner_trace", "tools": "tool_trace",
@@ -303,7 +303,7 @@ class InvestigationFrameService:
                 add("knowledge" if item.kind == K.KNOWLEDGE else "planner-runs", item)
         for r in data[InvestigationTraceRow.__tablename__]:
             if r["tenant_id"] == case.tenant_id:
-                item = TraceItem.model_validate(r["payload"])
+                item = stored_trace(r['payload'],r['projection_version'])
                 add("knowledge" if item.kind == K.KNOWLEDGE else "planner-runs", item)
         for r in data[WorkItemRow.__tablename__]:
             p = r["payload"]

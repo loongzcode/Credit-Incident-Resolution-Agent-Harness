@@ -15,6 +15,23 @@ def display(value):
     return text
 
 
+def stored_trace(payload, version):
+    """Legacy SHA aliases cannot be reversed. Re-key their opaque digest on read.
+
+    Old audit bytes remain immutable. Legacy/current aliases intentionally have
+    separate domains; neither is a current-case association witness.
+    """
+    item = TraceItem.model_validate(payload)
+    if version == '2':
+        return item
+    if version != '1':
+        raise ValueError('unsupported trace projection version')
+    pattern = re.compile(r'\b(EXPERIENCE|SPACE)-[a-f0-9]{20}\b')
+    projected = tuple(field.model_copy(update={'value': pattern.sub(
+        lambda match: alias('legacy:'+match.group(),match.group(1)),field.value)}) for field in item.fields)
+    return item.model_copy(update={'trace_id':alias('legacy:'+item.trace_id,item.kind.value),'fields':projected})
+
+
 def fields(payload, names):
     return tuple(TraceField(name=n, value=display(payload[n])) for n in names if n in payload)
 
