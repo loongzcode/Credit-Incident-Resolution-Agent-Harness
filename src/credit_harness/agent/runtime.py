@@ -16,7 +16,6 @@ from .models import (
 from .progress import knowledge_progress
 from .query import build_tool_query
 from .revalidation import RuntimeActionRevalidator, execution_precondition
-from .trace import InMemoryAgentRunTraceStore
 from credit_harness.recovery.case import CaseRecoveryCoordinator
 from credit_harness.recovery.checkpoint import AgentCheckpointStore
 
@@ -33,7 +32,11 @@ class InvestigationAgentRuntime:
         self.planner, self.executor = planner, executor
         self.config = config or AgentRunConfig()
         self.revalidator = RuntimeActionRevalidator()
-        self.trace_store = trace_store if trace_store is not None else InMemoryAgentRunTraceStore()
+        if trace_store is None:
+            from credit_harness.investigation.trace_store import SQLInvestigationTraceStore
+            trace_store = SQLInvestigationTraceStore(cases)
+            trace_store.create_schema()
+        self.trace_store = trace_store
         self.recovery = CaseRecoveryCoordinator(cases, evidence)
         self.checkpoints = AgentCheckpointStore(cases)
 

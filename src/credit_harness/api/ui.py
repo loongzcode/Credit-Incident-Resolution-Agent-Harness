@@ -74,19 +74,57 @@ class UIHypothesisGraph(Model):
 
 
 def create_ui_app(bindings: dict[str, EvidenceRepository], *,
-                  assembler: ReasoningContextAssembler | None = None) -> FastAPI:
+                  assembler: ReasoningContextAssembler | None = None,
+                  permissions: dict[str, frozenset[str]] | None = None,
+                  include_legacy_diagnostics: bool = True) -> FastAPI:
     app = FastAPI(title="Incident Investigation Console API", version="0.1.0")
     assembler = assembler or ReasoningContextAssembler()
     policy = assembler.eligibility
     bearer = HTTPBearer(auto_error=False)
+    from credit_harness.investigation.models import InvestigationFrame, FrameStale, TracePage, EvidencePage
+    from credit_harness.investigation.service import InvestigationFrameService, SECTIONS
+    all_permissions = frozenset({"CASE_VIEW", "CASE_TRACE_VIEW", "CASE_FINANCIAL_VIEW"})
+    # Legacy bindings are already explicit investigation-only read grants.
+    # Registry-admin credentials are never read or accepted by this app.
+    grants = permissions if permissions is not None else {key: all_permissions for key in bindings}
+    services = {key: InvestigationFrameService(repo, assembler=assembler) for key, repo in bindings.items()}
+    app.state.investigation_services = services
 
     def authenticate(credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)]):
         repository = bindings.get(token_hash(credentials.credentials)) if credentials else None
         if repository is None:
             raise HTTPException(403, detail={"code": "ACCESS_DENIED"})
+        if not all_permissions <= grants.get(token_hash(credentials.credentials), frozenset()):
+            raise HTTPException(403, detail={"code": "ACCESS_DENIED"})
         return repository
 
     Repository = Annotated[EvidenceRepository, Depends(authenticate)]
+
+    @app.exception_handler(FrameStale)
+    async def stale_frame(_request, error):
+        return JSONResponse(status_code=409, content={"detail": {"code": str(error)}})
+
+    def service(repository):
+        return next(s for s in services.values() if s.repository is repository)
+
+    @app.get("/ui/cases/{case_id}/frame", response_model=InvestigationFrame)
+    def get_frame(case_id: str, repository: Repository):
+        return safe(lambda: service(repository).build(case_id))
+
+    @app.get("/ui/cases/{case_id}/evidence-page", response_model=EvidencePage)
+    def get_evidence_page(case_id: str, frame_id: str, repository: Repository, cursor: str | None = None, limit: int = 40):
+        return safe(lambda: service(repository).page(case_id, frame_id, "evidence", cursor, limit))
+
+    @app.get("/ui/cases/{case_id}/evidence-items/{evidence_id}", response_model=UIEvidence)
+    def get_frame_evidence(case_id: str, evidence_id: str, frame_id: str, repository: Repository):
+        return safe(lambda: service(repository).evidence_detail(case_id, frame_id, evidence_id))
+
+    def install_page(section):
+        @app.get(f"/ui/cases/{{case_id}}/{section}", response_model=TracePage)
+        def get_trace_page(case_id: str, frame_id: str, repository: Repository, cursor: str | None = None, limit: int = 40):
+            return safe(lambda: service(repository).page(case_id, frame_id, section, cursor, limit))
+    for section in SECTIONS:
+        install_page(section)
 
     @app.exception_handler(RequestValidationError)
     async def invalid_request(_request, _error):
@@ -164,4 +202,13 @@ def create_ui_app(bindings: dict[str, EvidenceRepository], *,
     def get_context(case_id: str, repository: Repository):
         return safe(lambda: context_view(repository, case_id))
 
+    if not include_legacy_diagnostics:
+        legacy = {"/ui/cases/{case_id}" + suffix for suffix in ("", "/evidence", "/hypotheses", "/reasoning-context")}
+        app.router.routes[:] = [route for route in app.router.routes if getattr(route, "path", None) not in legacy]
     return app
+
+
+def create_production_ui_app(bindings, *, permissions=None, assembler=None):
+    """Production browser surface: only Frame-bound safe projections."""
+    return create_ui_app(bindings, permissions=permissions, assembler=assembler,
+        include_legacy_diagnostics=False)

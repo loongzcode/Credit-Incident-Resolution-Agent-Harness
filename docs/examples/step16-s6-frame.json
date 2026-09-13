@@ -1,0 +1,5699 @@
+{
+  "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+  "case_id": "CASE-JD202609100001",
+  "case_revision": "2026-09-12T20:17:56.718064Z",
+  "evidence_fingerprint": "65a5590e46108db84908ef130188b058f3ad71a88b92fba5c1bfcd51ff034474",
+  "registry_version": null,
+  "route_revision": null,
+  "latest_agent_run": "RUN-05e27defdc82b5df6098",
+  "assembled_at": "2026-09-12T20:17:57.011411Z",
+  "route_summary": [],
+  "investigation_allowed": false,
+  "current_evidence_total": 30,
+  "case_summary": {
+    "case_id": "CASE-JD202609100001",
+    "internal_order_id": "ORDER-5cd9f7e42f58bb065d50",
+    "status": "ESCALATED",
+    "updated_at": "2026-09-12T20:17:56.718064Z",
+    "budget": {
+      "max_tool_calls": 20,
+      "used_tool_calls": 9
+    },
+    "financial_subject": {
+      "expected_principal_minor": 2000000,
+      "currency": "CNY",
+      "customer_ref": "CUS-45e839b67f37a9eeb165",
+      "expected_beneficiary_ref": "BEN-5203ac0212415f345369",
+      "expected_account_ref": "ACC-c511d78af90647ddb14d"
+    }
+  },
+  "financial_truth": [
+    {
+      "claim_type": "PAYMENT_FINALITY",
+      "value": "SETTLED",
+      "evidence_refs": [
+        "E-5a281a676e9f1ba0599d8f95326661edc3e971442a3b34f561bce3688bebeddd"
+      ],
+      "status": "OBSERVED"
+    },
+    {
+      "claim_type": "FUND_BUSINESS_STATUS",
+      "value": "SUCCESS",
+      "evidence_refs": [
+        "E-848a7546698715768fa77f3b0097616b71277f70c8c8cd48b1f546fac6bdb488"
+      ],
+      "status": "OBSERVED"
+    },
+    {
+      "claim_type": "GUARANTEE_STATUS",
+      "value": "PROCESSING",
+      "evidence_refs": [
+        "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057"
+      ],
+      "status": "OBSERVED"
+    },
+    {
+      "claim_type": "ASSET_STATUS",
+      "value": "PROCESSING",
+      "evidence_refs": [
+        "E-3879a7e38946c44c51109f66c5f9e24e2015020c7393f2fdf1536961af0a8c2b"
+      ],
+      "status": "OBSERVED"
+    },
+    {
+      "claim_type": "CALLBACK_GATEWAY_RECEIVED",
+      "value": true,
+      "evidence_refs": [
+        "E-2dcbebc63c13c03dda873b7da37a44940f9117a01ba58d519904c93308c95a6d"
+      ],
+      "status": "OBSERVED"
+    },
+    {
+      "claim_type": "MESSAGE_CONSUME_STATUS",
+      "value": "FAILED",
+      "evidence_refs": [
+        "E-6d5fdffa4dc67795544dddca619cbf5d13c90549fbea1348fb3a9a50a0fb2256"
+      ],
+      "status": "OBSERVED"
+    },
+    {
+      "claim_type": "ACCOUNTING_ENTRY_PRESENT",
+      "value": "UNKNOWN",
+      "evidence_refs": [],
+      "status": "UNKNOWN"
+    }
+  ],
+  "financial_identity": {
+    "result": "MATCH",
+    "mismatch_dimensions": [],
+    "unknown_dimensions": [],
+    "candidate_transaction_count": 1,
+    "transaction_ref_preview": [
+      "TRANSACTION-1cf5f97e384f16107878"
+    ],
+    "transaction_refs_digest": "497891384dc890d8ebf131f7b6f5053380c1fb332a897a8d2ad82bd4dcb909f3",
+    "evidence_ref_count": 12,
+    "evidence_refs_digest": "db81cc69b594331678baa571918f6d441f8cf9c704aa999c77e7a58b86ebfd70",
+    "evidence_refs": [
+      "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569",
+      "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057",
+      "E-3aacfcf7eae22702e5576582c39029898b7f91860d5d5b54574f093880952650",
+      "E-5a281a676e9f1ba0599d8f95326661edc3e971442a3b34f561bce3688bebeddd",
+      "E-5d8aa8e64786b16b53dea44c8e929db8793b157bf80bf8cf2616b59794aa5814",
+      "E-6d56ea7c6f6cf8847f6d0de6b255e7055377bf844dc68360eaeb0bebf3d31202",
+      "E-73ebeceb109cb6379ac65fa42a5152fe39d6ed3e08c53fd8c29ea324bfabc2e2",
+      "E-848a7546698715768fa77f3b0097616b71277f70c8c8cd48b1f546fac6bdb488",
+      "E-86484766c5f394e3c1c1b9f22844ad89ea305d38bb51dac3b99510ca16473430",
+      "E-b20559b5f35e30b0d59cad4cbf791960d8a7e21127ba6cdd216c1da325e3d4ce",
+      "E-b77d109c15078068015d43fb15f7d8b6a4e58e72648d7ead00e8a3044adfec63",
+      "E-bbe97d9871ec3bed439790b8a4956a7c9b660f5babdb181a3ab295a05a7432b7"
+    ],
+    "verification_version": "1"
+  },
+  "financial_identity_dimensions": [
+    {
+      "name": "AMOUNT",
+      "value": "MATCH"
+    },
+    {
+      "name": "CURRENCY",
+      "value": "MATCH"
+    },
+    {
+      "name": "REQUEST",
+      "value": "MATCH"
+    },
+    {
+      "name": "CUSTOMER",
+      "value": "MATCH"
+    },
+    {
+      "name": "BENEFICIARY",
+      "value": "MATCH"
+    },
+    {
+      "name": "ACCOUNT",
+      "value": "MATCH"
+    }
+  ],
+  "current_evidence": [
+    {
+      "claim_type": "REQUEST_SENT",
+      "value": true,
+      "subject": {
+        "kind": "ORDER",
+        "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:03+08:00",
+      "observed_at": "2026-09-10T09:31:10+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_request_trace",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:31:10+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569"
+      ]
+    },
+    {
+      "claim_type": "HTTP_RESPONSE_STATUS",
+      "value": "TIMEOUT",
+      "subject": {
+        "kind": "ORDER",
+        "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:03+08:00",
+      "observed_at": "2026-09-10T09:31:10+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_request_trace",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:31:10+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-b20559b5f35e30b0d59cad4cbf791960d8a7e21127ba6cdd216c1da325e3d4ce"
+      ]
+    },
+    {
+      "claim_type": "FUND_BUSINESS_STATUS",
+      "value": "SUCCESS",
+      "subject": {
+        "kind": "FUND_REQUEST",
+        "identifier": "SUBJECT-d7d2d2a1f4492cc1ac14",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:02+08:00",
+      "observed_at": "2026-09-10T09:30:40+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_fund_order",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:30:40+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-848a7546698715768fa77f3b0097616b71277f70c8c8cd48b1f546fac6bdb488"
+      ]
+    },
+    {
+      "claim_type": "LOAN_NO_PRESENT",
+      "value": true,
+      "subject": {
+        "kind": "FUND_REQUEST",
+        "identifier": "SUBJECT-d7d2d2a1f4492cc1ac14",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:02+08:00",
+      "observed_at": "2026-09-10T09:30:40+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_fund_order",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:30:40+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-4bd440390ca0efa64d97168648d72cbe50fe63ba701a7f2ab3ddd3dcac18aa45"
+      ]
+    },
+    {
+      "claim_type": "LOAN_NOTE_REFERENCE",
+      "value": "EXTERNAL-930cf28c96d247671eb4",
+      "subject": {
+        "kind": "FUND_REQUEST",
+        "identifier": "SUBJECT-d7d2d2a1f4492cc1ac14",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:02+08:00",
+      "observed_at": "2026-09-10T09:30:40+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_fund_order",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:30:40+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-5b0a8031438a025a162e3cfd0dbc19ebc065ba93df1e6b3c79c73fa2d2218700"
+      ]
+    },
+    {
+      "claim_type": "PAYMENT_FINALITY",
+      "value": "SETTLED",
+      "subject": {
+        "kind": "TRANSACTION",
+        "identifier": "SUBJECT-1cf5f97e384f16107878",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:02+08:00",
+      "observed_at": "2026-09-10T09:30:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:30:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-5a281a676e9f1ba0599d8f95326661edc3e971442a3b34f561bce3688bebeddd"
+      ]
+    },
+    {
+      "claim_type": "PAYMENT_TRANSACTION_ID",
+      "value": "EXTERNAL-1cf5f97e384f16107878",
+      "subject": {
+        "kind": "TRANSACTION",
+        "identifier": "SUBJECT-1cf5f97e384f16107878",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:02+08:00",
+      "observed_at": "2026-09-10T09:30:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:30:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-86484766c5f394e3c1c1b9f22844ad89ea305d38bb51dac3b99510ca16473430"
+      ]
+    },
+    {
+      "claim_type": "PAYMENT_AMOUNT",
+      "value": 2000000,
+      "subject": {
+        "kind": "TRANSACTION",
+        "identifier": "SUBJECT-1cf5f97e384f16107878",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:02+08:00",
+      "observed_at": "2026-09-10T09:30:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:30:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-b77d109c15078068015d43fb15f7d8b6a4e58e72648d7ead00e8a3044adfec63"
+      ]
+    },
+    {
+      "claim_type": "PAYMENT_CURRENCY",
+      "value": "CNY",
+      "subject": {
+        "kind": "TRANSACTION",
+        "identifier": "SUBJECT-1cf5f97e384f16107878",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:02+08:00",
+      "observed_at": "2026-09-10T09:30:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:30:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-bbe97d9871ec3bed439790b8a4956a7c9b660f5babdb181a3ab295a05a7432b7"
+      ]
+    },
+    {
+      "claim_type": "PAYMENT_CUSTOMER_REF",
+      "value": "CUS-45e839b67f37a9eeb165",
+      "subject": {
+        "kind": "TRANSACTION",
+        "identifier": "SUBJECT-1cf5f97e384f16107878",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:02+08:00",
+      "observed_at": "2026-09-10T09:30:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:30:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-73ebeceb109cb6379ac65fa42a5152fe39d6ed3e08c53fd8c29ea324bfabc2e2"
+      ]
+    },
+    {
+      "claim_type": "PAYMENT_BENEFICIARY_REF",
+      "value": "BEN-5203ac0212415f345369",
+      "subject": {
+        "kind": "TRANSACTION",
+        "identifier": "SUBJECT-1cf5f97e384f16107878",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:02+08:00",
+      "observed_at": "2026-09-10T09:30:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:30:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-3aacfcf7eae22702e5576582c39029898b7f91860d5d5b54574f093880952650"
+      ]
+    },
+    {
+      "claim_type": "PAYMENT_ACCOUNT_REF",
+      "value": "ACC-c511d78af90647ddb14d",
+      "subject": {
+        "kind": "TRANSACTION",
+        "identifier": "SUBJECT-1cf5f97e384f16107878",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:02+08:00",
+      "observed_at": "2026-09-10T09:30:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:30:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-6d56ea7c6f6cf8847f6d0de6b255e7055377bf844dc68360eaeb0bebf3d31202"
+      ]
+    },
+    {
+      "claim_type": "TRANSACTION_FUND_REQUEST_ID",
+      "value": "EXTERNAL-d7d2d2a1f4492cc1ac14",
+      "subject": {
+        "kind": "TRANSACTION",
+        "identifier": "SUBJECT-1cf5f97e384f16107878",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:02+08:00",
+      "observed_at": "2026-09-10T09:30:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_payment_transaction",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:30:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-5d8aa8e64786b16b53dea44c8e929db8793b157bf80bf8cf2616b59794aa5814"
+      ]
+    },
+    {
+      "claim_type": "CALLBACK_GATEWAY_RECEIVED",
+      "value": true,
+      "subject": {
+        "kind": "CALLBACK",
+        "identifier": "SUBJECT-f6d524879813be869d4f",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:03+08:00",
+      "observed_at": "2026-09-10T09:31:40+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_callback_gateway",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:31:40+08:00"
+      },
+      "protocol_version": "2.3",
+      "evidence_refs": [
+        "E-2dcbebc63c13c03dda873b7da37a44940f9117a01ba58d519904c93308c95a6d"
+      ]
+    },
+    {
+      "claim_type": "CALLBACK_SIGNATURE_VERIFIED",
+      "value": true,
+      "subject": {
+        "kind": "CALLBACK",
+        "identifier": "SUBJECT-f6d524879813be869d4f",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:03+08:00",
+      "observed_at": "2026-09-10T09:31:40+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_callback_gateway",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:31:40+08:00"
+      },
+      "protocol_version": "2.3",
+      "evidence_refs": [
+        "E-0b9782ea26537bdbd01cbde29600a93b29d9604050b35d6e35c038d69a442c38"
+      ]
+    },
+    {
+      "claim_type": "CALLBACK_PROTOCOL_VERSION",
+      "value": "2.3",
+      "subject": {
+        "kind": "CALLBACK",
+        "identifier": "SUBJECT-f6d524879813be869d4f",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:03+08:00",
+      "observed_at": "2026-09-10T09:31:40+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_callback_gateway",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:31:40+08:00"
+      },
+      "protocol_version": "2.3",
+      "evidence_refs": [
+        "E-c6a2888f6d248e62f512ed6a0ef91fbb9a2c236f0960ef5be915ff42130d3e75"
+      ]
+    },
+    {
+      "claim_type": "MESSAGE_CONSUME_STATUS",
+      "value": "FAILED",
+      "subject": {
+        "kind": "MESSAGE",
+        "identifier": "SUBJECT-42ccd26b90d3314cd33b",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:04+08:00",
+      "observed_at": "2026-09-10T09:32:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_messages",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:32:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-6d5fdffa4dc67795544dddca619cbf5d13c90549fbea1348fb3a9a50a0fb2256"
+      ]
+    },
+    {
+      "claim_type": "MESSAGE_DLQ",
+      "value": "loan.callback.dlq",
+      "subject": {
+        "kind": "MESSAGE",
+        "identifier": "SUBJECT-42ccd26b90d3314cd33b",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:04+08:00",
+      "observed_at": "2026-09-10T09:32:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_messages",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:32:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-6f6578bfadba34a4ae2e81937112a16107ffe0a7f56b8937572feebb193b7072"
+      ]
+    },
+    {
+      "claim_type": "MESSAGE_ERROR_CODE",
+      "value": "CALLBACK_SCHEMA_MISMATCH",
+      "subject": {
+        "kind": "MESSAGE",
+        "identifier": "SUBJECT-42ccd26b90d3314cd33b",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:04+08:00",
+      "observed_at": "2026-09-10T09:32:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_messages",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:32:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-4ecca4d20e36d3ae21cd0b3fded0e2321164671da63079d7d9214954f9c19a87"
+      ]
+    },
+    {
+      "claim_type": "MESSAGE_ERROR_FIELD",
+      "value": "loanNo",
+      "subject": {
+        "kind": "MESSAGE",
+        "identifier": "SUBJECT-42ccd26b90d3314cd33b",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:04+08:00",
+      "observed_at": "2026-09-10T09:32:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_messages",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:32:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-b5b4315ddb2078e20cc638c78b9f0559e7f8dae8edd8c2d7d23ff374346d7af1"
+      ]
+    },
+    {
+      "claim_type": "MESSAGE_EXPECTED_FIELD_TYPE",
+      "value": "integer",
+      "subject": {
+        "kind": "MESSAGE",
+        "identifier": "SUBJECT-42ccd26b90d3314cd33b",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:04+08:00",
+      "observed_at": "2026-09-10T09:32:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_messages",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:32:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-a835e173a31e94ade0afa523f34da264726ec3e2052a770b313baaa3a5ab2f4c"
+      ]
+    },
+    {
+      "claim_type": "MESSAGE_ACTUAL_FIELD_TYPE",
+      "value": "string",
+      "subject": {
+        "kind": "MESSAGE",
+        "identifier": "SUBJECT-42ccd26b90d3314cd33b",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:04+08:00",
+      "observed_at": "2026-09-10T09:32:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_messages",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:32:25+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc"
+      ]
+    },
+    {
+      "claim_type": "ASSET_STATUS",
+      "value": "PROCESSING",
+      "subject": {
+        "kind": "ORDER",
+        "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:06+08:00",
+      "observed_at": "2026-09-10T09:32:10+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_asset_order",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:32:10+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-3879a7e38946c44c51109f66c5f9e24e2015020c7393f2fdf1536961af0a8c2b"
+      ]
+    },
+    {
+      "claim_type": "GUARANTEE_STATUS",
+      "value": "PROCESSING",
+      "subject": {
+        "kind": "ORDER",
+        "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:05+08:00",
+      "observed_at": "2026-09-10T09:30:55+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_guarantee_order",
+        "source_kind": "PRIMARY",
+        "source_version": "17",
+        "source_as_of": "2026-09-10T09:30:55+08:00"
+      },
+      "protocol_version": "2.3",
+      "evidence_refs": [
+        "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057"
+      ]
+    },
+    {
+      "claim_type": "GUARANTEE_VERSION",
+      "value": 17,
+      "subject": {
+        "kind": "ORDER",
+        "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:05+08:00",
+      "observed_at": "2026-09-10T09:30:55+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_guarantee_order",
+        "source_kind": "PRIMARY",
+        "source_version": "17",
+        "source_as_of": "2026-09-10T09:30:55+08:00"
+      },
+      "protocol_version": "2.3",
+      "evidence_refs": [
+        "E-cad2764697673d845aaef6134ea59f97931019eb1120bdc2ecdf8456b66320e3"
+      ]
+    },
+    {
+      "claim_type": "ASSET_DELIVERY_STATUS",
+      "value": "NOT_ATTEMPTED",
+      "subject": {
+        "kind": "ORDER",
+        "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+        "field": null,
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-10T09:30:06+08:00",
+      "observed_at": "2026-09-10T09:31:55+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_asset_delivery",
+        "source_kind": "PRIMARY",
+        "source_version": null,
+        "source_as_of": "2026-09-10T09:31:55+08:00"
+      },
+      "protocol_version": null,
+      "evidence_refs": [
+        "E-4fd4f2565804a518055ff829b961329147fa3d3c2d9a7f6832c97efe5e873ce1"
+      ]
+    },
+    {
+      "claim_type": "PROTOCOL_FIELD_TYPE",
+      "value": "string",
+      "subject": {
+        "kind": "PROTOCOL",
+        "identifier": "SUBJECT-1a2418c633a2e7c3d06d",
+        "field": "loanNo",
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-09T09:30:00+08:00",
+      "observed_at": "2026-09-10T09:31:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_protocol",
+        "source_kind": "PRIMARY",
+        "source_version": "2.3",
+        "source_as_of": "2026-09-10T09:31:25+08:00"
+      },
+      "protocol_version": "2.3",
+      "evidence_refs": [
+        "E-236cd1180aa7a2de937d0c1e03a947d3e73a90a2cb81094a2df8e6107b10aa34"
+      ]
+    },
+    {
+      "claim_type": "PROTOCOL_BUSINESS_SEMANTICS",
+      "value": "LOAN_CREATED_PAYMENT_SEPARATE",
+      "subject": {
+        "kind": "PROTOCOL",
+        "identifier": "SUBJECT-1a2418c633a2e7c3d06d",
+        "field": "SUCCESS",
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-09T09:30:00+08:00",
+      "observed_at": "2026-09-10T09:31:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_protocol",
+        "source_kind": "PRIMARY",
+        "source_version": "2.3",
+        "source_as_of": "2026-09-10T09:31:25+08:00"
+      },
+      "protocol_version": "2.3",
+      "evidence_refs": [
+        "E-60b8cab0ca8ba0853273d6e4c7a70e80984468cf876fc90906a368a96a609916"
+      ]
+    },
+    {
+      "claim_type": "PROTOCOL_BUSINESS_SEMANTICS",
+      "value": "REJECTED_NO_DISBURSEMENT",
+      "subject": {
+        "kind": "PROTOCOL",
+        "identifier": "SUBJECT-1a2418c633a2e7c3d06d",
+        "field": "FAILED",
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-09T09:30:00+08:00",
+      "observed_at": "2026-09-10T09:31:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_protocol",
+        "source_kind": "PRIMARY",
+        "source_version": "2.3",
+        "source_as_of": "2026-09-10T09:31:25+08:00"
+      },
+      "protocol_version": "2.3",
+      "evidence_refs": [
+        "E-effd9ac1a92839d31ad6660cb60586fce33ef43ddf7be93e9dbd41d4f9e4aaca"
+      ]
+    },
+    {
+      "claim_type": "PROTOCOL_BUSINESS_SEMANTICS",
+      "value": "REQUEST_PROCESSING",
+      "subject": {
+        "kind": "PROTOCOL",
+        "identifier": "SUBJECT-1a2418c633a2e7c3d06d",
+        "field": "PROCESSING",
+        "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+      },
+      "business_time": "2026-09-09T09:30:00+08:00",
+      "observed_at": "2026-09-10T09:31:25+08:00",
+      "freshness": "CURRENT",
+      "completeness": "COMPLETE",
+      "source": {
+        "tool": "get_protocol",
+        "source_kind": "PRIMARY",
+        "source_version": "2.3",
+        "source_as_of": "2026-09-10T09:31:25+08:00"
+      },
+      "protocol_version": "2.3",
+      "evidence_refs": [
+        "E-f7e0fdbe2639a648aafb9caaf85e09c91f4673c798aa3dc6df3939c930174951"
+      ]
+    }
+  ],
+  "hypotheses": {
+    "case_id": "CASE-JD202609100001",
+    "rule_version": "5",
+    "definitions": [
+      {
+        "hypothesis_id": "H1",
+        "kind": "CAUSAL",
+        "statement": "REQUEST_NOT_SENT",
+        "description": "原资金请求没有从我方成功发出。",
+        "confirmation_rule_id": "H1.confirm.v3",
+        "elimination_rule_id": "H1.eliminate.v3",
+        "relevant_claim_types": [
+          "REQUEST_SENT"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H2",
+        "kind": "CAUSAL",
+        "statement": "FUND_NOT_ACCEPTED",
+        "description": "资金方没有受理原资金请求。",
+        "confirmation_rule_id": "H2.confirmation_deferred.v3",
+        "elimination_rule_id": "H2.eliminate.v3",
+        "relevant_claim_types": [
+          "FUND_BUSINESS_STATUS",
+          "PAYMENT_FINALITY",
+          "TRANSACTION_FUND_REQUEST_ID",
+          "SOURCE_LOOKUP_STATUS"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H3",
+        "kind": "CAUSAL",
+        "statement": "FUND_PROCESSING_FAILED",
+        "description": "资金方已受理但最终处理失败，未产生放款效果。",
+        "confirmation_rule_id": "H3.confirmation_deferred.v3",
+        "elimination_rule_id": "H3.eliminate.v3",
+        "relevant_claim_types": [
+          "FUND_BUSINESS_STATUS",
+          "PAYMENT_FINALITY",
+          "TRANSACTION_FUND_REQUEST_ID"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H4",
+        "kind": "STATE",
+        "statement": "PAYMENT_SETTLED_WITHOUT_SUCCESSFUL_HTTP_RESPONSE",
+        "description": "原请求未获得成功 HTTP Response，但对应支付效果已有独立支付证据。",
+        "confirmation_rule_id": "H4.confirm.v3",
+        "elimination_rule_id": "H4.eliminate.v3",
+        "relevant_claim_types": [
+          "HTTP_RESPONSE_STATUS",
+          "PAYMENT_FINALITY",
+          "TRANSACTION_FUND_REQUEST_ID"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H5",
+        "kind": "CAUSAL",
+        "statement": "CALLBACK_NOT_OBSERVED_AT_GATEWAY",
+        "description": "当前尚未观察到 Callback 到达 Gateway。",
+        "confirmation_rule_id": "H5.confirmation_deferred.v3",
+        "elimination_rule_id": "H5.eliminate.v3",
+        "relevant_claim_types": [
+          "SOURCE_LOOKUP_STATUS",
+          "CALLBACK_GATEWAY_RECEIVED"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H6",
+        "kind": "CAUSAL",
+        "statement": "CALLBACK_CONSUMPTION_FAILED",
+        "description": "Callback 已到 Gateway，但业务消费未成功。",
+        "confirmation_rule_id": "H6.confirm.v3",
+        "elimination_rule_id": "H6.eliminate.v3",
+        "relevant_claim_types": [
+          "CALLBACK_GATEWAY_RECEIVED",
+          "CALLBACK_SIGNATURE_VERIFIED",
+          "MESSAGE_CONSUME_STATUS"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H6_SCHEMA_MISMATCH",
+        "kind": "CAUSAL",
+        "statement": "CALLBACK_SCHEMA_MISMATCH_TRIGGERED_FAILURE",
+        "description": "Callback 消费失败由 loanNo schema/type mismatch 直接触发。",
+        "confirmation_rule_id": "H6_SCHEMA_MISMATCH.confirm.v3",
+        "elimination_rule_id": "H6_SCHEMA_MISMATCH.eliminate.v3",
+        "relevant_claim_types": [
+          "CALLBACK_GATEWAY_RECEIVED",
+          "MESSAGE_CONSUME_STATUS",
+          "MESSAGE_ERROR_CODE",
+          "MESSAGE_ERROR_FIELD",
+          "MESSAGE_EXPECTED_FIELD_TYPE",
+          "MESSAGE_ACTUAL_FIELD_TYPE"
+        ],
+        "parent_hypothesis_id": "H6"
+      },
+      {
+        "hypothesis_id": "H6_STALE_CONSUMER_SCHEMA",
+        "kind": "CAUSAL",
+        "statement": "STALE_CONSUMER_SCHEMA",
+        "description": "运行中的 Consumer 使用过期 schema，未能解析当前协议 Callback。",
+        "confirmation_rule_id": "H6_STALE_CONSUMER_SCHEMA.confirmation_deferred.v3",
+        "elimination_rule_id": "H6_STALE_CONSUMER_SCHEMA.eliminate.v3",
+        "relevant_claim_types": [
+          "CALLBACK_GATEWAY_RECEIVED",
+          "MESSAGE_CONSUME_STATUS",
+          "MESSAGE_ERROR_CODE",
+          "MESSAGE_ERROR_FIELD",
+          "MESSAGE_EXPECTED_FIELD_TYPE",
+          "MESSAGE_ACTUAL_FIELD_TYPE",
+          "CALLBACK_PROTOCOL_VERSION",
+          "PROTOCOL_FIELD_TYPE",
+          "CONSUMER_DEPLOYED_SCHEMA_VERSION",
+          "CONSUMER_ACCEPTED_PROTOCOL_VERSION",
+          "CONSUMER_LOAN_NO_FIELD_TYPE"
+        ],
+        "parent_hypothesis_id": "H6"
+      },
+      {
+        "hypothesis_id": "H7",
+        "kind": "CAUSAL",
+        "statement": "ASSET_NOTIFICATION_FAILED",
+        "description": "我方业务已成功应用，但资产方终态通知未收敛。",
+        "confirmation_rule_id": "H7.confirm.v3",
+        "elimination_rule_id": "H7.eliminate.v3",
+        "relevant_claim_types": [
+          "GUARANTEE_STATUS",
+          "ASSET_DELIVERY_STATUS",
+          "ASSET_DELIVERY_EVENT_REF",
+          "ASSET_STATUS"
+        ],
+        "parent_hypothesis_id": null
+      },
+      {
+        "hypothesis_id": "H8",
+        "kind": "SEMANTIC_GUARD",
+        "statement": "FUND_SUCCESS_NOT_EQUAL_PAYMENT_FINALITY",
+        "description": "当前资金请求适用协议中的业务 SUCCESS 本身不足以证明支付终态。",
+        "confirmation_rule_id": "H8.confirm.v3",
+        "elimination_rule_id": "H8.eliminate.v3",
+        "relevant_claim_types": [
+          "PROTOCOL_BUSINESS_SEMANTICS",
+          "GUARANTEE_STATUS"
+        ],
+        "parent_hypothesis_id": null
+      }
+    ],
+    "hypotheses": [
+      {
+        "hypothesis_id": "H1",
+        "status": "ELIMINATED",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [
+          "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569"
+        ],
+        "decisive_evidence_refs": [
+          "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569"
+        ],
+        "missing_evidence": [],
+        "reason": "完整当前 Trace 的出站标记决定该命题；缺失或不完整 Trace 不具有否定证明能力。",
+        "rule_version": "5",
+        "evaluated_at": "2026-09-10T01:32:25Z"
+      },
+      {
+        "hypothesis_id": "H2",
+        "status": "ELIMINATED",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [
+          "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569",
+          "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057",
+          "E-3aacfcf7eae22702e5576582c39029898b7f91860d5d5b54574f093880952650",
+          "E-5a281a676e9f1ba0599d8f95326661edc3e971442a3b34f561bce3688bebeddd",
+          "E-5d8aa8e64786b16b53dea44c8e929db8793b157bf80bf8cf2616b59794aa5814",
+          "E-6d56ea7c6f6cf8847f6d0de6b255e7055377bf844dc68360eaeb0bebf3d31202",
+          "E-73ebeceb109cb6379ac65fa42a5152fe39d6ed3e08c53fd8c29ea324bfabc2e2",
+          "E-848a7546698715768fa77f3b0097616b71277f70c8c8cd48b1f546fac6bdb488",
+          "E-86484766c5f394e3c1c1b9f22844ad89ea305d38bb51dac3b99510ca16473430",
+          "E-b20559b5f35e30b0d59cad4cbf791960d8a7e21127ba6cdd216c1da325e3d4ce",
+          "E-b77d109c15078068015d43fb15f7d8b6a4e58e72648d7ead00e8a3044adfec63",
+          "E-bbe97d9871ec3bed439790b8a4956a7c9b660f5babdb181a3ab295a05a7432b7"
+        ],
+        "decisive_evidence_refs": [
+          "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569",
+          "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057",
+          "E-3aacfcf7eae22702e5576582c39029898b7f91860d5d5b54574f093880952650",
+          "E-5a281a676e9f1ba0599d8f95326661edc3e971442a3b34f561bce3688bebeddd",
+          "E-5d8aa8e64786b16b53dea44c8e929db8793b157bf80bf8cf2616b59794aa5814",
+          "E-6d56ea7c6f6cf8847f6d0de6b255e7055377bf844dc68360eaeb0bebf3d31202",
+          "E-73ebeceb109cb6379ac65fa42a5152fe39d6ed3e08c53fd8c29ea324bfabc2e2",
+          "E-848a7546698715768fa77f3b0097616b71277f70c8c8cd48b1f546fac6bdb488",
+          "E-86484766c5f394e3c1c1b9f22844ad89ea305d38bb51dac3b99510ca16473430",
+          "E-b20559b5f35e30b0d59cad4cbf791960d8a7e21127ba6cdd216c1da325e3d4ce",
+          "E-b77d109c15078068015d43fb15f7d8b6a4e58e72648d7ead00e8a3044adfec63",
+          "E-bbe97d9871ec3bed439790b8a4956a7c9b660f5babdb181a3ab295a05a7432b7"
+        ],
+        "missing_evidence": [],
+        "reason": "同请求可靠资金业务记录或完整 Payment Identity MATCH 可排除未受理；NOT_FOUND 不能确认未受理。",
+        "rule_version": "5",
+        "evaluated_at": "2026-09-10T01:32:25Z"
+      },
+      {
+        "hypothesis_id": "H3",
+        "status": "ELIMINATED",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [
+          "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569",
+          "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057",
+          "E-3aacfcf7eae22702e5576582c39029898b7f91860d5d5b54574f093880952650",
+          "E-5a281a676e9f1ba0599d8f95326661edc3e971442a3b34f561bce3688bebeddd",
+          "E-5d8aa8e64786b16b53dea44c8e929db8793b157bf80bf8cf2616b59794aa5814",
+          "E-6d56ea7c6f6cf8847f6d0de6b255e7055377bf844dc68360eaeb0bebf3d31202",
+          "E-73ebeceb109cb6379ac65fa42a5152fe39d6ed3e08c53fd8c29ea324bfabc2e2",
+          "E-848a7546698715768fa77f3b0097616b71277f70c8c8cd48b1f546fac6bdb488",
+          "E-86484766c5f394e3c1c1b9f22844ad89ea305d38bb51dac3b99510ca16473430",
+          "E-b20559b5f35e30b0d59cad4cbf791960d8a7e21127ba6cdd216c1da325e3d4ce",
+          "E-b77d109c15078068015d43fb15f7d8b6a4e58e72648d7ead00e8a3044adfec63",
+          "E-bbe97d9871ec3bed439790b8a4956a7c9b660f5babdb181a3ab295a05a7432b7"
+        ],
+        "decisive_evidence_refs": [
+          "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569",
+          "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057",
+          "E-3aacfcf7eae22702e5576582c39029898b7f91860d5d5b54574f093880952650",
+          "E-5a281a676e9f1ba0599d8f95326661edc3e971442a3b34f561bce3688bebeddd",
+          "E-5d8aa8e64786b16b53dea44c8e929db8793b157bf80bf8cf2616b59794aa5814",
+          "E-6d56ea7c6f6cf8847f6d0de6b255e7055377bf844dc68360eaeb0bebf3d31202",
+          "E-73ebeceb109cb6379ac65fa42a5152fe39d6ed3e08c53fd8c29ea324bfabc2e2",
+          "E-848a7546698715768fa77f3b0097616b71277f70c8c8cd48b1f546fac6bdb488",
+          "E-86484766c5f394e3c1c1b9f22844ad89ea305d38bb51dac3b99510ca16473430",
+          "E-b20559b5f35e30b0d59cad4cbf791960d8a7e21127ba6cdd216c1da325e3d4ce",
+          "E-b77d109c15078068015d43fb15f7d8b6a4e58e72648d7ead00e8a3044adfec63",
+          "E-bbe97d9871ec3bed439790b8a4956a7c9b660f5babdb181a3ab295a05a7432b7"
+        ],
+        "missing_evidence": [],
+        "reason": "业务 FAILED 仅支持；完整 Payment Identity MATCH 否定未产生放款效果。本版缺少受理/拒绝的完整终态契约。",
+        "rule_version": "5",
+        "evaluated_at": "2026-09-10T01:32:25Z"
+      },
+      {
+        "hypothesis_id": "H4",
+        "status": "CONFIRMED",
+        "supporting_evidence_refs": [
+          "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569",
+          "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057",
+          "E-3aacfcf7eae22702e5576582c39029898b7f91860d5d5b54574f093880952650",
+          "E-5a281a676e9f1ba0599d8f95326661edc3e971442a3b34f561bce3688bebeddd",
+          "E-5d8aa8e64786b16b53dea44c8e929db8793b157bf80bf8cf2616b59794aa5814",
+          "E-6d56ea7c6f6cf8847f6d0de6b255e7055377bf844dc68360eaeb0bebf3d31202",
+          "E-73ebeceb109cb6379ac65fa42a5152fe39d6ed3e08c53fd8c29ea324bfabc2e2",
+          "E-848a7546698715768fa77f3b0097616b71277f70c8c8cd48b1f546fac6bdb488",
+          "E-86484766c5f394e3c1c1b9f22844ad89ea305d38bb51dac3b99510ca16473430",
+          "E-b20559b5f35e30b0d59cad4cbf791960d8a7e21127ba6cdd216c1da325e3d4ce",
+          "E-b77d109c15078068015d43fb15f7d8b6a4e58e72648d7ead00e8a3044adfec63",
+          "E-bbe97d9871ec3bed439790b8a4956a7c9b660f5babdb181a3ab295a05a7432b7"
+        ],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [
+          "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569",
+          "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057",
+          "E-3aacfcf7eae22702e5576582c39029898b7f91860d5d5b54574f093880952650",
+          "E-5a281a676e9f1ba0599d8f95326661edc3e971442a3b34f561bce3688bebeddd",
+          "E-5d8aa8e64786b16b53dea44c8e929db8793b157bf80bf8cf2616b59794aa5814",
+          "E-6d56ea7c6f6cf8847f6d0de6b255e7055377bf844dc68360eaeb0bebf3d31202",
+          "E-73ebeceb109cb6379ac65fa42a5152fe39d6ed3e08c53fd8c29ea324bfabc2e2",
+          "E-848a7546698715768fa77f3b0097616b71277f70c8c8cd48b1f546fac6bdb488",
+          "E-86484766c5f394e3c1c1b9f22844ad89ea305d38bb51dac3b99510ca16473430",
+          "E-b20559b5f35e30b0d59cad4cbf791960d8a7e21127ba6cdd216c1da325e3d4ce",
+          "E-b77d109c15078068015d43fb15f7d8b6a4e58e72648d7ead00e8a3044adfec63",
+          "E-bbe97d9871ec3bed439790b8a4956a7c9b660f5babdb181a3ab295a05a7432b7"
+        ],
+        "missing_evidence": [],
+        "reason": "原请求 HTTP TIMEOUT + Payment Identity MATCH：交易、请求、金额、币种、客户、收款主体和账户完整绑定；不定位网络原因。",
+        "rule_version": "5",
+        "evaluated_at": "2026-09-10T01:32:25Z"
+      },
+      {
+        "hypothesis_id": "H5",
+        "status": "ELIMINATED",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [
+          "E-2dcbebc63c13c03dda873b7da37a44940f9117a01ba58d519904c93308c95a6d"
+        ],
+        "decisive_evidence_refs": [
+          "E-2dcbebc63c13c03dda873b7da37a44940f9117a01ba58d519904c93308c95a6d"
+        ],
+        "missing_evidence": [],
+        "reason": "查询范围内未观察到 Callback 仅为支持；实际 Gateway 接收证据排除此命题，不推导从未发送。",
+        "rule_version": "5",
+        "evaluated_at": "2026-09-10T01:32:25Z"
+      },
+      {
+        "hypothesis_id": "H6",
+        "status": "CONFIRMED",
+        "supporting_evidence_refs": [
+          "E-2dcbebc63c13c03dda873b7da37a44940f9117a01ba58d519904c93308c95a6d",
+          "E-6d5fdffa4dc67795544dddca619cbf5d13c90549fbea1348fb3a9a50a0fb2256"
+        ],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [
+          "E-2dcbebc63c13c03dda873b7da37a44940f9117a01ba58d519904c93308c95a6d",
+          "E-6d5fdffa4dc67795544dddca619cbf5d13c90549fbea1348fb3a9a50a0fb2256"
+        ],
+        "missing_evidence": [],
+        "reason": "同一 Callback event 的 Gateway 接收与消费 FAILED 确认消费异常；消费完成可排除当前未成功。",
+        "rule_version": "5",
+        "evaluated_at": "2026-09-10T01:32:25Z"
+      },
+      {
+        "hypothesis_id": "H6_SCHEMA_MISMATCH",
+        "status": "CONFIRMED",
+        "supporting_evidence_refs": [
+          "E-2dcbebc63c13c03dda873b7da37a44940f9117a01ba58d519904c93308c95a6d",
+          "E-4ecca4d20e36d3ae21cd0b3fded0e2321164671da63079d7d9214954f9c19a87",
+          "E-6d5fdffa4dc67795544dddca619cbf5d13c90549fbea1348fb3a9a50a0fb2256",
+          "E-a835e173a31e94ade0afa523f34da264726ec3e2052a770b313baaa3a5ab2f4c",
+          "E-b5b4315ddb2078e20cc638c78b9f0559e7f8dae8edd8c2d7d23ff374346d7af1",
+          "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc"
+        ],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [
+          "E-2dcbebc63c13c03dda873b7da37a44940f9117a01ba58d519904c93308c95a6d",
+          "E-4ecca4d20e36d3ae21cd0b3fded0e2321164671da63079d7d9214954f9c19a87",
+          "E-6d5fdffa4dc67795544dddca619cbf5d13c90549fbea1348fb3a9a50a0fb2256",
+          "E-a835e173a31e94ade0afa523f34da264726ec3e2052a770b313baaa3a5ab2f4c",
+          "E-b5b4315ddb2078e20cc638c78b9f0559e7f8dae8edd8c2d7d23ff374346d7af1",
+          "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc"
+        ],
+        "missing_evidence": [],
+        "reason": "父级同一 Callback 的 Gateway/消费失败 witness，加上同消息、同观测、同事件的错误码、字段和互异类型。",
+        "rule_version": "5",
+        "evaluated_at": "2026-09-10T01:32:25Z"
+      },
+      {
+        "hypothesis_id": "H6_STALE_CONSUMER_SCHEMA",
+        "status": "UNKNOWN",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [],
+        "missing_evidence": [
+          "CASE-JD202609100001:CALLBACK_SCHEMA_PROTOCOL",
+          "CASE-JD202609100001:DEPLOYED_CONSUMER_SCHEMA_VERSION"
+        ],
+        "reason": "类型与历史协议相符只构成支持；没有部署 schema/release/config 证据，禁止确认运行版本。",
+        "rule_version": "5",
+        "evaluated_at": "2026-09-10T01:32:25Z"
+      },
+      {
+        "hypothesis_id": "H7",
+        "status": "UNKNOWN",
+        "supporting_evidence_refs": [],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [],
+        "missing_evidence": [
+          "CASE-JD202609100001:ASSET_CONVERGENCE"
+        ],
+        "reason": "我方成功、通知失败及资产方仍处理中共同确认当前未收敛；资产方已成功则排除。",
+        "rule_version": "5",
+        "evaluated_at": "2026-09-10T01:32:25Z"
+      },
+      {
+        "hypothesis_id": "H8",
+        "status": "CONFIRMED",
+        "supporting_evidence_refs": [
+          "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057",
+          "E-60b8cab0ca8ba0853273d6e4c7a70e80984468cf876fc90906a368a96a609916"
+        ],
+        "contradicting_evidence_refs": [],
+        "decisive_evidence_refs": [
+          "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057",
+          "E-60b8cab0ca8ba0853273d6e4c7a70e80984468cf876fc90906a368a96a609916"
+        ],
+        "missing_evidence": [],
+        "reason": "业务 SUCCESS 的证明边界由适用协议确定；Callback 版本不等于原资金请求版本，支付已结算也不否定语义守卫。",
+        "rule_version": "5",
+        "evaluated_at": "2026-09-10T01:32:25Z"
+      }
+    ],
+    "open_gaps": [
+      {
+        "gap_id": "CASE-JD202609100001:ASSET_CONVERGENCE",
+        "case_id": "CASE-JD202609100001",
+        "hypothesis_ids": [
+          "H7"
+        ],
+        "question": "我方应用结果、资产通知结果和资产方当前状态是否收敛？",
+        "required_claim_types": [
+          "GUARANTEE_STATUS",
+          "ASSET_DELIVERY_STATUS",
+          "ASSET_STATUS"
+        ],
+        "status": "OPEN",
+        "reason": "未调查资产链路时不确认通知失败；资产方已成功应排除当前未收敛。",
+        "priority_class": "DISCRIMINATING",
+        "evidence_refs": []
+      },
+      {
+        "gap_id": "CASE-JD202609100001:CALLBACK_SCHEMA_PROTOCOL",
+        "case_id": "CASE-JD202609100001",
+        "hypothesis_ids": [
+          "H6_STALE_CONSUMER_SCHEMA"
+        ],
+        "question": "该 Callback 的协议版本及对应字段定义是否已明确？",
+        "required_claim_types": [
+          "CALLBACK_PROTOCOL_VERSION",
+          "PROTOCOL_FIELD_TYPE"
+        ],
+        "status": "OPEN",
+        "reason": "需要 Callback 版本关联和相应协议字段；不能任选已查询的协议版本。",
+        "priority_class": "DISCRIMINATING",
+        "evidence_refs": []
+      },
+      {
+        "gap_id": "CASE-JD202609100001:DEPLOYED_CONSUMER_SCHEMA_VERSION",
+        "case_id": "CASE-JD202609100001",
+        "hypothesis_ids": [
+          "H6_STALE_CONSUMER_SCHEMA"
+        ],
+        "question": "失败发生时实际部署 Consumer 的 schema/protocol version 是什么？",
+        "required_claim_types": [
+          "DEPLOYED_CONSUMER_SCHEMA_VERSION"
+        ],
+        "status": "OPEN",
+        "reason": "运行时期待的类型与历史协议相符不能证明部署版本；缺少 release/config 证据。",
+        "priority_class": "DISCRIMINATING",
+        "evidence_refs": []
+      }
+    ]
+  },
+  "gap_capabilities": [
+    {
+      "gap_id": "CASE-JD202609100001:ASSET_CONVERGENCE",
+      "available_tools": [
+        "get_asset_delivery",
+        "get_asset_order",
+        "get_guarantee_order"
+      ],
+      "unavailable_reason": null
+    },
+    {
+      "gap_id": "CASE-JD202609100001:CALLBACK_SCHEMA_PROTOCOL",
+      "available_tools": [
+        "get_callback_gateway",
+        "get_callback_raw",
+        "get_protocol"
+      ],
+      "unavailable_reason": null
+    },
+    {
+      "gap_id": "CASE-JD202609100001:DEPLOYED_CONSUMER_SCHEMA_VERSION",
+      "available_tools": [],
+      "unavailable_reason": "NO_AVAILABLE_CAPABILITY_FOR_REQUIRED_FACT"
+    }
+  ],
+  "evidence": {
+    "items": [
+      {
+        "claim_type": "MESSAGE_ACTUAL_FIELD_TYPE",
+        "value": "string",
+        "subject": {
+          "kind": "MESSAGE",
+          "identifier": "SUBJECT-42ccd26b90d3314cd33b",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:32:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_messages",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:32:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc"
+        ],
+        "evidence_id": "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc",
+        "observation_id": "72feeae2-afd7-437c-80a8-2b67bd72dc4c",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "MESSAGE_ERROR_FIELD",
+        "value": "loanNo",
+        "subject": {
+          "kind": "MESSAGE",
+          "identifier": "SUBJECT-42ccd26b90d3314cd33b",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:32:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_messages",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:32:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-b5b4315ddb2078e20cc638c78b9f0559e7f8dae8edd8c2d7d23ff374346d7af1"
+        ],
+        "evidence_id": "E-b5b4315ddb2078e20cc638c78b9f0559e7f8dae8edd8c2d7d23ff374346d7af1",
+        "observation_id": "72feeae2-afd7-437c-80a8-2b67bd72dc4c",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "MESSAGE_EXPECTED_FIELD_TYPE",
+        "value": "integer",
+        "subject": {
+          "kind": "MESSAGE",
+          "identifier": "SUBJECT-42ccd26b90d3314cd33b",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:32:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_messages",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:32:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-a835e173a31e94ade0afa523f34da264726ec3e2052a770b313baaa3a5ab2f4c"
+        ],
+        "evidence_id": "E-a835e173a31e94ade0afa523f34da264726ec3e2052a770b313baaa3a5ab2f4c",
+        "observation_id": "72feeae2-afd7-437c-80a8-2b67bd72dc4c",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "MESSAGE_DLQ",
+        "value": "loan.callback.dlq",
+        "subject": {
+          "kind": "MESSAGE",
+          "identifier": "SUBJECT-42ccd26b90d3314cd33b",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:32:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_messages",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:32:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-6f6578bfadba34a4ae2e81937112a16107ffe0a7f56b8937572feebb193b7072"
+        ],
+        "evidence_id": "E-6f6578bfadba34a4ae2e81937112a16107ffe0a7f56b8937572feebb193b7072",
+        "observation_id": "72feeae2-afd7-437c-80a8-2b67bd72dc4c",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "MESSAGE_CONSUME_STATUS",
+        "value": "FAILED",
+        "subject": {
+          "kind": "MESSAGE",
+          "identifier": "SUBJECT-42ccd26b90d3314cd33b",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:32:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_messages",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:32:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-6d5fdffa4dc67795544dddca619cbf5d13c90549fbea1348fb3a9a50a0fb2256"
+        ],
+        "evidence_id": "E-6d5fdffa4dc67795544dddca619cbf5d13c90549fbea1348fb3a9a50a0fb2256",
+        "observation_id": "72feeae2-afd7-437c-80a8-2b67bd72dc4c",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "MESSAGE_ERROR_CODE",
+        "value": "CALLBACK_SCHEMA_MISMATCH",
+        "subject": {
+          "kind": "MESSAGE",
+          "identifier": "SUBJECT-42ccd26b90d3314cd33b",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:04+08:00",
+        "observed_at": "2026-09-10T09:32:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_messages",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:32:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-4ecca4d20e36d3ae21cd0b3fded0e2321164671da63079d7d9214954f9c19a87"
+        ],
+        "evidence_id": "E-4ecca4d20e36d3ae21cd0b3fded0e2321164671da63079d7d9214954f9c19a87",
+        "observation_id": "72feeae2-afd7-437c-80a8-2b67bd72dc4c",
+        "event_time": "2026-09-10T09:30:04+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "ASSET_STATUS",
+        "value": "PROCESSING",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:06+08:00",
+        "observed_at": "2026-09-10T09:32:10+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_asset_order",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:32:10+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-3879a7e38946c44c51109f66c5f9e24e2015020c7393f2fdf1536961af0a8c2b"
+        ],
+        "evidence_id": "E-3879a7e38946c44c51109f66c5f9e24e2015020c7393f2fdf1536961af0a8c2b",
+        "observation_id": "a1402079-0d7a-4840-b0c1-164c7fdfdcb9",
+        "event_time": "2026-09-10T09:30:06+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "ASSET_DELIVERY_STATUS",
+        "value": "NOT_ATTEMPTED",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:06+08:00",
+        "observed_at": "2026-09-10T09:31:55+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_asset_delivery",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:31:55+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-4fd4f2565804a518055ff829b961329147fa3d3c2d9a7f6832c97efe5e873ce1"
+        ],
+        "evidence_id": "E-4fd4f2565804a518055ff829b961329147fa3d3c2d9a7f6832c97efe5e873ce1",
+        "observation_id": "afafac20-f2fa-4c17-bdbc-b2957905fbe7",
+        "event_time": "2026-09-10T09:30:06+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "CALLBACK_PROTOCOL_VERSION",
+        "value": "2.3",
+        "subject": {
+          "kind": "CALLBACK",
+          "identifier": "SUBJECT-f6d524879813be869d4f",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:03+08:00",
+        "observed_at": "2026-09-10T09:31:40+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_callback_gateway",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:31:40+08:00"
+        },
+        "protocol_version": "2.3",
+        "evidence_refs": [
+          "E-c6a2888f6d248e62f512ed6a0ef91fbb9a2c236f0960ef5be915ff42130d3e75"
+        ],
+        "evidence_id": "E-c6a2888f6d248e62f512ed6a0ef91fbb9a2c236f0960ef5be915ff42130d3e75",
+        "observation_id": "210a0038-a341-4e73-80a7-6d1113a62e73",
+        "event_time": "2026-09-10T09:30:03+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "CALLBACK_GATEWAY_RECEIVED",
+        "value": true,
+        "subject": {
+          "kind": "CALLBACK",
+          "identifier": "SUBJECT-f6d524879813be869d4f",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:03+08:00",
+        "observed_at": "2026-09-10T09:31:40+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_callback_gateway",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:31:40+08:00"
+        },
+        "protocol_version": "2.3",
+        "evidence_refs": [
+          "E-2dcbebc63c13c03dda873b7da37a44940f9117a01ba58d519904c93308c95a6d"
+        ],
+        "evidence_id": "E-2dcbebc63c13c03dda873b7da37a44940f9117a01ba58d519904c93308c95a6d",
+        "observation_id": "210a0038-a341-4e73-80a7-6d1113a62e73",
+        "event_time": "2026-09-10T09:30:03+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "CALLBACK_SIGNATURE_VERIFIED",
+        "value": true,
+        "subject": {
+          "kind": "CALLBACK",
+          "identifier": "SUBJECT-f6d524879813be869d4f",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:03+08:00",
+        "observed_at": "2026-09-10T09:31:40+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_callback_gateway",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:31:40+08:00"
+        },
+        "protocol_version": "2.3",
+        "evidence_refs": [
+          "E-0b9782ea26537bdbd01cbde29600a93b29d9604050b35d6e35c038d69a442c38"
+        ],
+        "evidence_id": "E-0b9782ea26537bdbd01cbde29600a93b29d9604050b35d6e35c038d69a442c38",
+        "observation_id": "210a0038-a341-4e73-80a7-6d1113a62e73",
+        "event_time": "2026-09-10T09:30:03+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "PROTOCOL_BUSINESS_SEMANTICS",
+        "value": "REQUEST_PROCESSING",
+        "subject": {
+          "kind": "PROTOCOL",
+          "identifier": "SUBJECT-1a2418c633a2e7c3d06d",
+          "field": "PROCESSING",
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-09T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:31:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_protocol",
+          "source_kind": "PRIMARY",
+          "source_version": "2.3",
+          "source_as_of": "2026-09-10T09:31:25+08:00"
+        },
+        "protocol_version": "2.3",
+        "evidence_refs": [
+          "E-f7e0fdbe2639a648aafb9caaf85e09c91f4673c798aa3dc6df3939c930174951"
+        ],
+        "evidence_id": "E-f7e0fdbe2639a648aafb9caaf85e09c91f4673c798aa3dc6df3939c930174951",
+        "observation_id": "e9741def-f565-42e0-b8e8-34de4cd58a44",
+        "event_time": "2026-09-09T09:30:00+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "PROTOCOL_BUSINESS_SEMANTICS",
+        "value": "REJECTED_NO_DISBURSEMENT",
+        "subject": {
+          "kind": "PROTOCOL",
+          "identifier": "SUBJECT-1a2418c633a2e7c3d06d",
+          "field": "FAILED",
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-09T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:31:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_protocol",
+          "source_kind": "PRIMARY",
+          "source_version": "2.3",
+          "source_as_of": "2026-09-10T09:31:25+08:00"
+        },
+        "protocol_version": "2.3",
+        "evidence_refs": [
+          "E-effd9ac1a92839d31ad6660cb60586fce33ef43ddf7be93e9dbd41d4f9e4aaca"
+        ],
+        "evidence_id": "E-effd9ac1a92839d31ad6660cb60586fce33ef43ddf7be93e9dbd41d4f9e4aaca",
+        "observation_id": "e9741def-f565-42e0-b8e8-34de4cd58a44",
+        "event_time": "2026-09-09T09:30:00+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "PROTOCOL_BUSINESS_SEMANTICS",
+        "value": "LOAN_CREATED_PAYMENT_SEPARATE",
+        "subject": {
+          "kind": "PROTOCOL",
+          "identifier": "SUBJECT-1a2418c633a2e7c3d06d",
+          "field": "SUCCESS",
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-09T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:31:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_protocol",
+          "source_kind": "PRIMARY",
+          "source_version": "2.3",
+          "source_as_of": "2026-09-10T09:31:25+08:00"
+        },
+        "protocol_version": "2.3",
+        "evidence_refs": [
+          "E-60b8cab0ca8ba0853273d6e4c7a70e80984468cf876fc90906a368a96a609916"
+        ],
+        "evidence_id": "E-60b8cab0ca8ba0853273d6e4c7a70e80984468cf876fc90906a368a96a609916",
+        "observation_id": "e9741def-f565-42e0-b8e8-34de4cd58a44",
+        "event_time": "2026-09-09T09:30:00+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "PROTOCOL_FIELD_TYPE",
+        "value": "string",
+        "subject": {
+          "kind": "PROTOCOL",
+          "identifier": "SUBJECT-1a2418c633a2e7c3d06d",
+          "field": "loanNo",
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-09T09:30:00+08:00",
+        "observed_at": "2026-09-10T09:31:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_protocol",
+          "source_kind": "PRIMARY",
+          "source_version": "2.3",
+          "source_as_of": "2026-09-10T09:31:25+08:00"
+        },
+        "protocol_version": "2.3",
+        "evidence_refs": [
+          "E-236cd1180aa7a2de937d0c1e03a947d3e73a90a2cb81094a2df8e6107b10aa34"
+        ],
+        "evidence_id": "E-236cd1180aa7a2de937d0c1e03a947d3e73a90a2cb81094a2df8e6107b10aa34",
+        "observation_id": "e9741def-f565-42e0-b8e8-34de4cd58a44",
+        "event_time": "2026-09-09T09:30:00+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "HTTP_RESPONSE_STATUS",
+        "value": "TIMEOUT",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:03+08:00",
+        "observed_at": "2026-09-10T09:31:10+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_request_trace",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:31:10+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-b20559b5f35e30b0d59cad4cbf791960d8a7e21127ba6cdd216c1da325e3d4ce"
+        ],
+        "evidence_id": "E-b20559b5f35e30b0d59cad4cbf791960d8a7e21127ba6cdd216c1da325e3d4ce",
+        "observation_id": "621884ac-3ede-4fe4-b11e-ec7d4884f65d",
+        "event_time": "2026-09-10T09:30:03+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "REQUEST_SENT",
+        "value": true,
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:03+08:00",
+        "observed_at": "2026-09-10T09:31:10+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_request_trace",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:31:10+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569"
+        ],
+        "evidence_id": "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569",
+        "observation_id": "621884ac-3ede-4fe4-b11e-ec7d4884f65d",
+        "event_time": "2026-09-10T09:30:03+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "GUARANTEE_VERSION",
+        "value": 17,
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:05+08:00",
+        "observed_at": "2026-09-10T09:30:55+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_guarantee_order",
+          "source_kind": "PRIMARY",
+          "source_version": "17",
+          "source_as_of": "2026-09-10T09:30:55+08:00"
+        },
+        "protocol_version": "2.3",
+        "evidence_refs": [
+          "E-cad2764697673d845aaef6134ea59f97931019eb1120bdc2ecdf8456b66320e3"
+        ],
+        "evidence_id": "E-cad2764697673d845aaef6134ea59f97931019eb1120bdc2ecdf8456b66320e3",
+        "observation_id": "df503ff3-6704-49f5-9169-148cf9288738",
+        "event_time": "2026-09-10T09:30:05+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "GUARANTEE_STATUS",
+        "value": "PROCESSING",
+        "subject": {
+          "kind": "ORDER",
+          "identifier": "SUBJECT-5cd9f7e42f58bb065d50",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:05+08:00",
+        "observed_at": "2026-09-10T09:30:55+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_guarantee_order",
+          "source_kind": "PRIMARY",
+          "source_version": "17",
+          "source_as_of": "2026-09-10T09:30:55+08:00"
+        },
+        "protocol_version": "2.3",
+        "evidence_refs": [
+          "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057"
+        ],
+        "evidence_id": "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057",
+        "observation_id": "df503ff3-6704-49f5-9169-148cf9288738",
+        "event_time": "2026-09-10T09:30:05+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "FUND_BUSINESS_STATUS",
+        "value": "SUCCESS",
+        "subject": {
+          "kind": "FUND_REQUEST",
+          "identifier": "SUBJECT-d7d2d2a1f4492cc1ac14",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:40+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_fund_order",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:40+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-848a7546698715768fa77f3b0097616b71277f70c8c8cd48b1f546fac6bdb488"
+        ],
+        "evidence_id": "E-848a7546698715768fa77f3b0097616b71277f70c8c8cd48b1f546fac6bdb488",
+        "observation_id": "9f32baf3-ab2d-433b-8b2a-8d91ef4ce8ad",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "LOAN_NOTE_REFERENCE",
+        "value": "EXTERNAL-930cf28c96d247671eb4",
+        "subject": {
+          "kind": "FUND_REQUEST",
+          "identifier": "SUBJECT-d7d2d2a1f4492cc1ac14",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:40+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_fund_order",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:40+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-5b0a8031438a025a162e3cfd0dbc19ebc065ba93df1e6b3c79c73fa2d2218700"
+        ],
+        "evidence_id": "E-5b0a8031438a025a162e3cfd0dbc19ebc065ba93df1e6b3c79c73fa2d2218700",
+        "observation_id": "9f32baf3-ab2d-433b-8b2a-8d91ef4ce8ad",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "LOAN_NO_PRESENT",
+        "value": true,
+        "subject": {
+          "kind": "FUND_REQUEST",
+          "identifier": "SUBJECT-d7d2d2a1f4492cc1ac14",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:40+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_fund_order",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:40+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-4bd440390ca0efa64d97168648d72cbe50fe63ba701a7f2ab3ddd3dcac18aa45"
+        ],
+        "evidence_id": "E-4bd440390ca0efa64d97168648d72cbe50fe63ba701a7f2ab3ddd3dcac18aa45",
+        "observation_id": "9f32baf3-ab2d-433b-8b2a-8d91ef4ce8ad",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "PAYMENT_CURRENCY",
+        "value": "CNY",
+        "subject": {
+          "kind": "TRANSACTION",
+          "identifier": "SUBJECT-1cf5f97e384f16107878",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_payment_transaction",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-bbe97d9871ec3bed439790b8a4956a7c9b660f5babdb181a3ab295a05a7432b7"
+        ],
+        "evidence_id": "E-bbe97d9871ec3bed439790b8a4956a7c9b660f5babdb181a3ab295a05a7432b7",
+        "observation_id": "829f1be5-cb88-49a4-bbc9-9d4db4d82f12",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "PAYMENT_AMOUNT",
+        "value": 2000000,
+        "subject": {
+          "kind": "TRANSACTION",
+          "identifier": "SUBJECT-1cf5f97e384f16107878",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_payment_transaction",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-b77d109c15078068015d43fb15f7d8b6a4e58e72648d7ead00e8a3044adfec63"
+        ],
+        "evidence_id": "E-b77d109c15078068015d43fb15f7d8b6a4e58e72648d7ead00e8a3044adfec63",
+        "observation_id": "829f1be5-cb88-49a4-bbc9-9d4db4d82f12",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "PAYMENT_TRANSACTION_ID",
+        "value": "EXTERNAL-1cf5f97e384f16107878",
+        "subject": {
+          "kind": "TRANSACTION",
+          "identifier": "SUBJECT-1cf5f97e384f16107878",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_payment_transaction",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-86484766c5f394e3c1c1b9f22844ad89ea305d38bb51dac3b99510ca16473430"
+        ],
+        "evidence_id": "E-86484766c5f394e3c1c1b9f22844ad89ea305d38bb51dac3b99510ca16473430",
+        "observation_id": "829f1be5-cb88-49a4-bbc9-9d4db4d82f12",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "PAYMENT_CUSTOMER_REF",
+        "value": "CUS-45e839b67f37a9eeb165",
+        "subject": {
+          "kind": "TRANSACTION",
+          "identifier": "SUBJECT-1cf5f97e384f16107878",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_payment_transaction",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-73ebeceb109cb6379ac65fa42a5152fe39d6ed3e08c53fd8c29ea324bfabc2e2"
+        ],
+        "evidence_id": "E-73ebeceb109cb6379ac65fa42a5152fe39d6ed3e08c53fd8c29ea324bfabc2e2",
+        "observation_id": "829f1be5-cb88-49a4-bbc9-9d4db4d82f12",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "PAYMENT_ACCOUNT_REF",
+        "value": "ACC-c511d78af90647ddb14d",
+        "subject": {
+          "kind": "TRANSACTION",
+          "identifier": "SUBJECT-1cf5f97e384f16107878",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_payment_transaction",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-6d56ea7c6f6cf8847f6d0de6b255e7055377bf844dc68360eaeb0bebf3d31202"
+        ],
+        "evidence_id": "E-6d56ea7c6f6cf8847f6d0de6b255e7055377bf844dc68360eaeb0bebf3d31202",
+        "observation_id": "829f1be5-cb88-49a4-bbc9-9d4db4d82f12",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "TRANSACTION_FUND_REQUEST_ID",
+        "value": "EXTERNAL-d7d2d2a1f4492cc1ac14",
+        "subject": {
+          "kind": "TRANSACTION",
+          "identifier": "SUBJECT-1cf5f97e384f16107878",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_payment_transaction",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-5d8aa8e64786b16b53dea44c8e929db8793b157bf80bf8cf2616b59794aa5814"
+        ],
+        "evidence_id": "E-5d8aa8e64786b16b53dea44c8e929db8793b157bf80bf8cf2616b59794aa5814",
+        "observation_id": "829f1be5-cb88-49a4-bbc9-9d4db4d82f12",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "PAYMENT_FINALITY",
+        "value": "SETTLED",
+        "subject": {
+          "kind": "TRANSACTION",
+          "identifier": "SUBJECT-1cf5f97e384f16107878",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_payment_transaction",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-5a281a676e9f1ba0599d8f95326661edc3e971442a3b34f561bce3688bebeddd"
+        ],
+        "evidence_id": "E-5a281a676e9f1ba0599d8f95326661edc3e971442a3b34f561bce3688bebeddd",
+        "observation_id": "829f1be5-cb88-49a4-bbc9-9d4db4d82f12",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      },
+      {
+        "claim_type": "PAYMENT_BENEFICIARY_REF",
+        "value": "BEN-5203ac0212415f345369",
+        "subject": {
+          "kind": "TRANSACTION",
+          "identifier": "SUBJECT-1cf5f97e384f16107878",
+          "field": null,
+          "internal_order_id": "ORDER-5cd9f7e42f58bb065d50"
+        },
+        "business_time": "2026-09-10T09:30:02+08:00",
+        "observed_at": "2026-09-10T09:30:25+08:00",
+        "freshness": "CURRENT",
+        "completeness": "COMPLETE",
+        "source": {
+          "tool": "get_payment_transaction",
+          "source_kind": "PRIMARY",
+          "source_version": null,
+          "source_as_of": "2026-09-10T09:30:25+08:00"
+        },
+        "protocol_version": null,
+        "evidence_refs": [
+          "E-3aacfcf7eae22702e5576582c39029898b7f91860d5d5b54574f093880952650"
+        ],
+        "evidence_id": "E-3aacfcf7eae22702e5576582c39029898b7f91860d5d5b54574f093880952650",
+        "observation_id": "829f1be5-cb88-49a4-bbc9-9d4db4d82f12",
+        "event_time": "2026-09-10T09:30:02+08:00",
+        "strength": "STRONG",
+        "extractor_version": "4"
+      }
+    ],
+    "total": 30,
+    "eligibility_denied_count": 0,
+    "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+    "next_cursor": null
+  },
+  "timeline": {
+    "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+    "items": [
+      {
+        "trace_id": "RESUMEWORK-96f8e77bffe3f35a6bd0",
+        "kind": "ResumeWork",
+        "occurred_at": "2026-09-12T20:17:56.730042Z",
+        "status": "PENDING",
+        "fields": [
+          {
+            "name": "work_type",
+            "value": "OPERATOR_FOLLOWUP"
+          },
+          {
+            "name": "reason_code",
+            "value": "DEPLOYMENT_STATE_UNKNOWN"
+          },
+          {
+            "name": "trigger",
+            "value": "RESOLUTION_SIGNAL"
+          },
+          {
+            "name": "not_before",
+            "value": "2026-09-12T20:17:56.730042Z"
+          },
+          {
+            "name": "attempt_count",
+            "value": "0"
+          },
+          {
+            "name": "verification_requirements",
+            "value": "[]"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-bc4aa4d2fac140008ded",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-12T20:17:54.888215Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "fd9a7c72433e3bafff2e562c485006c6176c8f104bebfe48126006a89100b9bc"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-5c7ee2074b65853f71fc"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "ESCALATE"
+          },
+          {
+            "name": "tool_name",
+            "value": "UNKNOWN"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": ""
+          },
+          {
+            "name": "reason_summary",
+            "value": "无法安全调查时交由外层处理。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "0"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "0"
+          },
+          {
+            "name": "rank_economy",
+            "value": "0"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-a0ba58f3f0017d447dd8",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-12T20:17:54.888215Z",
+        "status": "REJECTED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "fd9a7c72433e3bafff2e562c485006c6176c8f104bebfe48126006a89100b9bc"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-3c8acf667613543c77f2"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_accounting"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "ACCOUNTING_ENTRY_PRESENT"
+          },
+          {
+            "name": "reason_summary",
+            "value": "也许查账务就能解释。"
+          },
+          {
+            "name": "rejections",
+            "value": "TOOL_DOES_NOT_ADDRESS_TARGET_GAP"
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-94a1835d6eb802210983",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-12T20:17:54.888215Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "fd9a7c72433e3bafff2e562c485006c6176c8f104bebfe48126006a89100b9bc"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-29ba6947875fa4dbc743"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_payment_transaction"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "PAYMENT_FINALITY, PAYMENT_TRANSACTION_ID, TRANSACTION_FUND_REQUEST_ID, PAYMENT_AMOUNT, PAYMENT_CURRENCY, PAYMENT_CUSTOMER_REF, PAYMENT_BENEFICIARY_REF, PAYMENT_ACCOUNT_REF, SOURCE_LOOKUP_STATUS"
+          },
+          {
+            "name": "reason_summary",
+            "value": "查询当前缺口所需且尚未观察到的字段；关联与结论由 Harness 确定性验证。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "True"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "3"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "8"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "8"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "3"
+          },
+          {
+            "name": "rank_economy",
+            "value": "2"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "KNOWLEDGERETRIEVAL-f6351c5d3dc4a623e561",
+        "kind": "KnowledgeRetrieval",
+        "occurred_at": "2026-09-12T20:17:54.888215Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "build_status",
+            "value": "EMPTY"
+          },
+          {
+            "name": "degradation",
+            "value": "NONE"
+          },
+          {
+            "name": "skills",
+            "value": ""
+          },
+          {
+            "name": "experiences",
+            "value": ""
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+        "historical": true
+      },
+      {
+        "trace_id": "CONTEXTSNAPSHOT-508923f666fca7b63614",
+        "kind": "ContextSnapshot",
+        "occurred_at": "2026-09-12T20:17:54.888215Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "fd9a7c72433e3bafff2e562c485006c6176c8f104bebfe48126006a89100b9bc"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "CASECREATED-8c4bdc6effad585d006c",
+        "kind": "CaseCreated",
+        "occurred_at": "2026-09-12T20:17:54.888215Z",
+        "status": "CREATED",
+        "fields": [],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-3684d31537b4726ca67b",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:32:25Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "05a8f0aa95f526930b03e7c7ee78291f465316cb328a73318941b708adf9e5c5"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-f965e5fbf98dd531b7c0"
+          },
+          {
+            "name": "candidate_count",
+            "value": "1"
+          },
+          {
+            "name": "action_type",
+            "value": "ESCALATE"
+          },
+          {
+            "name": "tool_name",
+            "value": "UNKNOWN"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": ""
+          },
+          {
+            "name": "reason_summary",
+            "value": "现有可观察字段不足以填补剩余缺口，需要外层调查。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "True"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "2"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "0"
+          },
+          {
+            "name": "rank_economy",
+            "value": "0"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "OBSERVATION-60d87c0d06a7f9466fab",
+        "kind": "Observation",
+        "occurred_at": "2026-09-10T09:32:25+08:00",
+        "status": "OK",
+        "fields": [
+          {
+            "name": "tool",
+            "value": "get_messages"
+          }
+        ],
+        "evidence_refs": [
+          "E-4ecca4d20e36d3ae21cd0b3fded0e2321164671da63079d7d9214954f9c19a87",
+          "E-6d5fdffa4dc67795544dddca619cbf5d13c90549fbea1348fb3a9a50a0fb2256",
+          "E-6f6578bfadba34a4ae2e81937112a16107ffe0a7f56b8937572feebb193b7072",
+          "E-a835e173a31e94ade0afa523f34da264726ec3e2052a770b313baaa3a5ab2f4c",
+          "E-b5b4315ddb2078e20cc638c78b9f0559e7f8dae8edd8c2d7d23ff374346d7af1",
+          "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc"
+        ],
+        "related_refs": [
+          "CALL_TOOL-c64ffd07d31ca58c1400"
+        ],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "KNOWLEDGERETRIEVAL-6761fd6a5e8b10881521",
+        "kind": "KnowledgeRetrieval",
+        "occurred_at": "2026-09-10T01:32:25Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "build_status",
+            "value": "EMPTY"
+          },
+          {
+            "name": "degradation",
+            "value": "NONE"
+          },
+          {
+            "name": "skills",
+            "value": ""
+          },
+          {
+            "name": "experiences",
+            "value": ""
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+        "historical": true
+      }
+    ],
+    "total": 99,
+    "next_cursor": "10.676f86cb53d7707ffa0fa351e80b3d57f07a2a231e2ea52930eb701197a661ba"
+  },
+  "planner_trace": {
+    "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+    "items": [
+      {
+        "trace_id": "PLANNERDECISION-bc4aa4d2fac140008ded",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-12T20:17:54.888215Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "fd9a7c72433e3bafff2e562c485006c6176c8f104bebfe48126006a89100b9bc"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-5c7ee2074b65853f71fc"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "ESCALATE"
+          },
+          {
+            "name": "tool_name",
+            "value": "UNKNOWN"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": ""
+          },
+          {
+            "name": "reason_summary",
+            "value": "无法安全调查时交由外层处理。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "0"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "0"
+          },
+          {
+            "name": "rank_economy",
+            "value": "0"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-a0ba58f3f0017d447dd8",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-12T20:17:54.888215Z",
+        "status": "REJECTED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "fd9a7c72433e3bafff2e562c485006c6176c8f104bebfe48126006a89100b9bc"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-3c8acf667613543c77f2"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_accounting"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "ACCOUNTING_ENTRY_PRESENT"
+          },
+          {
+            "name": "reason_summary",
+            "value": "也许查账务就能解释。"
+          },
+          {
+            "name": "rejections",
+            "value": "TOOL_DOES_NOT_ADDRESS_TARGET_GAP"
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-94a1835d6eb802210983",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-12T20:17:54.888215Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "fd9a7c72433e3bafff2e562c485006c6176c8f104bebfe48126006a89100b9bc"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-29ba6947875fa4dbc743"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_payment_transaction"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "PAYMENT_FINALITY, PAYMENT_TRANSACTION_ID, TRANSACTION_FUND_REQUEST_ID, PAYMENT_AMOUNT, PAYMENT_CURRENCY, PAYMENT_CUSTOMER_REF, PAYMENT_BENEFICIARY_REF, PAYMENT_ACCOUNT_REF, SOURCE_LOOKUP_STATUS"
+          },
+          {
+            "name": "reason_summary",
+            "value": "查询当前缺口所需且尚未观察到的字段；关联与结论由 Harness 确定性验证。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "True"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "3"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "8"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "8"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "3"
+          },
+          {
+            "name": "rank_economy",
+            "value": "2"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "CONTEXTSNAPSHOT-508923f666fca7b63614",
+        "kind": "ContextSnapshot",
+        "occurred_at": "2026-09-12T20:17:54.888215Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "fd9a7c72433e3bafff2e562c485006c6176c8f104bebfe48126006a89100b9bc"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-3684d31537b4726ca67b",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:32:25Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "05a8f0aa95f526930b03e7c7ee78291f465316cb328a73318941b708adf9e5c5"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-f965e5fbf98dd531b7c0"
+          },
+          {
+            "name": "candidate_count",
+            "value": "1"
+          },
+          {
+            "name": "action_type",
+            "value": "ESCALATE"
+          },
+          {
+            "name": "tool_name",
+            "value": "UNKNOWN"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": ""
+          },
+          {
+            "name": "reason_summary",
+            "value": "现有可观察字段不足以填补剩余缺口，需要外层调查。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "True"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "2"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "0"
+          },
+          {
+            "name": "rank_economy",
+            "value": "0"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "CONTEXTSNAPSHOT-3efcc43eaae6fdb1a61f",
+        "kind": "ContextSnapshot",
+        "occurred_at": "2026-09-10T01:32:25Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "05a8f0aa95f526930b03e7c7ee78291f465316cb328a73318941b708adf9e5c5"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-f408d33463076bb679a6",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:32:10Z",
+        "status": "REJECTED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "REDACTED"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-3c8acf667613543c77f2"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_accounting"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "ACCOUNTING_ENTRY_PRESENT"
+          },
+          {
+            "name": "reason_summary",
+            "value": "也许查账务就能解释。"
+          },
+          {
+            "name": "rejections",
+            "value": "TOOL_DOES_NOT_ADDRESS_TARGET_GAP"
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-2bed4334d8444d971f94",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:32:10Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "REDACTED"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-29ba6947875fa4dbc743"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_messages"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "MESSAGE_CONSUME_STATUS, MESSAGE_DLQ, MESSAGE_ERROR_CODE, MESSAGE_ERROR_FIELD, MESSAGE_EXPECTED_FIELD_TYPE, MESSAGE_ACTUAL_FIELD_TYPE, SOURCE_LOOKUP_STATUS"
+          },
+          {
+            "name": "reason_summary",
+            "value": "查询当前缺口所需且尚未观察到的字段；关联与结论由 Harness 确定性验证。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "True"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "2"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "1"
+          },
+          {
+            "name": "rank_economy",
+            "value": "2"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-18884de5059609df4571",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:32:10Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "REDACTED"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-5c7ee2074b65853f71fc"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "ESCALATE"
+          },
+          {
+            "name": "tool_name",
+            "value": "UNKNOWN"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": ""
+          },
+          {
+            "name": "reason_summary",
+            "value": "无法安全调查时交由外层处理。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "0"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "0"
+          },
+          {
+            "name": "rank_economy",
+            "value": "0"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "CONTEXTSNAPSHOT-af238da8debef5ec30b8",
+        "kind": "ContextSnapshot",
+        "occurred_at": "2026-09-10T01:32:10Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "REDACTED"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-e2d0c9be861388ae148b",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:31:55Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "a7c4fb77b6dd012fb556a630f762ce6ce4af3aa5ef2d3a4455f42449676ee7f4"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-29ba6947875fa4dbc743"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_asset_order"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "ASSET_STATUS, SOURCE_LOOKUP_STATUS"
+          },
+          {
+            "name": "reason_summary",
+            "value": "查询当前缺口所需且尚未观察到的字段；关联与结论由 Harness 确定性验证。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "True"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "2"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "1"
+          },
+          {
+            "name": "rank_economy",
+            "value": "2"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-7880176fe11814d8372e",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:31:55Z",
+        "status": "REJECTED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "a7c4fb77b6dd012fb556a630f762ce6ce4af3aa5ef2d3a4455f42449676ee7f4"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-3c8acf667613543c77f2"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_accounting"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "ACCOUNTING_ENTRY_PRESENT"
+          },
+          {
+            "name": "reason_summary",
+            "value": "也许查账务就能解释。"
+          },
+          {
+            "name": "rejections",
+            "value": "TOOL_DOES_NOT_ADDRESS_TARGET_GAP"
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-13fc7ac761817fd6f0e2",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:31:55Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "a7c4fb77b6dd012fb556a630f762ce6ce4af3aa5ef2d3a4455f42449676ee7f4"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-5c7ee2074b65853f71fc"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "ESCALATE"
+          },
+          {
+            "name": "tool_name",
+            "value": "UNKNOWN"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": ""
+          },
+          {
+            "name": "reason_summary",
+            "value": "无法安全调查时交由外层处理。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "0"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "0"
+          },
+          {
+            "name": "rank_economy",
+            "value": "0"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "CONTEXTSNAPSHOT-c113cff9df8e9b6f8357",
+        "kind": "ContextSnapshot",
+        "occurred_at": "2026-09-10T01:31:55Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "a7c4fb77b6dd012fb556a630f762ce6ce4af3aa5ef2d3a4455f42449676ee7f4"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-f2a62b99137c124d557f",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:31:40Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "1d9795fb115200e9f7cca77678f22fcac3a02116af8e235a70158f54b69e0fe8"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-5c7ee2074b65853f71fc"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "ESCALATE"
+          },
+          {
+            "name": "tool_name",
+            "value": "UNKNOWN"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": ""
+          },
+          {
+            "name": "reason_summary",
+            "value": "无法安全调查时交由外层处理。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "0"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "0"
+          },
+          {
+            "name": "rank_economy",
+            "value": "0"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-99ed43f5207e424bde7b",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:31:40Z",
+        "status": "REJECTED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "1d9795fb115200e9f7cca77678f22fcac3a02116af8e235a70158f54b69e0fe8"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-3c8acf667613543c77f2"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_accounting"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "ACCOUNTING_ENTRY_PRESENT"
+          },
+          {
+            "name": "reason_summary",
+            "value": "也许查账务就能解释。"
+          },
+          {
+            "name": "rejections",
+            "value": "TOOL_DOES_NOT_ADDRESS_TARGET_GAP"
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-0efb5c425c8407645027",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:31:40Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "1d9795fb115200e9f7cca77678f22fcac3a02116af8e235a70158f54b69e0fe8"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-29ba6947875fa4dbc743"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_asset_delivery"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "ASSET_DELIVERY_STATUS, SOURCE_LOOKUP_STATUS"
+          },
+          {
+            "name": "reason_summary",
+            "value": "查询当前缺口所需且尚未观察到的字段；关联与结论由 Harness 确定性验证。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "True"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "2"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "1"
+          },
+          {
+            "name": "rank_economy",
+            "value": "2"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "CONTEXTSNAPSHOT-67acad5aae6a20bba7e0",
+        "kind": "ContextSnapshot",
+        "occurred_at": "2026-09-10T01:31:40Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "1d9795fb115200e9f7cca77678f22fcac3a02116af8e235a70158f54b69e0fe8"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-f96f320a1b9388874f33",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:31:25Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "67e7ec4ec1fedcfef2895bd610e8079ac22340e6885e5568f2ceed3d746ad27d"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-29ba6947875fa4dbc743"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_callback_gateway"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "CALLBACK_GATEWAY_RECEIVED, CALLBACK_SIGNATURE_VERIFIED, CALLBACK_PROTOCOL_VERSION, SOURCE_LOOKUP_STATUS"
+          },
+          {
+            "name": "reason_summary",
+            "value": "查询当前缺口所需且尚未观察到的字段；关联与结论由 Harness 确定性验证。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "True"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "2"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "2"
+          },
+          {
+            "name": "rank_economy",
+            "value": "2"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-71492e02eb703d2dcfe7",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:31:25Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "67e7ec4ec1fedcfef2895bd610e8079ac22340e6885e5568f2ceed3d746ad27d"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-5c7ee2074b65853f71fc"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "ESCALATE"
+          },
+          {
+            "name": "tool_name",
+            "value": "UNKNOWN"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": ""
+          },
+          {
+            "name": "reason_summary",
+            "value": "无法安全调查时交由外层处理。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "0"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "0"
+          },
+          {
+            "name": "rank_economy",
+            "value": "0"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-6f17a86d68d53b414b6d",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:31:25Z",
+        "status": "REJECTED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "67e7ec4ec1fedcfef2895bd610e8079ac22340e6885e5568f2ceed3d746ad27d"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-3c8acf667613543c77f2"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_accounting"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "ACCOUNTING_ENTRY_PRESENT"
+          },
+          {
+            "name": "reason_summary",
+            "value": "也许查账务就能解释。"
+          },
+          {
+            "name": "rejections",
+            "value": "TOOL_DOES_NOT_ADDRESS_TARGET_GAP"
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "CONTEXTSNAPSHOT-7ee0444b205ca70d5e8e",
+        "kind": "ContextSnapshot",
+        "occurred_at": "2026-09-10T01:31:25Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "67e7ec4ec1fedcfef2895bd610e8079ac22340e6885e5568f2ceed3d746ad27d"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-dfc7eb1fb0bdc61ce18e",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:31:10Z",
+        "status": "REJECTED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "d8b22cadf56f53e8674d73c7eda2d5452791ad5e06464a35c141bce08d1d3b74"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-3c8acf667613543c77f2"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_accounting"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "ACCOUNTING_ENTRY_PRESENT"
+          },
+          {
+            "name": "reason_summary",
+            "value": "也许查账务就能解释。"
+          },
+          {
+            "name": "rejections",
+            "value": "TOOL_DOES_NOT_ADDRESS_TARGET_GAP"
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-9fa4509e484d55c99df9",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:31:10Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "d8b22cadf56f53e8674d73c7eda2d5452791ad5e06464a35c141bce08d1d3b74"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-5c7ee2074b65853f71fc"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "ESCALATE"
+          },
+          {
+            "name": "tool_name",
+            "value": "UNKNOWN"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": ""
+          },
+          {
+            "name": "reason_summary",
+            "value": "无法安全调查时交由外层处理。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "0"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "0"
+          },
+          {
+            "name": "rank_economy",
+            "value": "0"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-61ad66992e0d2a037747",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:31:10Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "d8b22cadf56f53e8674d73c7eda2d5452791ad5e06464a35c141bce08d1d3b74"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-29ba6947875fa4dbc743"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_protocol"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "PROTOCOL_FIELD_TYPE, PROTOCOL_BUSINESS_SEMANTICS, SOURCE_LOOKUP_STATUS"
+          },
+          {
+            "name": "reason_summary",
+            "value": "查询当前缺口所需且尚未观察到的字段；关联与结论由 Harness 确定性验证。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "True"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "3"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "1"
+          },
+          {
+            "name": "rank_economy",
+            "value": "2"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "CONTEXTSNAPSHOT-2eaad633ddf4efcde950",
+        "kind": "ContextSnapshot",
+        "occurred_at": "2026-09-10T01:31:10Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "d8b22cadf56f53e8674d73c7eda2d5452791ad5e06464a35c141bce08d1d3b74"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-e40f8ef72cd62090230c",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:30:55Z",
+        "status": "REJECTED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "bf96bcd843b45cf4bf57d71a1a9158283b85d87296384de1839e37fe80c64733"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-3c8acf667613543c77f2"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_accounting"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "ACCOUNTING_ENTRY_PRESENT"
+          },
+          {
+            "name": "reason_summary",
+            "value": "也许查账务就能解释。"
+          },
+          {
+            "name": "rejections",
+            "value": "TOOL_DOES_NOT_ADDRESS_TARGET_GAP"
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-7b1f036ea9f6cf0278d0",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:30:55Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "bf96bcd843b45cf4bf57d71a1a9158283b85d87296384de1839e37fe80c64733"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-5c7ee2074b65853f71fc"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "ESCALATE"
+          },
+          {
+            "name": "tool_name",
+            "value": "UNKNOWN"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": ""
+          },
+          {
+            "name": "reason_summary",
+            "value": "无法安全调查时交由外层处理。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "0"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "0"
+          },
+          {
+            "name": "rank_economy",
+            "value": "0"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-686daf9d5441977bb630",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:30:55Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "bf96bcd843b45cf4bf57d71a1a9158283b85d87296384de1839e37fe80c64733"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-29ba6947875fa4dbc743"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_request_trace"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "REQUEST_SENT, HTTP_RESPONSE_STATUS, SOURCE_LOOKUP_STATUS"
+          },
+          {
+            "name": "reason_summary",
+            "value": "查询当前缺口所需且尚未观察到的字段；关联与结论由 Harness 确定性验证。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "True"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "3"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "1"
+          },
+          {
+            "name": "rank_economy",
+            "value": "2"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "CONTEXTSNAPSHOT-0904241264a1fe1f25a6",
+        "kind": "ContextSnapshot",
+        "occurred_at": "2026-09-10T01:30:55Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "bf96bcd843b45cf4bf57d71a1a9158283b85d87296384de1839e37fe80c64733"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-fda0fbae2ba83ed4fc18",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:30:40Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "62000b2dc9ddb150036cf6cb51276e108bd5ee051298b0af5bd61bc4242225bf"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-29ba6947875fa4dbc743"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_guarantee_order"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "GUARANTEE_STATUS, GUARANTEE_VERSION, SOURCE_LOOKUP_STATUS"
+          },
+          {
+            "name": "reason_summary",
+            "value": "查询当前缺口所需且尚未观察到的字段；关联与结论由 Harness 确定性验证。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "True"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "3"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "2"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "2"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "2"
+          },
+          {
+            "name": "rank_economy",
+            "value": "2"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-d5547cdd2a89e6746ef0",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:30:40Z",
+        "status": "REJECTED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "62000b2dc9ddb150036cf6cb51276e108bd5ee051298b0af5bd61bc4242225bf"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-3c8acf667613543c77f2"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_accounting"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "ACCOUNTING_ENTRY_PRESENT"
+          },
+          {
+            "name": "reason_summary",
+            "value": "也许查账务就能解释。"
+          },
+          {
+            "name": "rejections",
+            "value": "TOOL_DOES_NOT_ADDRESS_TARGET_GAP"
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-261b45d10407a5d5b311",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:30:40Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "62000b2dc9ddb150036cf6cb51276e108bd5ee051298b0af5bd61bc4242225bf"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-5c7ee2074b65853f71fc"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "ESCALATE"
+          },
+          {
+            "name": "tool_name",
+            "value": "UNKNOWN"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": ""
+          },
+          {
+            "name": "reason_summary",
+            "value": "无法安全调查时交由外层处理。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "0"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "0"
+          },
+          {
+            "name": "rank_economy",
+            "value": "0"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "CONTEXTSNAPSHOT-53b469763b7ceec30696",
+        "kind": "ContextSnapshot",
+        "occurred_at": "2026-09-10T01:30:40Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "62000b2dc9ddb150036cf6cb51276e108bd5ee051298b0af5bd61bc4242225bf"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-beb00cd7b103607dcac7",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:30:25Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "a77859a2ec9de1dc1b87ca2d4dc813f458f7abd26c33f831ecb90d4381661b7c"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-5c7ee2074b65853f71fc"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "ESCALATE"
+          },
+          {
+            "name": "tool_name",
+            "value": "UNKNOWN"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": ""
+          },
+          {
+            "name": "reason_summary",
+            "value": "无法安全调查时交由外层处理。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "0"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "0"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "0"
+          },
+          {
+            "name": "rank_economy",
+            "value": "0"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-19c65abdb452a12fed4d",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:30:25Z",
+        "status": "VALID",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "a77859a2ec9de1dc1b87ca2d4dc813f458f7abd26c33f831ecb90d4381661b7c"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-29ba6947875fa4dbc743"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_fund_order"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "FUND_BUSINESS_STATUS, LOAN_NO_PRESENT, LOAN_NOTE_REFERENCE, SOURCE_LOOKUP_STATUS"
+          },
+          {
+            "name": "reason_summary",
+            "value": "查询当前缺口所需且尚未观察到的字段；关联与结论由 Harness 确定性验证。"
+          },
+          {
+            "name": "rejections",
+            "value": ""
+          },
+          {
+            "name": "selected",
+            "value": "True"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          },
+          {
+            "name": "rank_priority",
+            "value": "3"
+          },
+          {
+            "name": "rank_novel_requirement_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_coverage",
+            "value": "1"
+          },
+          {
+            "name": "rank_hypothesis_discrimination",
+            "value": "3"
+          },
+          {
+            "name": "rank_economy",
+            "value": "2"
+          },
+          {
+            "name": "rank_repeated_query_penalty",
+            "value": "0"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "PLANNERDECISION-0873f6949b154a649740",
+        "kind": "PlannerDecision",
+        "occurred_at": "2026-09-10T01:30:25Z",
+        "status": "REJECTED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "a77859a2ec9de1dc1b87ca2d4dc813f458f7abd26c33f831ecb90d4381661b7c"
+          },
+          {
+            "name": "candidate_id",
+            "value": "CANDIDATE-3c8acf667613543c77f2"
+          },
+          {
+            "name": "candidate_count",
+            "value": "3"
+          },
+          {
+            "name": "action_type",
+            "value": "CALL_TOOL"
+          },
+          {
+            "name": "tool_name",
+            "value": "get_accounting"
+          },
+          {
+            "name": "target_gaps",
+            "value": "REDACTED"
+          },
+          {
+            "name": "expected_claims",
+            "value": "ACCOUNTING_ENTRY_PRESENT"
+          },
+          {
+            "name": "reason_summary",
+            "value": "也许查账务就能解释。"
+          },
+          {
+            "name": "rejections",
+            "value": "TOOL_DOES_NOT_ADDRESS_TARGET_GAP"
+          },
+          {
+            "name": "selected",
+            "value": "False"
+          },
+          {
+            "name": "model",
+            "value": "context-driven-investigation-v1"
+          },
+          {
+            "name": "provider",
+            "value": "fake"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "CONTEXTSNAPSHOT-2dbe8a8e4495c63a4ca3",
+        "kind": "ContextSnapshot",
+        "occurred_at": "2026-09-10T01:30:25Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "snapshot_id",
+            "value": "a77859a2ec9de1dc1b87ca2d4dc813f458f7abd26c33f831ecb90d4381661b7c"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      },
+      {
+        "trace_id": "ESCALATE-6974eaa03f00cd08787b",
+        "kind": "ESCALATE",
+        "occurred_at": null,
+        "status": "ESCALATED",
+        "fields": [
+          {
+            "name": "reason_code",
+            "value": "NO_AVAILABLE_TOOL"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      }
+    ],
+    "total": 39,
+    "next_cursor": null
+  },
+  "tool_trace": {
+    "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+    "items": [
+      {
+        "trace_id": "CALL_TOOL-e6b03d8a663a0fd89408",
+        "kind": "CALL_TOOL",
+        "occurred_at": null,
+        "status": "OBSERVED",
+        "fields": [
+          {
+            "name": "tool",
+            "value": "get_protocol"
+          },
+          {
+            "name": "sequence",
+            "value": "5"
+          },
+          {
+            "name": "observation_status",
+            "value": "OK"
+          },
+          {
+            "name": "observed_at",
+            "value": "2026-09-10T09:31:25+08:00"
+          },
+          {
+            "name": "claim_types",
+            "value": "PROTOCOL_BUSINESS_SEMANTICS, PROTOCOL_FIELD_TYPE"
+          }
+        ],
+        "evidence_refs": [
+          "E-236cd1180aa7a2de937d0c1e03a947d3e73a90a2cb81094a2df8e6107b10aa34",
+          "E-60b8cab0ca8ba0853273d6e4c7a70e80984468cf876fc90906a368a96a609916",
+          "E-effd9ac1a92839d31ad6660cb60586fce33ef43ddf7be93e9dbd41d4f9e4aaca",
+          "E-f7e0fdbe2639a648aafb9caaf85e09c91f4673c798aa3dc6df3939c930174951"
+        ],
+        "related_refs": [
+          "OBSERVATION-24190492f9f63e76f853"
+        ],
+        "warning": "Dispatch timestamp was not recorded",
+        "historical": false
+      },
+      {
+        "trace_id": "CALL_TOOL-c93e5e5bce0476a3ad0f",
+        "kind": "CALL_TOOL",
+        "occurred_at": null,
+        "status": "OBSERVED",
+        "fields": [
+          {
+            "name": "tool",
+            "value": "get_fund_order"
+          },
+          {
+            "name": "sequence",
+            "value": "2"
+          },
+          {
+            "name": "observation_status",
+            "value": "OK"
+          },
+          {
+            "name": "observed_at",
+            "value": "2026-09-10T09:30:40+08:00"
+          },
+          {
+            "name": "claim_types",
+            "value": "FUND_BUSINESS_STATUS, LOAN_NOTE_REFERENCE, LOAN_NO_PRESENT"
+          }
+        ],
+        "evidence_refs": [
+          "E-4bd440390ca0efa64d97168648d72cbe50fe63ba701a7f2ab3ddd3dcac18aa45",
+          "E-5b0a8031438a025a162e3cfd0dbc19ebc065ba93df1e6b3c79c73fa2d2218700",
+          "E-848a7546698715768fa77f3b0097616b71277f70c8c8cd48b1f546fac6bdb488"
+        ],
+        "related_refs": [
+          "OBSERVATION-3ba5dd182df14062dd14"
+        ],
+        "warning": "Dispatch timestamp was not recorded",
+        "historical": false
+      },
+      {
+        "trace_id": "CALL_TOOL-c64ffd07d31ca58c1400",
+        "kind": "CALL_TOOL",
+        "occurred_at": null,
+        "status": "OBSERVED",
+        "fields": [
+          {
+            "name": "tool",
+            "value": "get_messages"
+          },
+          {
+            "name": "sequence",
+            "value": "9"
+          },
+          {
+            "name": "observation_status",
+            "value": "OK"
+          },
+          {
+            "name": "observed_at",
+            "value": "2026-09-10T09:32:25+08:00"
+          },
+          {
+            "name": "claim_types",
+            "value": "MESSAGE_ACTUAL_FIELD_TYPE, MESSAGE_CONSUME_STATUS, MESSAGE_DLQ, MESSAGE_ERROR_CODE, MESSAGE_ERROR_FIELD, MESSAGE_EXPECTED_FIELD_TYPE"
+          }
+        ],
+        "evidence_refs": [
+          "E-4ecca4d20e36d3ae21cd0b3fded0e2321164671da63079d7d9214954f9c19a87",
+          "E-6d5fdffa4dc67795544dddca619cbf5d13c90549fbea1348fb3a9a50a0fb2256",
+          "E-6f6578bfadba34a4ae2e81937112a16107ffe0a7f56b8937572feebb193b7072",
+          "E-a835e173a31e94ade0afa523f34da264726ec3e2052a770b313baaa3a5ab2f4c",
+          "E-b5b4315ddb2078e20cc638c78b9f0559e7f8dae8edd8c2d7d23ff374346d7af1",
+          "E-e416721823d6f7c23d431500fe0795d1897226714130f7601a71e0d7343eebfc"
+        ],
+        "related_refs": [
+          "OBSERVATION-60d87c0d06a7f9466fab"
+        ],
+        "warning": "Dispatch timestamp was not recorded",
+        "historical": false
+      },
+      {
+        "trace_id": "CALL_TOOL-c4140c7d0a4a5e4f9c2e",
+        "kind": "CALL_TOOL",
+        "occurred_at": null,
+        "status": "OBSERVED",
+        "fields": [
+          {
+            "name": "tool",
+            "value": "get_request_trace"
+          },
+          {
+            "name": "sequence",
+            "value": "4"
+          },
+          {
+            "name": "observation_status",
+            "value": "OK"
+          },
+          {
+            "name": "observed_at",
+            "value": "2026-09-10T09:31:10+08:00"
+          },
+          {
+            "name": "claim_types",
+            "value": "HTTP_RESPONSE_STATUS, REQUEST_SENT"
+          }
+        ],
+        "evidence_refs": [
+          "E-0945f52a3c2382c5609bafad8638b5608a0cd3e0b659753b4296d31392f40569",
+          "E-b20559b5f35e30b0d59cad4cbf791960d8a7e21127ba6cdd216c1da325e3d4ce"
+        ],
+        "related_refs": [
+          "OBSERVATION-2cd48fd1d83c53279504"
+        ],
+        "warning": "Dispatch timestamp was not recorded",
+        "historical": false
+      },
+      {
+        "trace_id": "CALL_TOOL-bb4706791090681682f2",
+        "kind": "CALL_TOOL",
+        "occurred_at": null,
+        "status": "OBSERVED",
+        "fields": [
+          {
+            "name": "tool",
+            "value": "get_asset_order"
+          },
+          {
+            "name": "sequence",
+            "value": "8"
+          },
+          {
+            "name": "observation_status",
+            "value": "OK"
+          },
+          {
+            "name": "observed_at",
+            "value": "2026-09-10T09:32:10+08:00"
+          },
+          {
+            "name": "claim_types",
+            "value": "ASSET_STATUS"
+          }
+        ],
+        "evidence_refs": [
+          "E-3879a7e38946c44c51109f66c5f9e24e2015020c7393f2fdf1536961af0a8c2b"
+        ],
+        "related_refs": [
+          "OBSERVATION-3d5e8c73018ca976b7e4"
+        ],
+        "warning": "Dispatch timestamp was not recorded",
+        "historical": false
+      },
+      {
+        "trace_id": "CALL_TOOL-987f74dc70246c3152fe",
+        "kind": "CALL_TOOL",
+        "occurred_at": null,
+        "status": "OBSERVED",
+        "fields": [
+          {
+            "name": "tool",
+            "value": "get_callback_gateway"
+          },
+          {
+            "name": "sequence",
+            "value": "6"
+          },
+          {
+            "name": "observation_status",
+            "value": "OK"
+          },
+          {
+            "name": "observed_at",
+            "value": "2026-09-10T09:31:40+08:00"
+          },
+          {
+            "name": "claim_types",
+            "value": "CALLBACK_GATEWAY_RECEIVED, CALLBACK_PROTOCOL_VERSION, CALLBACK_SIGNATURE_VERIFIED"
+          }
+        ],
+        "evidence_refs": [
+          "E-0b9782ea26537bdbd01cbde29600a93b29d9604050b35d6e35c038d69a442c38",
+          "E-2dcbebc63c13c03dda873b7da37a44940f9117a01ba58d519904c93308c95a6d",
+          "E-c6a2888f6d248e62f512ed6a0ef91fbb9a2c236f0960ef5be915ff42130d3e75"
+        ],
+        "related_refs": [
+          "OBSERVATION-2bf5007baf6a67ab7f20"
+        ],
+        "warning": "Dispatch timestamp was not recorded",
+        "historical": false
+      },
+      {
+        "trace_id": "CALL_TOOL-75088dd1017c40ff9c71",
+        "kind": "CALL_TOOL",
+        "occurred_at": null,
+        "status": "OBSERVED",
+        "fields": [
+          {
+            "name": "tool",
+            "value": "get_guarantee_order"
+          },
+          {
+            "name": "sequence",
+            "value": "3"
+          },
+          {
+            "name": "observation_status",
+            "value": "OK"
+          },
+          {
+            "name": "observed_at",
+            "value": "2026-09-10T09:30:55+08:00"
+          },
+          {
+            "name": "claim_types",
+            "value": "GUARANTEE_STATUS, GUARANTEE_VERSION"
+          }
+        ],
+        "evidence_refs": [
+          "E-13cf9d6ce30af3606c87e926b40ee7451e45faa21d81803e509373fee70b3057",
+          "E-cad2764697673d845aaef6134ea59f97931019eb1120bdc2ecdf8456b66320e3"
+        ],
+        "related_refs": [
+          "OBSERVATION-eec043550a541b98fa17"
+        ],
+        "warning": "Dispatch timestamp was not recorded",
+        "historical": false
+      },
+      {
+        "trace_id": "CALL_TOOL-51f874fc0e95decf5995",
+        "kind": "CALL_TOOL",
+        "occurred_at": null,
+        "status": "OBSERVED",
+        "fields": [
+          {
+            "name": "tool",
+            "value": "get_asset_delivery"
+          },
+          {
+            "name": "sequence",
+            "value": "7"
+          },
+          {
+            "name": "observation_status",
+            "value": "OK"
+          },
+          {
+            "name": "observed_at",
+            "value": "2026-09-10T09:31:55+08:00"
+          },
+          {
+            "name": "claim_types",
+            "value": "ASSET_DELIVERY_STATUS"
+          }
+        ],
+        "evidence_refs": [
+          "E-4fd4f2565804a518055ff829b961329147fa3d3c2d9a7f6832c97efe5e873ce1"
+        ],
+        "related_refs": [
+          "OBSERVATION-82587f9d7e7ff0a1533d"
+        ],
+        "warning": "Dispatch timestamp was not recorded",
+        "historical": false
+      },
+      {
+        "trace_id": "CALL_TOOL-181d39c780aadbe5fa5c",
+        "kind": "CALL_TOOL",
+        "occurred_at": null,
+        "status": "OBSERVED",
+        "fields": [
+          {
+            "name": "tool",
+            "value": "get_payment_transaction"
+          },
+          {
+            "name": "sequence",
+            "value": "1"
+          },
+          {
+            "name": "observation_status",
+            "value": "OK"
+          },
+          {
+            "name": "observed_at",
+            "value": "2026-09-10T09:30:25+08:00"
+          },
+          {
+            "name": "claim_types",
+            "value": "PAYMENT_ACCOUNT_REF, PAYMENT_AMOUNT, PAYMENT_BENEFICIARY_REF, PAYMENT_CURRENCY, PAYMENT_CUSTOMER_REF, PAYMENT_FINALITY, PAYMENT_TRANSACTION_ID, TRANSACTION_FUND_REQUEST_ID"
+          }
+        ],
+        "evidence_refs": [
+          "E-3aacfcf7eae22702e5576582c39029898b7f91860d5d5b54574f093880952650",
+          "E-5a281a676e9f1ba0599d8f95326661edc3e971442a3b34f561bce3688bebeddd",
+          "E-5d8aa8e64786b16b53dea44c8e929db8793b157bf80bf8cf2616b59794aa5814",
+          "E-6d56ea7c6f6cf8847f6d0de6b255e7055377bf844dc68360eaeb0bebf3d31202",
+          "E-73ebeceb109cb6379ac65fa42a5152fe39d6ed3e08c53fd8c29ea324bfabc2e2",
+          "E-86484766c5f394e3c1c1b9f22844ad89ea305d38bb51dac3b99510ca16473430",
+          "E-b77d109c15078068015d43fb15f7d8b6a4e58e72648d7ead00e8a3044adfec63",
+          "E-bbe97d9871ec3bed439790b8a4956a7c9b660f5babdb181a3ab295a05a7432b7"
+        ],
+        "related_refs": [
+          "OBSERVATION-7def87d78b4fdeab034e"
+        ],
+        "warning": "Dispatch timestamp was not recorded",
+        "historical": false
+      }
+    ],
+    "total": 9,
+    "next_cursor": null
+  },
+  "registry_source_trace": {
+    "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+    "items": [],
+    "total": 0,
+    "next_cursor": null
+  },
+  "route_trace": {
+    "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+    "items": [],
+    "total": 0,
+    "next_cursor": null
+  },
+  "knowledge_retrieval_trace": {
+    "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+    "items": [
+      {
+        "trace_id": "KNOWLEDGERETRIEVAL-f6351c5d3dc4a623e561",
+        "kind": "KnowledgeRetrieval",
+        "occurred_at": "2026-09-12T20:17:54.888215Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "build_status",
+            "value": "EMPTY"
+          },
+          {
+            "name": "degradation",
+            "value": "NONE"
+          },
+          {
+            "name": "skills",
+            "value": ""
+          },
+          {
+            "name": "experiences",
+            "value": ""
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+        "historical": true
+      },
+      {
+        "trace_id": "KNOWLEDGERETRIEVAL-6761fd6a5e8b10881521",
+        "kind": "KnowledgeRetrieval",
+        "occurred_at": "2026-09-10T01:32:25Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "build_status",
+            "value": "EMPTY"
+          },
+          {
+            "name": "degradation",
+            "value": "NONE"
+          },
+          {
+            "name": "skills",
+            "value": ""
+          },
+          {
+            "name": "experiences",
+            "value": ""
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+        "historical": true
+      },
+      {
+        "trace_id": "KNOWLEDGERETRIEVAL-7c817cd13358733a96d2",
+        "kind": "KnowledgeRetrieval",
+        "occurred_at": "2026-09-10T01:32:10Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "build_status",
+            "value": "EMPTY"
+          },
+          {
+            "name": "degradation",
+            "value": "NONE"
+          },
+          {
+            "name": "skills",
+            "value": ""
+          },
+          {
+            "name": "experiences",
+            "value": ""
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+        "historical": true
+      },
+      {
+        "trace_id": "KNOWLEDGERETRIEVAL-88a8099beac987f78425",
+        "kind": "KnowledgeRetrieval",
+        "occurred_at": "2026-09-10T01:31:55Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "build_status",
+            "value": "EMPTY"
+          },
+          {
+            "name": "degradation",
+            "value": "NONE"
+          },
+          {
+            "name": "skills",
+            "value": ""
+          },
+          {
+            "name": "experiences",
+            "value": ""
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+        "historical": true
+      },
+      {
+        "trace_id": "KNOWLEDGERETRIEVAL-56b51e50c225e6c8930c",
+        "kind": "KnowledgeRetrieval",
+        "occurred_at": "2026-09-10T01:31:40Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "build_status",
+            "value": "EMPTY"
+          },
+          {
+            "name": "degradation",
+            "value": "NONE"
+          },
+          {
+            "name": "skills",
+            "value": ""
+          },
+          {
+            "name": "experiences",
+            "value": ""
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+        "historical": true
+      },
+      {
+        "trace_id": "KNOWLEDGERETRIEVAL-b3e2ef4792f8deece1e3",
+        "kind": "KnowledgeRetrieval",
+        "occurred_at": "2026-09-10T01:31:25Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "build_status",
+            "value": "EMPTY"
+          },
+          {
+            "name": "degradation",
+            "value": "NONE"
+          },
+          {
+            "name": "skills",
+            "value": ""
+          },
+          {
+            "name": "experiences",
+            "value": ""
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+        "historical": true
+      },
+      {
+        "trace_id": "KNOWLEDGERETRIEVAL-5d73e0a32fe0104e9262",
+        "kind": "KnowledgeRetrieval",
+        "occurred_at": "2026-09-10T01:31:10Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "build_status",
+            "value": "EMPTY"
+          },
+          {
+            "name": "degradation",
+            "value": "NONE"
+          },
+          {
+            "name": "skills",
+            "value": ""
+          },
+          {
+            "name": "experiences",
+            "value": ""
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+        "historical": true
+      },
+      {
+        "trace_id": "KNOWLEDGERETRIEVAL-22c3ef8ead69b4b2cc17",
+        "kind": "KnowledgeRetrieval",
+        "occurred_at": "2026-09-10T01:30:55Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "build_status",
+            "value": "EMPTY"
+          },
+          {
+            "name": "degradation",
+            "value": "NONE"
+          },
+          {
+            "name": "skills",
+            "value": ""
+          },
+          {
+            "name": "experiences",
+            "value": ""
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+        "historical": true
+      },
+      {
+        "trace_id": "KNOWLEDGERETRIEVAL-81942c5888be648e73f9",
+        "kind": "KnowledgeRetrieval",
+        "occurred_at": "2026-09-10T01:30:40Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "build_status",
+            "value": "EMPTY"
+          },
+          {
+            "name": "degradation",
+            "value": "NONE"
+          },
+          {
+            "name": "skills",
+            "value": ""
+          },
+          {
+            "name": "experiences",
+            "value": ""
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+        "historical": true
+      },
+      {
+        "trace_id": "KNOWLEDGERETRIEVAL-55f6e2ff80ef442155dc",
+        "kind": "KnowledgeRetrieval",
+        "occurred_at": "2026-09-10T01:30:25Z",
+        "status": "RECORDED",
+        "fields": [
+          {
+            "name": "build_status",
+            "value": "EMPTY"
+          },
+          {
+            "name": "degradation",
+            "value": "NONE"
+          },
+          {
+            "name": "skills",
+            "value": ""
+          },
+          {
+            "name": "experiences",
+            "value": ""
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": "HISTORICAL GUIDANCE; NOT CURRENT CASE EVIDENCE",
+        "historical": true
+      }
+    ],
+    "total": 10,
+    "next_cursor": null
+  },
+  "work_trace": {
+    "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+    "items": [
+      {
+        "trace_id": "RESUMEWORK-96f8e77bffe3f35a6bd0",
+        "kind": "ResumeWork",
+        "occurred_at": "2026-09-12T20:17:56.730042Z",
+        "status": "PENDING",
+        "fields": [
+          {
+            "name": "work_type",
+            "value": "OPERATOR_FOLLOWUP"
+          },
+          {
+            "name": "reason_code",
+            "value": "DEPLOYMENT_STATE_UNKNOWN"
+          },
+          {
+            "name": "trigger",
+            "value": "RESOLUTION_SIGNAL"
+          },
+          {
+            "name": "not_before",
+            "value": "2026-09-12T20:17:56.730042Z"
+          },
+          {
+            "name": "attempt_count",
+            "value": "0"
+          },
+          {
+            "name": "verification_requirements",
+            "value": "[]"
+          }
+        ],
+        "evidence_refs": [],
+        "related_refs": [],
+        "warning": null,
+        "historical": false
+      }
+    ],
+    "total": 1,
+    "next_cursor": null
+  },
+  "side_effect_trace": {
+    "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+    "items": [],
+    "total": 0,
+    "next_cursor": null
+  },
+  "recovery_trace": {
+    "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+    "items": [],
+    "total": 0,
+    "next_cursor": null
+  },
+  "evaluation_trace": {
+    "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+    "items": [],
+    "total": 0,
+    "next_cursor": null
+  },
+  "closure_trace": {
+    "frame_id": "86e03a2a2e1fbab980f82359257257c0c6d405d75d7548bb17ab4b92844b885c",
+    "items": [],
+    "total": 0,
+    "next_cursor": null
+  },
+  "notice": "READ ONLY · APPLIED ≠ VERIFIED · Historical guidance is not current Evidence"
+}

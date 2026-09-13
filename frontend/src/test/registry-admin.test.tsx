@@ -38,11 +38,11 @@ function setup(element:React.ReactNode,path='/',permissions:Permission[]=['REGIS
 describe('Registry Administration',()=>{
   it('system list shows legitimate integration meaning',async()=>{setup(<Systems/>);expect(await screen.findByText('Synthetic 公司系统')).toBeVisible();expect(screen.getByText('测试基础类型')).toBeVisible();});
   it('system detail masks credentials and shows capabilities',async()=>{setup(<SystemDetail/>,'/systems/sim-fund');expect(await screen.findByText('[MASKED]')).toBeVisible();expect(screen.getByText('get_fund_order')).toBeVisible();expect(document.body.textContent).not.toContain('vault://');});
-  it('capability editor uses typed tool claims',()=>{setup(<CapabilityEditor definition={definition} catalog={catalog} onChange={vi.fn()}/>);expect(screen.getByText('Claim Authority（独立审核）')).toBeVisible();expect(screen.getByText('新增 Capability')).toBeVisible();});
-  it('diff page displays backend diff and before/after values',async()=>{setup(<DiffPage/>,'/versions/a/diff/b');expect(await screen.findByText('HIGH_RISK')).toBeVisible();expect(screen.getByText('"旧名称"')).toBeVisible();expect(screen.getByText('"新名称"')).toBeVisible();});
+  it('capability editor uses typed tool claims',()=>{setup(<CapabilityEditor definition={definition} catalog={catalog} onChange={vi.fn()}/>);expect(screen.getByText('事实权威性（独立审核）')).toBeVisible();expect(screen.getByText('新增工具能力')).toBeVisible();});
+  it('diff page displays backend diff and before/after values',async()=>{setup(<DiffPage/>,'/versions/a/diff/b');expect(await screen.findByText('高风险')).toBeVisible();expect(screen.getByText('"旧名称"')).toBeVisible();expect(screen.getByText('"新名称"')).toBeVisible();});
   it('approval queue requests only submitted changes',async()=>{const api=setup(<Changes approvals/>);expect(await screen.findByText('支付来源变更')).toBeVisible();expect(api).toHaveBeenCalledWith(expect.stringContaining('status=SUBMITTED'));});
-  it('impact page shows digest and paginated case scope',async()=>{setup(<ImpactPage/>,'/change-requests/CR-1');expect(await screen.findByText('CASE-1')).toBeVisible();expect(screen.getByText(/digest-only/)).toBeVisible();expect(screen.getByText('Pending Work')).toBeVisible();});
-  it('permission-hidden actions keep viewer read only',async()=>{setup(<Changes/>);await screen.findByText('支付来源变更');expect(screen.queryByText('创建 Draft')).not.toBeInTheDocument();});
+  it('impact page shows digest and paginated case scope',async()=>{setup(<ImpactPage/>,'/change-requests/CR-1');expect(await screen.findByText('CASE-1')).toBeVisible();expect(screen.getByText(/digest-only/)).toBeVisible();expect(screen.getByText('待处理任务')).toBeVisible();});
+  it('permission-hidden actions keep viewer read only',async()=>{setup(<Changes/>);await screen.findByText('支付来源变更');expect(screen.queryByText('创建草稿')).not.toBeInTheDocument();});
   it('server 403 is displayed without exposing data',async()=>{setup(<Systems/>,'/',['REGISTRY_VIEW'],()=>{throw new AdminApiError(403,'FORBIDDEN');});expect(await screen.findByText(/无权执行此操作/)).toBeVisible();});
   it('stale version conflict requires refresh and never claims activation',async()=>{
     setup(<ChangeDetail/>,'/change-requests/CR-1',['REGISTRY_VIEW','REGISTRY_APPROVE'],(path,method)=>{if(method==='POST')throw new AdminApiError(409,'STALE_CHANGE_REQUEST');});
@@ -53,7 +53,7 @@ describe('Registry Administration',()=>{
   it('import preview shows additions and never automatically activates',async()=>{
     const api=setup(<ImportSystems/>,'/',['REGISTRY_VIEW','REGISTRY_EDIT'],(path)=>path==='/import/preview'?importData:undefined);
     const input=document.querySelector('input[type=file]')!;fireEvent.change(input,{target:{files:[new File(['fake-xlsx'],'systems.xlsx')]}});
-    expect(await screen.findByText('Added 1')).toBeVisible();expect(screen.getByText('确认并生成 Draft')).toBeVisible();expect(api.mock.calls.some(([p])=>p.includes('/activate'))).toBe(false);
+    expect(await screen.findByText('新增 1')).toBeVisible();expect(screen.getByText('确认并生成草稿')).toBeVisible();expect(api.mock.calls.some(([p])=>p.includes('/activate'))).toBe(false);
   });
   it('transport uses explicit bearer and CSRF header without cookies',async()=>{
     const fetch=vi.spyOn(globalThis,'fetch').mockResolvedValue({ok:true,json:async()=>({})} as Response);
@@ -68,17 +68,17 @@ describe('Registry Administration',()=>{
   });
   it('unconfigured company systems remain visible in master list',async()=>{
     setup(<Systems/>,'/',['REGISTRY_VIEW'],path=>path.startsWith('/systems?')?{items:[{...companySummary,agent_configuration_status:'NOT_CONFIGURED',agent_source_count:0,capability_count:0}],total:1}:undefined);
-    expect(await screen.findByText('NOT_CONFIGURED')).toBeVisible();expect(screen.getByText('Synthetic 公司系统')).toBeVisible();
+    expect(await screen.findByText('未配置')).toBeVisible();expect(screen.getByText('Synthetic 公司系统')).toBeVisible();
   });
   it('company details show original info and explicit Agent configuration separately',async()=>{
     setup(<SystemDetail/>,'/systems/sim-fund');
     expect(await screen.findByText('公司原始资料')).toBeVisible();expect(screen.getByText('Synthetic original summary')).toBeVisible();
-    expect(screen.getByText('Synthetic original functions')).toBeVisible();expect(screen.getByText('Agent 能力配置')).toBeVisible();
-    expect(screen.getByText('get_fund_order')).toBeVisible();expect(screen.getByText('PARTNER_OFFICIAL_API')).toBeVisible();
+    expect(screen.getByText('Synthetic original functions')).toBeVisible();expect(screen.getByText('智能体能力配置')).toBeVisible();
+    expect(screen.getByText('get_fund_order')).toBeVisible();expect(screen.getByText('合作方官方接口')).toBeVisible();
   });
   it('unconfigured detail states no Agent capability',async()=>{
     setup(<SystemDetail/>,'/systems/sim-fund',['REGISTRY_VIEW'],path=>path==='/systems/sim-fund'?{...companyDetail,registry_sources:[],capabilities:[],authority:[],capability_count:0,agent_configuration_status:'NOT_CONFIGURED'}:undefined);
-    expect(await screen.findByText('尚未配置 Agent 能力')).toBeVisible();expect(screen.getByText('Synthetic original summary')).toBeVisible();
+    expect(await screen.findByText('尚未配置智能体能力')).toBeVisible();expect(screen.getByText('Synthetic original summary')).toBeVisible();
   });
   it('approval sends a bounded plain decision comment',async()=>{
     const api=setup(<ChangeDetail/>,'/change-requests/CR-1',['REGISTRY_VIEW','REGISTRY_APPROVE']);
@@ -97,12 +97,12 @@ describe('Registry Administration',()=>{
   });
   it('inventory activation explicitly keeps Registry Version unchanged',async()=>{
     setup(<ChangeDetail/>,'/change-requests/CR-1',['REGISTRY_VIEW','REGISTRY_ACTIVATE'],path=>path==='/change-requests/CR-1'?{...detail,change_request:{...detail.change_request,kind:'INVENTORY',status:'APPROVED',base_inventory_revision:2},inventory_changes:[company]}:undefined);
-    expect(await screen.findByText(/仅更新 Inventory Revision 2 → 3；Registry Version 不变/)).toBeVisible();
+    expect(await screen.findByText(/仅更新公司清单修订号 2 → 3；系统清单配置版本不变/)).toBeVisible();
     expect(screen.getByRole('button',{name:'激活公司资料'})).toBeVisible();
   });
   it('conflicting import cannot be confirmed',async()=>{
     setup(<ImportSystems/>,'/',['REGISTRY_VIEW','REGISTRY_EDIT'],path=>path==='/import/preview'?{...importData,conflicts:[{system_code:'aut',code:'CONFLICTING_SYSTEM_DEFINITION',row_refs:['九里云系统!2','融担系统!2']}]}:undefined);
     fireEvent.change(document.querySelector('input[type=file]')!,{target:{files:[new File(['synthetic'],'synthetic.xlsx')]}});
-    expect(await screen.findByText('aut: CONFLICTING_SYSTEM_DEFINITION')).toBeVisible();expect(screen.getByRole('button',{name:'确认并生成 Draft'})).toBeDisabled();
+    expect(await screen.findByText('aut: CONFLICTING_SYSTEM_DEFINITION')).toBeVisible();expect(screen.getByRole('button',{name:'确认并生成草稿'})).toBeDisabled();
   });
 });

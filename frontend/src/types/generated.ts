@@ -4,6 +4,244 @@
  */
 
 export interface paths {
+    "/ui/cases/{case_id}/frame": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Frame */
+        get: operations["get_frame_ui_cases__case_id__frame_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/evidence-page": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Evidence Page */
+        get: operations["get_evidence_page_ui_cases__case_id__evidence_page_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/evidence-items/{evidence_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Frame Evidence */
+        get: operations["get_frame_evidence_ui_cases__case_id__evidence_items__evidence_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trace Page */
+        get: operations["get_trace_page_ui_cases__case_id__timeline_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/planner-runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trace Page */
+        get: operations["get_trace_page_ui_cases__case_id__planner_runs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/tools": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trace Page */
+        get: operations["get_trace_page_ui_cases__case_id__tools_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trace Page */
+        get: operations["get_trace_page_ui_cases__case_id__sources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/routes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trace Page */
+        get: operations["get_trace_page_ui_cases__case_id__routes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/knowledge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trace Page */
+        get: operations["get_trace_page_ui_cases__case_id__knowledge_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/work": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trace Page */
+        get: operations["get_trace_page_ui_cases__case_id__work_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/effects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trace Page */
+        get: operations["get_trace_page_ui_cases__case_id__effects_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/recovery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trace Page */
+        get: operations["get_trace_page_ui_cases__case_id__recovery_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/evaluations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trace Page */
+        get: operations["get_trace_page_ui_cases__case_id__evaluations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ui/cases/{case_id}/closure": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trace Page */
+        get: operations["get_trace_page_ui_cases__case_id__closure_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ui/cases/{case_id}": {
         parameters: {
             query?: never;
@@ -76,6 +314,35 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AuthorityLevel
+         * @enum {string}
+         */
+        AuthorityLevel: "AUTHORITATIVE" | "CORROBORATING" | "DIAGNOSTIC";
+        /** AvailableCapability */
+        AvailableCapability: {
+            capability_type: components["schemas"]["CapabilityType"];
+            tool_name: components["schemas"]["ToolName"];
+            /** Claim Types */
+            claim_types: components["schemas"]["ClaimType"][];
+            /** Authority */
+            authority: components["schemas"]["VisibleAuthority"][];
+            /**
+             * Cost Class
+             * @default LOW
+             */
+            cost_class: string;
+            /**
+             * Latency Class
+             * @default LOW
+             */
+            latency_class: string;
+        };
+        /**
+         * CapabilityType
+         * @enum {string}
+         */
+        CapabilityType: "ESTABLISH_PAYMENT_FINALITY" | "ESTABLISH_PAYMENT_IDENTITY" | "ESTABLISH_REQUEST_ASSOCIATION" | "READ_FUND_STATE" | "READ_GUARANTEE_STATE" | "READ_CALLBACK_RECEIPT" | "READ_MESSAGE_CONSUMPTION" | "READ_ASSET_STATE" | "READ_ASSET_DELIVERY" | "READ_ACCOUNTING_ENTRY" | "READ_PROTOCOL_SCHEMA";
         /** CaseBudget */
         CaseBudget: {
             /** Max Tool Calls */
@@ -86,16 +353,34 @@ export interface components {
              */
             used_tool_calls: number;
         };
+        /** CaseCapabilitySnapshot */
+        CaseCapabilitySnapshot: {
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Case Id */
+            case_id: string;
+            /** Registry Version */
+            registry_version: string;
+            /** Routing Context Fingerprint */
+            routing_context_fingerprint: string;
+            /** Available Capabilities */
+            available_capabilities: components["schemas"]["AvailableCapability"][];
+            /**
+             * Assembled At
+             * Format: date-time
+             */
+            assembled_at: string;
+        };
         /**
          * CaseStatus
          * @enum {string}
          */
-        CaseStatus: "NEW" | "INVESTIGATING" | "WAITING" | "ESCALATED" | "CLOSED";
+        CaseStatus: "NEW" | "INVESTIGATING" | "WAITING" | "ESCALATED" | "CLOSED" | "CLOSED_VERIFIED";
         /**
          * ClaimType
          * @enum {string}
          */
-        ClaimType: "REQUEST_SENT" | "HTTP_RESPONSE_STATUS" | "FUND_BUSINESS_STATUS" | "LOAN_NO_PRESENT" | "LOAN_NOTE_REFERENCE" | "PAYMENT_FINALITY" | "PAYMENT_TRANSACTION_ID" | "PAYMENT_AMOUNT" | "PAYMENT_CURRENCY" | "PAYMENT_CUSTOMER_REF" | "PAYMENT_BENEFICIARY_REF" | "PAYMENT_ACCOUNT_REF" | "TRANSACTION_FUND_REQUEST_ID" | "CALLBACK_GATEWAY_RECEIVED" | "CALLBACK_SIGNATURE_VERIFIED" | "CALLBACK_PROTOCOL_VERSION" | "MESSAGE_CONSUME_STATUS" | "MESSAGE_DLQ" | "MESSAGE_ERROR_CODE" | "MESSAGE_ERROR_FIELD" | "MESSAGE_EXPECTED_FIELD_TYPE" | "MESSAGE_ACTUAL_FIELD_TYPE" | "ACCOUNTING_ENTRY_PRESENT" | "ASSET_STATUS" | "GUARANTEE_STATUS" | "GUARANTEE_VERSION" | "ASSET_DELIVERY_STATUS" | "PROTOCOL_FIELD_TYPE" | "PROTOCOL_BUSINESS_SEMANTICS" | "SOURCE_LOOKUP_STATUS";
+        ClaimType: "REQUEST_SENT" | "HTTP_RESPONSE_STATUS" | "FUND_BUSINESS_STATUS" | "LOAN_NO_PRESENT" | "LOAN_NOTE_REFERENCE" | "PAYMENT_FINALITY" | "PAYMENT_TRANSACTION_ID" | "PAYMENT_AMOUNT" | "PAYMENT_CURRENCY" | "PAYMENT_CUSTOMER_REF" | "PAYMENT_BENEFICIARY_REF" | "PAYMENT_ACCOUNT_REF" | "TRANSACTION_FUND_REQUEST_ID" | "CALLBACK_GATEWAY_RECEIVED" | "CALLBACK_SIGNATURE_VERIFIED" | "CALLBACK_PROTOCOL_VERSION" | "MESSAGE_CONSUME_STATUS" | "MESSAGE_DLQ" | "MESSAGE_ERROR_CODE" | "MESSAGE_ERROR_FIELD" | "MESSAGE_EXPECTED_FIELD_TYPE" | "MESSAGE_ACTUAL_FIELD_TYPE" | "CONSUMER_DEPLOYED_SCHEMA_VERSION" | "CONSUMER_ACCEPTED_PROTOCOL_VERSION" | "CONSUMER_LOAN_NO_FIELD_TYPE" | "ACCOUNTING_ENTRY_PRESENT" | "ASSET_STATUS" | "GUARANTEE_STATUS" | "GUARANTEE_VERSION" | "ASSET_DELIVERY_STATUS" | "ASSET_DELIVERY_EVENT_REF" | "PROTOCOL_FIELD_TYPE" | "PROTOCOL_BUSINESS_SEMANTICS" | "SOURCE_LOOKUP_STATUS";
         /**
          * Completeness
          * @enum {string}
@@ -187,6 +472,12 @@ export interface components {
              */
             available_tools: "TRUSTED_CONTROL";
             /**
+             * Capability Snapshot
+             * @default TRUSTED_CONTROL
+             * @constant
+             */
+            capability_snapshot: "TRUSTED_CONTROL";
+            /**
              * Budget
              * @default TRUSTED_CONTROL
              * @constant
@@ -239,6 +530,19 @@ export interface components {
          * @enum {string}
          */
         EstimateClass: "LOW" | "MEDIUM";
+        /** EvidencePage */
+        EvidencePage: {
+            /** Items */
+            items: components["schemas"]["UIEvidence"][];
+            /** Total */
+            total: number;
+            /** Eligibility Denied Count */
+            eligibility_denied_count: number;
+            /** Frame Id */
+            frame_id: string;
+            /** Next Cursor */
+            next_cursor?: string | null;
+        };
         /**
          * EvidenceStrength
          * @enum {string}
@@ -299,11 +603,33 @@ export interface components {
             /** Expected Account Ref */
             expected_account_ref: string;
         };
+        /** FinancialTruth */
+        FinancialTruth: {
+            claim_type: components["schemas"]["ClaimType"];
+            /** Value */
+            value: string | number | boolean;
+            /** Evidence Refs */
+            evidence_refs: string[];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "OBSERVED" | "UNKNOWN" | "CONFLICT";
+        };
         /**
          * Freshness
          * @enum {string}
          */
         Freshness: "CURRENT" | "STALE" | "UNKNOWN";
+        /** GapCapability */
+        GapCapability: {
+            /** Gap Id */
+            gap_id: string;
+            /** Available Tools */
+            available_tools: components["schemas"]["ToolName"][];
+            /** Unavailable Reason */
+            unavailable_reason?: string | null;
+        };
         /** GapCapsule */
         GapCapsule: {
             /** Gap Id */
@@ -354,6 +680,8 @@ export interface components {
         };
         /** HistoryDigest */
         HistoryDigest: {
+            /** Retry Window Start */
+            retry_window_start?: string | null;
             /** Tool Calls Used */
             tool_calls_used: number;
             /** Evidence Count */
@@ -443,6 +771,68 @@ export interface components {
          * @enum {string}
          */
         IdentityMatch: "MATCH" | "MISMATCH" | "UNKNOWN";
+        /** InvestigationFrame */
+        InvestigationFrame: {
+            /** Frame Id */
+            frame_id: string;
+            /** Case Id */
+            case_id: string;
+            /**
+             * Case Revision
+             * Format: date-time
+             */
+            case_revision: string;
+            /** Evidence Fingerprint */
+            evidence_fingerprint: string;
+            /** Registry Version */
+            registry_version: string | null;
+            /** Route Revision */
+            route_revision: string | null;
+            /** Latest Agent Run */
+            latest_agent_run: string | null;
+            /**
+             * Assembled At
+             * Format: date-time
+             */
+            assembled_at: string;
+            /**
+             * Route Summary
+             * @default []
+             */
+            route_summary: components["schemas"]["TraceField"][];
+            /** Investigation Allowed */
+            investigation_allowed: boolean;
+            /** Current Evidence Total */
+            current_evidence_total: number;
+            case_summary: components["schemas"]["UICase"];
+            /** Financial Truth */
+            financial_truth: components["schemas"]["FinancialTruth"][];
+            financial_identity: components["schemas"]["PaymentIdentityContext"];
+            /** Financial Identity Dimensions */
+            financial_identity_dimensions: components["schemas"]["TraceField"][];
+            /** Current Evidence */
+            current_evidence: components["schemas"]["FactCapsule"][];
+            hypotheses: components["schemas"]["UIHypothesisGraph"];
+            /** Gap Capabilities */
+            gap_capabilities: components["schemas"]["GapCapability"][];
+            evidence: components["schemas"]["EvidencePage"];
+            timeline: components["schemas"]["TracePage"];
+            planner_trace: components["schemas"]["TracePage"];
+            tool_trace: components["schemas"]["TracePage"];
+            registry_source_trace: components["schemas"]["TracePage"];
+            route_trace: components["schemas"]["TracePage"];
+            knowledge_retrieval_trace: components["schemas"]["TracePage"];
+            work_trace: components["schemas"]["TracePage"];
+            side_effect_trace: components["schemas"]["TracePage"];
+            recovery_trace: components["schemas"]["TracePage"];
+            evaluation_trace: components["schemas"]["TracePage"];
+            closure_trace: components["schemas"]["TracePage"];
+            /**
+             * Notice
+             * @default READ ONLY · APPLIED ≠ VERIFIED · Historical guidance is not current Evidence
+             */
+            notice: string;
+        };
         /** LookupScope */
         LookupScope: {
             /** Internal Order Id */
@@ -516,6 +906,7 @@ export interface components {
              *       "financial_subject": "TRUSTED_CONTROL",
              *       "safety_constraints": "TRUSTED_CONTROL",
              *       "available_tools": "TRUSTED_CONTROL",
+             *       "capability_snapshot": "TRUSTED_CONTROL",
              *       "budget": "TRUSTED_CONTROL",
              *       "current_facts": "UNTRUSTED_EXTERNAL_DATA",
              *       "history_digest": "UNTRUSTED_EXTERNAL_DATA",
@@ -570,6 +961,7 @@ export interface components {
             budget: components["schemas"]["RuntimeBudgetContext"];
             /** Available Tools */
             available_tools: components["schemas"]["ToolCapability"][];
+            capability_snapshot?: components["schemas"]["CaseCapabilitySnapshot"] | null;
             history_digest: components["schemas"]["HistoryDigest"];
             /** Selected Evidence Refs */
             selected_evidence_refs: string[];
@@ -701,6 +1093,61 @@ export interface components {
          * @enum {string}
          */
         ToolRisk: "READ_ONLY";
+        /** TraceField */
+        TraceField: {
+            /** Name */
+            name: string;
+            /** Value */
+            value: string;
+        };
+        /** TraceItem */
+        TraceItem: {
+            /** Trace Id */
+            trace_id: string;
+            kind: components["schemas"]["TraceKind"];
+            /** Occurred At */
+            occurred_at?: string | null;
+            /** Status */
+            status: string;
+            /**
+             * Fields
+             * @default []
+             */
+            fields: components["schemas"]["TraceField"][];
+            /**
+             * Evidence Refs
+             * @default []
+             */
+            evidence_refs: string[];
+            /**
+             * Related Refs
+             * @default []
+             */
+            related_refs: string[];
+            /** Warning */
+            warning?: string | null;
+            /**
+             * Historical
+             * @default false
+             */
+            historical: boolean;
+        };
+        /**
+         * TraceKind
+         * @enum {string}
+         */
+        TraceKind: "CaseCreated" | "ContextSnapshot" | "PlannerDecision" | "CALL_TOOL" | "Observation" | "EvidencePublished" | "ResumeWork" | "RemediationProposed" | "Approval" | "Effect" | "Recovery" | "Evaluation" | "Closed" | "RouteRevision" | "RegistrySource" | "KnowledgeRetrieval" | "WAIT" | "ESCALATE";
+        /** TracePage */
+        TracePage: {
+            /** Frame Id */
+            frame_id: string;
+            /** Items */
+            items: components["schemas"]["TraceItem"][];
+            /** Total */
+            total: number;
+            /** Next Cursor */
+            next_cursor?: string | null;
+        };
         /** UICase */
         UICase: {
             /** Case Id */
@@ -831,6 +1278,17 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /** VisibleAuthority */
+        VisibleAuthority: {
+            claim_type: components["schemas"]["ClaimType"];
+            authority_level: components["schemas"]["AuthorityLevel"];
+            /** Subject Binding Required */
+            subject_binding_required: boolean;
+            /** Identity Binding Required */
+            identity_binding_required: boolean;
+            freshness_requirement: components["schemas"]["Freshness"];
+            completeness_requirement: components["schemas"]["Completeness"];
+        };
     };
     responses: never;
     parameters: never;
@@ -840,6 +1298,491 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    get_frame_ui_cases__case_id__frame_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvestigationFrame"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_evidence_page_ui_cases__case_id__evidence_page_get: {
+        parameters: {
+            query: {
+                frame_id: string;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvidencePage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_frame_evidence_ui_cases__case_id__evidence_items__evidence_id__get: {
+        parameters: {
+            query: {
+                frame_id: string;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+                evidence_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UIEvidence"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trace_page_ui_cases__case_id__timeline_get: {
+        parameters: {
+            query: {
+                frame_id: string;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TracePage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trace_page_ui_cases__case_id__planner_runs_get: {
+        parameters: {
+            query: {
+                frame_id: string;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TracePage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trace_page_ui_cases__case_id__tools_get: {
+        parameters: {
+            query: {
+                frame_id: string;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TracePage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trace_page_ui_cases__case_id__sources_get: {
+        parameters: {
+            query: {
+                frame_id: string;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TracePage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trace_page_ui_cases__case_id__routes_get: {
+        parameters: {
+            query: {
+                frame_id: string;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TracePage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trace_page_ui_cases__case_id__knowledge_get: {
+        parameters: {
+            query: {
+                frame_id: string;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TracePage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trace_page_ui_cases__case_id__work_get: {
+        parameters: {
+            query: {
+                frame_id: string;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TracePage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trace_page_ui_cases__case_id__effects_get: {
+        parameters: {
+            query: {
+                frame_id: string;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TracePage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trace_page_ui_cases__case_id__recovery_get: {
+        parameters: {
+            query: {
+                frame_id: string;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TracePage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trace_page_ui_cases__case_id__evaluations_get: {
+        parameters: {
+            query: {
+                frame_id: string;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TracePage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trace_page_ui_cases__case_id__closure_get: {
+        parameters: {
+            query: {
+                frame_id: string;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TracePage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_case_ui_cases__case_id__get: {
         parameters: {
             query?: never;

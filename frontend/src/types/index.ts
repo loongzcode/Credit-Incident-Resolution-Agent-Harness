@@ -9,3 +9,6 @@ export type Identity = Schema['PaymentIdentityContext'];
 export type Graph = Schema['UIHypothesisGraph'];
 export type Hypothesis = Schema['UIHypothesisState'];
 export type Gap = Schema['UIGap'];
+export type InvestigationFrame = Schema['InvestigationFrame'];
+export type TracePage = Schema['TracePage'];
+export type EvidencePage = Schema['EvidencePage'];

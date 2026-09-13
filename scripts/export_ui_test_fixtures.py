@@ -23,7 +23,7 @@ if __name__ == '__main__':
             repository = EvidenceRepository(CaseRepository(engine, 'demo'))
             with TestClient(create_ui_app({token_hash('test'): repository})) as client:
                 output = {}
-                for key, suffix in [('case', ''), ('evidence', '/evidence'), ('graph', '/hypotheses'), ('context', '/reasoning-context')]:
+                for key, suffix in [('case', ''), ('evidence', '/evidence'), ('graph', '/hypotheses'), ('context', '/reasoning-context'), ('frame', '/frame')]:
                     response = client.get('/ui/cases/CASE-JD202609100001' + suffix, headers={'Authorization': 'Bearer test'})
                     response.raise_for_status()
                     output[key] = response.json()

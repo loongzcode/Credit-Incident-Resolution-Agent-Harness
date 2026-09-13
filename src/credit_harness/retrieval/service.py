@@ -24,14 +24,20 @@ class HybridRetrievalService:
         self.sources = repository.sources
         self.telemetry_sink = telemetry_sink
         self._telemetry = ContextVar("hybrid_retrieval_telemetry", default=RetrievalTelemetry())
+        self._telemetry_revision = ContextVar("hybrid_telemetry_revision", default=0)
 
     @property
     def last_telemetry(self):
         return self._telemetry.get()
 
+    @property
+    def telemetry_revision(self):
+        return self._telemetry_revision.get()
+
     def _emit(self, values):
         telemetry = RetrievalTelemetry(**values)
         self._telemetry.set(telemetry)
+        self._telemetry_revision.set(self._telemetry_revision.get() + 1)
         if self.telemetry_sink:
             try:
                 self.telemetry_sink(telemetry)

@@ -81,3 +81,16 @@ code { font-family: 'Cascadia Code', Consolas, monospace; overflow-wrap: anywher
 footer { text-align: center; padding: 12px 0 24px; font-size: 11px; color: #7a8b97; }
 @media (max-width: 1199px) { main { padding: 18px; } .investigation-grid { gap: 14px; } .panel .ant-card-body { padding: 12px; } .graph-toolbar { flex-wrap: wrap; } h1 { font-size: 23px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+/* Step 16: one coherent frame, business truth before traces. */
+.frame-watermark { display:flex; flex-wrap:wrap; gap:12px; padding:14px 0; color:#526174; font-size:12px; }
+.truth-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin:20px 0; }
+.truth-card { border:1px solid #dce4ed; border-radius:10px; padding:18px; background:#fff; min-height:130px; }
+.truth-card small { display:block; margin-top:10px; color:#526174; }
+.truth-card .eyebrow { min-height:38px; font-size:10px; letter-spacing:.08em; }
+.trace-event { border-left:3px solid #a2b6cc; padding:12px 18px; margin:16px 0; background:#fafcff; overflow-wrap:anywhere; }
+.trace-event header { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
+.trace-event time, .trace-count { color:#526174; font-size:12px; }
+.trace-event code { font-size:11px; color:#526174; }
+.trace-event .ant-alert { margin:10px 0; }
+.trace-evidence { display:flex; flex-wrap:wrap; }
+.trace-list { max-height:600px; overflow:auto; padding-right:10px; }

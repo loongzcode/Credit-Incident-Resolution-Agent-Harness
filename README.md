@@ -431,15 +431,17 @@ Credit Incident Resolution Agent Harness/
 
 实现顺序：先完成 Simulator、领域不变量与独立 Evaluator，再接入工具和持久化 Runtime，最后接入真实模型调查循环与演示。这样可以先证明执行边界正确，再评估模型是否真正改善调查路径。
 
-## Frontend — UI-0 Investigation Console
+## Frontend — Production Investigation & Trace Console (Step 16)
 
-`frontend/` 提供 React + TypeScript + Vite、Ant Design、React Flow 和 TanStack Query 实现的只读调查控制台。主页面为 `/cases/:caseId`，显示当前事实、支付身份、假设及证据关系、Evidence Timeline、Safety Gap 和 Context Inspector。Planner Trace 仅保留占位；没有聊天、工具执行、审批或修复入口。
+`frontend/` 提供 React + TypeScript + Vite、Ant Design、React Flow 和 TanStack Query 实现的只读调查控制台。主页面为 `/cases/:caseId`，每次刷新只使用一个同水位 InvestigationFrame：金融事实、身份契约、Hypothesis/Gap、Planner/Tool/Registry/Route/Knowledge、Work/Effect/Recovery/Evaluator/Closure。各分页绑定原 Frame，不会独立拼接不同版本。没有聊天、工具执行、审批或修复入口。
 
 沿用现有 Python 虚拟环境，另开两个终端启动本地 S6 演示：
 
 ```powershell
 # 终端 1：仓库根目录；通过现有真实 HTTP 调查流程创建独立 SQLite demo
 .\.venv\Scripts\python scripts/serve_ui_demo.py --scenario S6
+# 如需实际 Planner Trace，在只读服务启动前运行已有 synthetic Fake Agent：
+# .\.venv\Scripts\python scripts/serve_ui_demo.py --scenario S6 --recorded-agent
 
 # 终端 2
 cd frontend
@@ -460,4 +462,4 @@ cd ..
 .\.venv\Scripts\python -m pytest tests/test_ui_api.py -q
 ```
 
-API 边界、目录、类型生成、S6/S8 截图和验收说明见 [UI-0 控制台文档](docs/ui-console.md)。现有 Python 开发、Simulator 和 Harness 启动流程保持不变。
+API 边界、权限、Frame 一致性、类型生成、S6/S8 截图和验收说明见 [生产调查控制台文档](docs/ui-console.md)。安全数据示例见 [S6 Frame](docs/examples/step16-s6-frame.json) / [S8 Frame](docs/examples/step16-s8-frame.json)，可运行 `python scripts/export_investigation_frames.py` 从真实 synthetic 调查重新导出。

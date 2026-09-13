@@ -1,112 +1,128 @@
-# UI-0 — Incident Investigation Console
+# Production Investigation & Trace Console — Step 16
 
-UI-0 为工程师与审核人员提供只读调查视图。运行时数据全部来自已持久化的 Case/Evidence，以及每次 GET 重算的 HypothesisEngine / ReasoningContextAssembler；测试样本不进入应用 bundle，也不作为 API 的数据源。
+这是面向工程师的只读调查控制台。当前数据全部为 synthetic fixtures；企业系统名称只来自已发布 Registry 的受控人类投影。页面不持有上游 Tool credential、执行客户端、审批授权或关闭 Case 的能力。
 
-## 技术栈与目录
+## 一次刷新，一个 InvestigationFrame
 
-React 19、TypeScript、Vite 7、Ant Design 6、`@xyflow/react` 12、TanStack Query 5、React Router 7。测试使用 Vitest 4.1.11 和 React Testing Library。精确依赖由 `frontend/package-lock.json` 固定。
+首页只请求 `GET /ui/cases/{case_id}/frame`。Frame 包含 case_revision、evidence_fingerprint、registry_version、route_revision、latest_agent_run、assembled_at、frame_id。Case revision 使用既有单调 updated_at；frame_id 还绑定所有 Trace 水位，因此只新增 Recovery/Registry/Work 记录也会改变 Frame。
 
-```text
-frontend/
-  src/api/caseApi.ts                 GET 请求与结构化错误映射
-  src/hooks/useInvestigation.ts      TanStack Query、手动刷新、可选 5 秒轮询
-  src/pages/CaseInvestigation/       /cases/:caseId 与 /cases 查找入口
-  src/components/                   各调查面板与只读详情 Drawer
-  src/types/generated.ts            OpenAPI 生成类型，无生成 SDK
-  src/utils/format.ts                时间、金额与原值显示
-  src/test/                         RTL 测试及通过真实 API 生成的测试样本
-  openapi.json                      仅 UI app 的公开 schema
-src/credit_harness/api/ui.py         独立只读 FastAPI app
-scripts/serve_ui_demo.py             可信本地调查 bootstrap
-tests/test_ui_api.py                 HTTP、schema、隔离与敏感数据边界测试
-```
+后端在一个 SQLAlchemy Connection/Session 中读取完整输入：PostgreSQL 使用 REPEATABLE READ；SQLite 显式 BEGIN，避免 legacy transaction control 对 SELECT 不开启事务的问题。Evidence 复用 read_verified_evidence，重查 dispatch correlation、Observation hash、原始确定性 extraction 与 origin 关系。原 Observation 在此边界内使用，不返回浏览器。
 
-## API 审计与边界
+完成安全投影后，在新的数据库读事务中再次比较全量水位。Case、Evidence、call receipts、Registry head、Route head、Registry source version、Work、Effect、Recovery、Evaluation、Closure 或安全 Trace 发生变化，整帧重试；三次均不稳定返回 `409 FRAME_STALE`。不会将旧 Route 搭配新 Registry，或静默把旧 Evaluator 当新 Evidence 的评估。请求完成后的新事件属于下一次刷新；任何系统都不能把未来事件纳入已经完成的 HTTP 响应。
 
-原 `/cases/{case_id}` 返回包含 `simulation_id` 的完整 Case；原 `/evidence` 返回 CaseEvidenceView，其中包括原始 Observation。它们适合原有可信诊断流程，不能直接给浏览器。因此新增独立 `create_ui_app`，使用只读 bearer 到 tenant-scoped EvidenceRepository 的绑定；它不持有 CaseToolExecutor，也不挂载原 Harness 的任何 route。
+## 金融真相与证据
 
-| 方法 | 路径 | 返回 |
+金融摘要直接从当前合格 Evidence 构造，保留冲突时 UNKNOWN/CONFLICT。缺少 Payment Evidence 时显示 UNKNOWN，不使用 Fund SUCCESS、Tool SUCCESS 或历史经验填补。支付 finality 与订单对应的 Payment Identity 是两个字段。
+
+Identity 复用确定性 PaymentIdentityResult，展示金额、币种、请求、用户、收款主体、账户六个维度。MATCH 不是概率，也不赋予写操作权限。Raw PII 不进入 Frame；订单、外部 subject、借据/交易引用使用稳定散列别名。CUS/BEN/ACC 引用也采用保留类型前缀的显示别名，同一个原引用在同一类型内关联一致。数字金额仍是整数分。
+
+Current Evidence 展示 claim/value、source kind/tool、business time、observed_at、source_as_of、freshness、completeness、Evidence refs。首页最多预览 100 条 current facts，公开 total；Evidence 列表和详情可继续查询。展示是 diagnostic/inspection view，不是 Planner Context，不会回传模型或写入 Evidence。
+
+Hypothesis Graph 从完整同帧 Case + Evidence 重算，保留父子关系和支持/反对/decisive 引用。若 Graph 或 Identity 依赖不合格 Evidence，整个 Frame 拒绝，不能靠删除输入生成方便的结论。Gap 展示 priority、问题、required claims，以及当前 Registry 路由真正能提供的 capability；缺失、禁用、歧义或 scope 不匹配的数据源不会被静态 Tool 名称冒充。
+
+## 统一时间线与 Trace
+
+统一 DTO 是 TraceItem(kind, status, occurred_at, fields, evidence_refs, related_refs, warning, historical)。fields 只由专门投影选择，不执行通用 payload dump。
+
+| 区域 | 展示的数据 | 不能推导的结论 |
 |---|---|---|
-| GET | `/ui/cases/{case_id}` | UICase：Case/Order ID、状态、金额与币种、预算、更新时间、opaque financial refs |
-| GET | `/ui/cases/{case_id}/evidence` | UIEvidenceList：类型化事实、provenance、总数与资格拒绝数量 |
-| GET | `/ui/cases/{case_id}/hypotheses` | UIHypothesisGraph：定义、状态、全部证明引用、父子关系与 open gaps |
-| GET | `/ui/cases/{case_id}/reasoning-context` | 原样的 ReasoningContextSnapshot，实时组装并再次验证完整 envelope |
+| Planner | Snapshot、候选、target gaps、claims、简短 rationale、拒绝码、离散排名、selected | 模型建议不等于授权 |
+| Tool | call sequence、状态、真实 Observation status、observed_at、产生的 Evidence | Tool SUCCESS 不等于业务成功 |
+| Registry Source | 实际 dispatch 的 system/code/display name/capability/channel/version/authority | Registry 权威等级不替代资金契约 |
+| Route | revision、parent、protocol、变更原因及 supporting Evidence | UI 不能修改 Route |
+| Knowledge | 检索空间别名、candidate/rerank 数、latency、degradation、skill/experience refs | Historical guidance 不是 Current Evidence |
+| Work | type、status、reason、trigger、not_before、attempt、verification requirements | 展示不触发 claim/resume |
+| Effect | action、approval state、ledger status | APPLIED ≠ VERIFIED |
+| Recovery | status、attempt、next eligible、operator escalation | UNKNOWN 不允许盲目重试 |
+| Evaluator | 八个维度、PASS/FAIL/INCONCLUSIVE/NOT_APPLICABLE、缺失 requirements | 旧评估不能批准新状态 |
+| Closure | 实际 closure alias、report alias、outcome、closed_at | Agent 不能宣布关闭 |
 
-Evidence 投影复用 ContextEligibilityPolicy / FactCapsule，保留历史 Evidence 的原始 freshness 和 completeness，不在浏览器重新判定有效性。只显式选择允许字段，排除 metadata、raw_ref、Raw Observation body、内部调度关联与敏感数据域。详情展示 Observation ID 与 extractor version，不能跳转或自动请求 raw endpoint。
+旧 CaseCall 没有 dispatch timestamp。界面明确显示未记录；Observation 时间单独展示，绝不伪造 dispatch 时间。没有运行/检索/审批记录时显示“未记录”，不会模拟一条成功记录填满面板。
 
-Graph 必须从完整 Case + Evidence 重算。若展示的证明引用依赖不合格 Evidence，整个 Graph 请求返回资格错误，不能通过删除输入重新推导一个方便的结论。Identity Panel 使用 Snapshot 中的有界 PaymentIdentityContext，保留 mismatch/unknown dimensions、候选数量、preview、验证版本与关键 refs。
+Evaluator 报告重验类型、内容 identity 和 tenant/case 绑定。Evidence/case revision/call history/effects 不再匹配的报告标为 historical，仍保留历史审计价值。CLOSED_VERIFIED 只在 Case 状态、持久化 CaseClosureRecord、实际 PASS 报告与 Evidence fingerprint 对应时展示，并标注 IndependentEvaluator PASS + VerifiedClosure CAS。
 
-Context 中的任务禁令可能出现“禁止使用 GroundTruth / ScenarioId”等**控制文字**，不代表返回这些对象、字段或隐藏真值。遵守现有可信 TaskContract 边界，不以字符串删除改写后端安全契约。任意用户自由文本的 PII 清洗不属于现有 TaskContract 入口；UI 没有新增此入口。
+## 普通 Agent 与 Knowledge Trace 持久化
 
-无效凭据返回 403；Case 缺失或不属于该租户统一返回 404。ContextEligibilityError 与 MandatoryContextOverflow 返回不同的 409 code；不回显被拒绝的外部值。前端还区分网络故障、其他 409 与服务器错误，使用面板内错误提示。初始加载使用 Skeleton；失败的刷新不会继续展示旧的 Context/Identity 为当前结果。
+既有 orchestration_agent_runs 可以直接投影。普通 InvestigationAgentRuntime 默认改为 SQLInvestigationTraceStore，仍保留原 in-process records 接口；数据库只保存安全投影，不存整个 AgentRunResult 的执行 precondition/lease 等内部字段。调用者显式注入其他 trace store 的行为保留。
 
-API 每次从仓库分别读取 Case/Evidence，沿用已有诊断读取的一致性限制：不保证四个 GET 在并发主线写入时属于同一数据库事务快照。Context 自身以同一次 assembler 的输入生成，Inspector 显示内容 hash、逻辑 assembled_at 和版本；轮询只是展示刷新，不推进调查。
+SQLInvestigationTraceStore 提供 `record_planning(snapshot, decision, guidance)`、`record_retrieval(case_id=..., snapshot_id=..., telemetry=...)`、`record_guidance(snapshot, bundle)`。这些是可信基础设施接口，未注册 HTTP POST。新表为 investigation_safe_traces；已部署库可调用 store.create_schema() 做 additive bootstrap。
 
-## 面板与交互
+真实 hybrid telemetry 与所选 guidance 应在原调用处捕获，不能为了展示再执行一次 retrieval。可信配置示例：
 
-| 组件 | 已实现内容 |
+```python
+store = SQLInvestigationTraceStore(cases)
+store.create_schema()
+provider = TracedGuidanceProvider(hybrid.guidance_provider(), store, hybrid=hybrid)
+planner = PlannerService(model, guidance_provider=provider)
+```
+
+Skill 展示实际选择的 ID/version、strategies/invariants；存在对应持久化 Skill definition 时重验 hash 并展示 applicable scope，否则标记 NOT_RECORDED。Experience 展示别名、outcome、similarity features、已观察模式、tool sequence、lessons。两者有明确组织/历史徽标，不包含源 Case/订单/历史 Evidence ID。没有接入 telemetry sink 的旧记录不会被追溯伪造。PII Vault、embedding vector、raw query text、API key、完整 Prompt、私有 CoT 和 raw callback 不在任何新 DTO 中。
+
+## API、分页和权限
+
+所有新端点都是 GET，不存在执行/修复/重试/审批/关闭按钮。
+
+- `/ui/cases/{case_id}/frame`：同帧首页。
+- `/ui/cases/{case_id}/evidence-page`：Evidence cursor page。
+- `/ui/cases/{case_id}/evidence-items/{evidence_id}`：同 Frame 的单条安全详情。
+- `/ui/cases/{case_id}/{timeline|planner-runs|tools|sources|routes|knowledge|work|effects|recovery|evaluations|closure}`：分区 cursor page。
+
+分页必须携带 frame_id；游标以服务器私钥 MAC 绑定 Frame、section 和 offset。默认每页 40，最多 100；首页时间线先展示 10 条，当前事实预览最多 100。分页读取短期不可变安全投影，不重新拼接实时数据。默认缓存每 tenant-bound service 32 Frames、TTL 300 秒；失效返回 FRAME_EXPIRED，游标跨 section/篡改返回 INVALID_CURSOR。缓存页也重新校验 Case 访问权限。Tool → Evidence 使用 EvidenceOrigin 多对多关系，因此 Evidence 去重不会抹掉旧 Tool Call 的证明链。
+
+CASE_VIEW、CASE_TRACE_VIEW、CASE_FINANCIAL_VIEW 是三个独立服务端权限。当前完整 Frame 包含三个域，要求三项均具备，缺少任意一项返回 403。Registry Admin 的角色/凭据没有隐式继承；跨租户 Case 返回同样的 404。legacy read bindings 是此前已经明确授权的 investigation-only grants，兼容映射为三项权限；部署可通过 create_ui_app(..., permissions=...) 显式提供权限映射。
+
+兼容工厂 create_ui_app 保留旧 UI-0 四个 GET，供既有客户端/测试迁移。生产入口 create_production_ui_app 与新的演示服务不挂载它们，已授权浏览器也不能通过旧诊断接口绕过 Frame 的 alias/PII 投影。不要把兼容工厂直接当生产公开入口。浏览器代理只在开发服务器端注入 synthetic 本地只读 grant，token 不在应用 bundle 中；真实部署需替换为企业认证后的服务端 grant。
+
+## 前端结构与运行
+
+React / TypeScript / Ant Design / React Flow / TanStack Query。useInvestigation 只获取一个 Frame，整帧替换，frame_id 变化卸载旧分页状态；刷新失败撤下旧资金状态。统一时间线使用限高滚动区域；所有状态同时有文字，避免只依赖颜色。Evidence Drawer 从同 Frame 拉取跨页详情；不请求 Raw Observation。
+
+```powershell
+# 只有真实持久化手工调查样本
+.venv/Scripts/python scripts/serve_ui_demo.py --scenario S6 --port 8016
+# 或在启动只读服务器前，用已有 synthetic fake Agent 生成实际 Planner/Tool Trace
+.venv/Scripts/python scripts/serve_ui_demo.py --scenario S6 --recorded-agent --port 8016
+# S8 可使用独立端口/数据库启动
+# frontend 工作目录
+$env:UI_API_TARGET='http://127.0.0.1:8016'
+npm run dev -- --port 5176
+```
+
+生产路由 `/cases/CASE-JD202609100001`。启动阶段的 synthetic bootstrap 与只读 Web app 分离，网页访问/刷新本身绝不推进 Agent。
+
+类型和样本同步：`scripts/export_ui_contract.py` → `npm run types --prefix frontend`；`scripts/export_ui_test_fixtures.py` 通过真实 API 生成前端测试 fixtures，应用 bundle 不引用 fixtures。
+
+## 生产边界与验收
+
+本步没有新 Agent/Planner/执行/审批能力，没有 MoneyMovement，没有修改金融安全策略。这里实现的是独立只读 Projection，不是数据库原始内容展览。
+
+当前 Frame cache 是进程内短期缓存；多副本部署需要会话粘连或受保护的共享投影缓存，不能绕过 Frame token 改成各面板独立 GET。Frame 组装为正确性读取完整 Evidence provenance，返回内容有界；超大 Case 后续可优化读模型/索引，不能用截断输入改变金融判断。展示散列别名和敏感格式拦截不是完整 DLP/企业脱敏平台，输入数据仍必须遵守已有 synthetic/tokenized DTO 边界。
+
+测试覆盖真实 S6/S8、并发 Evidence/Route/Registry 变化、历史报告失效、来源绑定、独立权限、分页 MAC、资金 UNKNOWN、Effect/Recovery、真实 VerifiedClosure，以及前端只读行为和刷新失败。详细数量以本步最终测试输出为准；历史 UI-0 的 489 项结果不再代表当前仓库。
+
+## 真实 Synthetic Agent Frame 示例
+
+`scripts/export_investigation_frames.py` 运行已有 Fake Agent 并通过只读 API 导出，下面不是手写前端 mock：
+
+- [S6 Frame](examples/step16-s6-frame.json)：ESCALATED、Identity MATCH、Payment SETTLED、30 条 Evidence、9 次 Tool Call。H4/H6/H6_SCHEMA_MISMATCH CONFIRMED；部署版本等缺口仍存在，不伪造闭环。
+- [S8 Frame](examples/step16-s8-frame.json)：WAITING、Identity UNKNOWN、Payment UNKNOWN、3 条查询结果 Evidence、3 次 Tool Call，没有 CLOSED_VERIFIED。
+
+这两个基础演示沿用未绑定企业 Registry 的 synthetic 配置，因此 Header 明确显示 NOT REGISTERED；Registry 来源和协议 Route revision 由注册场景的真实集成测试另行验证。
+
+![S6 production investigation console](screenshots/step16-s6.png)
+
+![S8 preserves UNKNOWN](screenshots/step16-s8.png)
+
+## 本次验证结果
+
+| 验证 | 实际结果 |
 |---|---|
-| CaseHeader | Case/Order、Status Tag、金额（分转元）、币种、used/max、后端 investigation_allowed、Identity |
-| SafetyBanner | UNKNOWN、MISMATCH 或安全关键 OPEN Gap 时显示后端 SafetyInvariant 枚举，不生成资金结论 |
-| CurrentFactsPanel | 直接显示 current_facts，按 Request/Fund/Payment/Callback/Message/Guarantee/Asset/Protocol/Accounting 分类；显示来源、业务时间、质量和 Evidence refs |
-| FinancialIdentityPanel | MATCH/MISMATCH/UNKNOWN、具体维度、候选交易 count/preview、verification version、关键 Evidence refs |
-| HypothesisGraphPanel | React Flow hierarchy 与 Gap relation；H6 → 子假设；缩放、展开大图、状态索引、节点点击 Drawer；所有状态有文字标签 |
-| Hypothesis Drawer | kind、reason、decisive refs、supporting/contradicting count 与 refs、相关 open gaps |
-| EvidenceTimeline | business_time、observed_at 降序；Tool、Claim Type、Freshness、Source Kind 筛选；仅搜索 Evidence ID / Claim Type；分页 |
-| EvidenceDetailDrawer | Claim/Value/Subject、event/observed/source 时间、各版本、质量、强度、Observation ID、Extractor Version |
-| EvidenceGapPanel | SAFETY_CRITICAL 始终置顶，显示问题、状态、关联假设、required claims，无 next-tool 推断 |
-| ReasoningContextInspector | Snapshot/Schema/Policy/Compaction/Rule 版本、字符/近似 token/各 capsule count、selected/total、全部后端 omission reason counts |
-| Trust Sections | TRUSTED CONTROL、UNTRUSTED EXTERNAL DATA、DETERMINISTIC DERIVED，直接映射 section_trust |
-| Available Tools | capability 的描述、risk、classification、cost/latency、produces claims，仅展示 |
-| History Digest | 直接显示 repeated lookup groups 和 state transitions，包括次数、首末时间、首末 refs |
-| PlannerTracePlaceholder | `Planner not enabled in UI-0.` 与未来四项 trace 字段提示 |
+| SQLite 全仓回归 | 1457 passed / 8 skipped，704.95 秒 |
+| PostgreSQL 全仓回归 | 1459 passed / 6 skipped，621.22 秒 |
+| 后续最终 Frame/Trace/生产入口补丁 + 兼容 UI API | SQLite 60 passed；PostgreSQL 60 passed |
+| 检索 telemetry 隔离相关回归 | SQLite 83 passed / 4 skipped；PostgreSQL 84 passed / 3 skipped |
+| 前端 Vitest / RTL | 46 passed |
+| TypeScript + Vite production build | 通过 |
+| 浏览器 | 已检查 1440px S6/S8 实际截图 |
 
-合法 ErrorCode `IGNORE_PREVIOUS_INSTRUCTIONS` 原样显示并带 `UNTRUSTED DATA`，没有 phrase blacklist。未知值保持 `UNKNOWN`；Callback 的后端 bool 原样显示 `true`，不会前端改写业务枚举。缺少某业务组的当前事实时不生成该组事实。
-
-`/cases` 是 Case ID 查找入口，不伪造 Case List。当前后端没有 list API。整个 UI 不提供 Repair、Approval、生产操作、Tool Execution、Agent Chat 或真实 Planner Trace。
-
-## 启动与类型同步
-
-按 README 启动。前端 Node 版本使用 22.23.1 验证。两场景同时打开时可另外运行：
-
-```powershell
-# 仓库根目录的新终端
-.\.venv\Scripts\python scripts/serve_ui_demo.py --scenario S8 --port 8002
-# frontend/ 的新终端
-$env:UI_API_TARGET='http://127.0.0.1:8002'
-npm run dev -- --port 5174
-```
-
-S6：`http://127.0.0.1:5173/cases/CASE-JD202609100001`；S8：`http://127.0.0.1:5174/cases/CASE-JD202609100001`。两场景使用独立数据库与端口，同一个业务 Case ID 不混用数据。每次启动创建新的 demo 数据库，不覆盖已有调查。
-
-后端 DTO 变化后，在根目录执行：
-
-```powershell
-.\.venv\Scripts\python scripts/export_ui_contract.py
-npm run types --prefix frontend
-# 仅在需要更新测试样本时运行；数据通过现有真实 demo 调查与 UI routes 生成
-.\.venv\Scripts\python scripts/export_ui_test_fixtures.py
-```
-
-## S6 / S8 实际验证
-
-S6：20,000 CNY，Tool Budget 7/20，Identity MATCH。当前事实包含 HTTP TIMEOUT、Fund SUCCESS、Payment SETTLED、Callback gateway received=true、Message FAILED。H4、H6、H6_SCHEMA_MISMATCH 为 CONFIRMED，H6_STALE_CONSUMER_SCHEMA 与 H8 为 SUPPORTED。FUND_PROTOCOL_APPLICABILITY 为 SAFETY_CRITICAL，DEPLOYED_CONSUMER_SCHEMA_VERSION 为 DISCRIMINATING。点击 H4 decisive ref 能打开 PAYMENT_FINALITY=SETTLED 的实际 Evidence Detail。
-
-![S6 investigation console](screenshots/ui-0-s6.png)
-
-![S6 expanded hypothesis graph](screenshots/ui-0-s6-graph.png)
-
-S8：Identity UNKNOWN，当前支付事实缺失，页面明确显示无 eligible current facts / UNKNOWN；PAYMENT_FINALITY 和 PAYMENT_IDENTITY Gap 为 SAFETY_CRITICAL。History Digest 显示 `get_payment_transaction / TIMEOUT × 3`，没有 Payment Failed 结论。
-
-![S8 investigation console](screenshots/ui-0-s8.png)
-
-![S8 trust boundary and timeout history](screenshots/ui-0-s8-history.png)
-
-布局面向 1440px 桌面，并检查 1024px。时间统一 UTC。缩略图提供全图概览，可展开并缩放检查；文本状态索引和 Drawer 保证证据可读。
-
-## 测试记录
-
-- Vitest / React Testing Library：20 passed。覆盖 Header、UNKNOWN、MISMATCH dimensions、安全 Gap 排序、CONFIRMED refs、ELIMINATED、版本、省略计数、Trust Sections、合法外部 ErrorCode、S8 history、搜索边界、Evidence Drawer、错误分类、禁止操作控件与刷新失败撤下旧身份结果。
-- 新增 API contract tests：19 passed。覆盖 S6/S8 实际 HTTP 数据、所有 GET 的认证/租户隔离、Timeline 的 Case/Order/Query scope 复验、只读路由、预算不变、Snapshot 与 assembler 相等、response keys/OpenAPI schema、敏感值的多字段负例、metadata 隔离、资格拒绝、overflow 与合法外部 ErrorCode。
-- `npm run build` 通过；`npm audit` 为 0 vulnerabilities。当前构建有 Ant Design/React Flow bundle 大于 500 kB 的体积提示；UI-0 未做完整生产部署优化。
-- 最终全仓回归：489 passed、2 skipped，93.95 秒；两项跳过分别为未配置 PostgreSQL 和可选 live LLM。保留一项已有 Starlette/anyio 弃用警告。本支线没有修改 Planner 逻辑或将它接入 UI。
+全量回归之后补充了去重 EvidenceOrigin、检索早期失败隔离、Recovery 水位和生产入口隔离，以上单独列出的是对应增量验证，不把它们冒充另一次全仓运行。数据库跳过项为未显式配置的真实模型/embedding/公司文件，以及 SQLite 下 PostgreSQL 专属测试。保留上游 Starlette/AnyIO 弃用提示、jsdom CSS 解析提示与已有 Vite 大 bundle 提示；未调用真实 LLM 或访问真实个人/金融数据。

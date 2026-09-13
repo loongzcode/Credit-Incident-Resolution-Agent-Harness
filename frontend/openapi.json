@@ -5,6 +5,1060 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/ui/cases/{case_id}/frame": {
+      "get": {
+        "summary": "Get Frame",
+        "operationId": "get_frame_ui_cases__case_id__frame_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvestigationFrame"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/evidence-page": {
+      "get": {
+        "summary": "Get Evidence Page",
+        "operationId": "get_evidence_page_ui_cases__case_id__evidence_page_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 40,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidencePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/evidence-items/{evidence_id}": {
+      "get": {
+        "summary": "Get Frame Evidence",
+        "operationId": "get_frame_evidence_ui_cases__case_id__evidence_items__evidence_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "evidence_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Evidence Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UIEvidence"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/timeline": {
+      "get": {
+        "summary": "Get Trace Page",
+        "operationId": "get_trace_page_ui_cases__case_id__timeline_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 40,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TracePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/planner-runs": {
+      "get": {
+        "summary": "Get Trace Page",
+        "operationId": "get_trace_page_ui_cases__case_id__planner_runs_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 40,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TracePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/tools": {
+      "get": {
+        "summary": "Get Trace Page",
+        "operationId": "get_trace_page_ui_cases__case_id__tools_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 40,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TracePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/sources": {
+      "get": {
+        "summary": "Get Trace Page",
+        "operationId": "get_trace_page_ui_cases__case_id__sources_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 40,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TracePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/routes": {
+      "get": {
+        "summary": "Get Trace Page",
+        "operationId": "get_trace_page_ui_cases__case_id__routes_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 40,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TracePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/knowledge": {
+      "get": {
+        "summary": "Get Trace Page",
+        "operationId": "get_trace_page_ui_cases__case_id__knowledge_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 40,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TracePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/work": {
+      "get": {
+        "summary": "Get Trace Page",
+        "operationId": "get_trace_page_ui_cases__case_id__work_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 40,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TracePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/effects": {
+      "get": {
+        "summary": "Get Trace Page",
+        "operationId": "get_trace_page_ui_cases__case_id__effects_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 40,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TracePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/recovery": {
+      "get": {
+        "summary": "Get Trace Page",
+        "operationId": "get_trace_page_ui_cases__case_id__recovery_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 40,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TracePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/evaluations": {
+      "get": {
+        "summary": "Get Trace Page",
+        "operationId": "get_trace_page_ui_cases__case_id__evaluations_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 40,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TracePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/cases/{case_id}/closure": {
+      "get": {
+        "summary": "Get Trace Page",
+        "operationId": "get_trace_page_ui_cases__case_id__closure_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "frame_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Frame Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 40,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TracePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/ui/cases/{case_id}": {
       "get": {
         "summary": "Get Case",
@@ -184,6 +1238,77 @@
   },
   "components": {
     "schemas": {
+      "AuthorityLevel": {
+        "type": "string",
+        "enum": [
+          "AUTHORITATIVE",
+          "CORROBORATING",
+          "DIAGNOSTIC"
+        ],
+        "title": "AuthorityLevel"
+      },
+      "AvailableCapability": {
+        "properties": {
+          "capability_type": {
+            "$ref": "#/components/schemas/CapabilityType"
+          },
+          "tool_name": {
+            "$ref": "#/components/schemas/ToolName"
+          },
+          "claim_types": {
+            "items": {
+              "$ref": "#/components/schemas/ClaimType"
+            },
+            "type": "array",
+            "title": "Claim Types"
+          },
+          "authority": {
+            "items": {
+              "$ref": "#/components/schemas/VisibleAuthority"
+            },
+            "type": "array",
+            "title": "Authority"
+          },
+          "cost_class": {
+            "type": "string",
+            "pattern": "^(LOW|MEDIUM)$",
+            "title": "Cost Class",
+            "default": "LOW"
+          },
+          "latency_class": {
+            "type": "string",
+            "pattern": "^(LOW|MEDIUM)$",
+            "title": "Latency Class",
+            "default": "LOW"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "capability_type",
+          "tool_name",
+          "claim_types",
+          "authority"
+        ],
+        "title": "AvailableCapability"
+      },
+      "CapabilityType": {
+        "type": "string",
+        "enum": [
+          "ESTABLISH_PAYMENT_FINALITY",
+          "ESTABLISH_PAYMENT_IDENTITY",
+          "ESTABLISH_REQUEST_ASSOCIATION",
+          "READ_FUND_STATE",
+          "READ_GUARANTEE_STATE",
+          "READ_CALLBACK_RECEIPT",
+          "READ_MESSAGE_CONSUMPTION",
+          "READ_ASSET_STATE",
+          "READ_ASSET_DELIVERY",
+          "READ_ACCOUNTING_ENTRY",
+          "READ_PROTOCOL_SCHEMA"
+        ],
+        "title": "CapabilityType"
+      },
       "CaseBudget": {
         "properties": {
           "max_tool_calls": {
@@ -205,6 +1330,53 @@
         ],
         "title": "CaseBudget"
       },
+      "CaseCapabilitySnapshot": {
+        "properties": {
+          "snapshot_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Snapshot Id"
+          },
+          "case_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,100}$",
+            "title": "Case Id"
+          },
+          "registry_version": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Registry Version"
+          },
+          "routing_context_fingerprint": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Routing Context Fingerprint"
+          },
+          "available_capabilities": {
+            "items": {
+              "$ref": "#/components/schemas/AvailableCapability"
+            },
+            "type": "array",
+            "title": "Available Capabilities"
+          },
+          "assembled_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Assembled At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "snapshot_id",
+          "case_id",
+          "registry_version",
+          "routing_context_fingerprint",
+          "available_capabilities",
+          "assembled_at"
+        ],
+        "title": "CaseCapabilitySnapshot"
+      },
       "CaseStatus": {
         "type": "string",
         "enum": [
@@ -212,7 +1384,8 @@
           "INVESTIGATING",
           "WAITING",
           "ESCALATED",
-          "CLOSED"
+          "CLOSED",
+          "CLOSED_VERIFIED"
         ],
         "title": "CaseStatus"
       },
@@ -241,11 +1414,15 @@
           "MESSAGE_ERROR_FIELD",
           "MESSAGE_EXPECTED_FIELD_TYPE",
           "MESSAGE_ACTUAL_FIELD_TYPE",
+          "CONSUMER_DEPLOYED_SCHEMA_VERSION",
+          "CONSUMER_ACCEPTED_PROTOCOL_VERSION",
+          "CONSUMER_LOAN_NO_FIELD_TYPE",
           "ACCOUNTING_ENTRY_PRESENT",
           "ASSET_STATUS",
           "GUARANTEE_STATUS",
           "GUARANTEE_VERSION",
           "ASSET_DELIVERY_STATUS",
+          "ASSET_DELIVERY_EVENT_REF",
           "PROTOCOL_FIELD_TYPE",
           "PROTOCOL_BUSINESS_SEMANTICS",
           "SOURCE_LOOKUP_STATUS"
@@ -392,6 +1569,12 @@
             "title": "Available Tools",
             "default": "TRUSTED_CONTROL"
           },
+          "capability_snapshot": {
+            "type": "string",
+            "const": "TRUSTED_CONTROL",
+            "title": "Capability Snapshot",
+            "default": "TRUSTED_CONTROL"
+          },
           "budget": {
             "type": "string",
             "const": "TRUSTED_CONTROL",
@@ -454,6 +1637,49 @@
           "MEDIUM"
         ],
         "title": "EstimateClass"
+      },
+      "EvidencePage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/UIEvidence"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "eligibility_denied_count": {
+            "type": "integer",
+            "title": "Eligibility Denied Count"
+          },
+          "frame_id": {
+            "type": "string",
+            "title": "Frame Id"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "eligibility_denied_count",
+          "frame_id"
+        ],
+        "title": "EvidencePage"
       },
       "EvidenceStrength": {
         "type": "string",
@@ -674,6 +1900,52 @@
         ],
         "title": "FinancialSubject"
       },
+      "FinancialTruth": {
+        "properties": {
+          "claim_type": {
+            "$ref": "#/components/schemas/ClaimType"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "title": "Value"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Refs"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OBSERVED",
+              "UNKNOWN",
+              "CONFLICT"
+            ],
+            "title": "Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "claim_type",
+          "value",
+          "evidence_refs",
+          "status"
+        ],
+        "title": "FinancialTruth"
+      },
       "Freshness": {
         "type": "string",
         "enum": [
@@ -682,6 +1954,39 @@
           "UNKNOWN"
         ],
         "title": "Freshness"
+      },
+      "GapCapability": {
+        "properties": {
+          "gap_id": {
+            "type": "string",
+            "title": "Gap Id"
+          },
+          "available_tools": {
+            "items": {
+              "$ref": "#/components/schemas/ToolName"
+            },
+            "type": "array",
+            "title": "Available Tools"
+          },
+          "unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unavailable Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "gap_id",
+          "available_tools"
+        ],
+        "title": "GapCapability"
       },
       "GapCapsule": {
         "properties": {
@@ -853,6 +2158,18 @@
       },
       "HistoryDigest": {
         "properties": {
+          "retry_window_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retry Window Start"
+          },
           "tool_calls_used": {
             "type": "integer",
             "minimum": 0.0,
@@ -1119,6 +2436,193 @@
         ],
         "title": "IdentityMatch"
       },
+      "InvestigationFrame": {
+        "properties": {
+          "frame_id": {
+            "type": "string",
+            "title": "Frame Id"
+          },
+          "case_id": {
+            "type": "string",
+            "title": "Case Id"
+          },
+          "case_revision": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Case Revision"
+          },
+          "evidence_fingerprint": {
+            "type": "string",
+            "title": "Evidence Fingerprint"
+          },
+          "registry_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registry Version"
+          },
+          "route_revision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Revision"
+          },
+          "latest_agent_run": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Agent Run"
+          },
+          "assembled_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Assembled At"
+          },
+          "route_summary": {
+            "items": {
+              "$ref": "#/components/schemas/TraceField"
+            },
+            "type": "array",
+            "title": "Route Summary",
+            "default": []
+          },
+          "investigation_allowed": {
+            "type": "boolean",
+            "title": "Investigation Allowed"
+          },
+          "current_evidence_total": {
+            "type": "integer",
+            "title": "Current Evidence Total"
+          },
+          "case_summary": {
+            "$ref": "#/components/schemas/UICase"
+          },
+          "financial_truth": {
+            "items": {
+              "$ref": "#/components/schemas/FinancialTruth"
+            },
+            "type": "array",
+            "title": "Financial Truth"
+          },
+          "financial_identity": {
+            "$ref": "#/components/schemas/PaymentIdentityContext"
+          },
+          "financial_identity_dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/TraceField"
+            },
+            "type": "array",
+            "title": "Financial Identity Dimensions"
+          },
+          "current_evidence": {
+            "items": {
+              "$ref": "#/components/schemas/FactCapsule"
+            },
+            "type": "array",
+            "title": "Current Evidence"
+          },
+          "hypotheses": {
+            "$ref": "#/components/schemas/UIHypothesisGraph"
+          },
+          "gap_capabilities": {
+            "items": {
+              "$ref": "#/components/schemas/GapCapability"
+            },
+            "type": "array",
+            "title": "Gap Capabilities"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/EvidencePage"
+          },
+          "timeline": {
+            "$ref": "#/components/schemas/TracePage"
+          },
+          "planner_trace": {
+            "$ref": "#/components/schemas/TracePage"
+          },
+          "tool_trace": {
+            "$ref": "#/components/schemas/TracePage"
+          },
+          "registry_source_trace": {
+            "$ref": "#/components/schemas/TracePage"
+          },
+          "route_trace": {
+            "$ref": "#/components/schemas/TracePage"
+          },
+          "knowledge_retrieval_trace": {
+            "$ref": "#/components/schemas/TracePage"
+          },
+          "work_trace": {
+            "$ref": "#/components/schemas/TracePage"
+          },
+          "side_effect_trace": {
+            "$ref": "#/components/schemas/TracePage"
+          },
+          "recovery_trace": {
+            "$ref": "#/components/schemas/TracePage"
+          },
+          "evaluation_trace": {
+            "$ref": "#/components/schemas/TracePage"
+          },
+          "closure_trace": {
+            "$ref": "#/components/schemas/TracePage"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice",
+            "default": "READ ONLY \u00b7 APPLIED \u2260 VERIFIED \u00b7 Historical guidance is not current Evidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "frame_id",
+          "case_id",
+          "case_revision",
+          "evidence_fingerprint",
+          "registry_version",
+          "route_revision",
+          "latest_agent_run",
+          "assembled_at",
+          "investigation_allowed",
+          "current_evidence_total",
+          "case_summary",
+          "financial_truth",
+          "financial_identity",
+          "financial_identity_dimensions",
+          "current_evidence",
+          "hypotheses",
+          "gap_capabilities",
+          "evidence",
+          "timeline",
+          "planner_trace",
+          "tool_trace",
+          "registry_source_trace",
+          "route_trace",
+          "knowledge_retrieval_trace",
+          "work_trace",
+          "side_effect_trace",
+          "recovery_trace",
+          "evaluation_trace",
+          "closure_trace"
+        ],
+        "title": "InvestigationFrame"
+      },
       "LookupScope": {
         "properties": {
           "internal_order_id": {
@@ -1346,6 +2850,7 @@
               "financial_subject": "TRUSTED_CONTROL",
               "safety_constraints": "TRUSTED_CONTROL",
               "available_tools": "TRUSTED_CONTROL",
+              "capability_snapshot": "TRUSTED_CONTROL",
               "budget": "TRUSTED_CONTROL",
               "current_facts": "UNTRUSTED_EXTERNAL_DATA",
               "history_digest": "UNTRUSTED_EXTERNAL_DATA",
@@ -1490,6 +2995,16 @@
             },
             "type": "array",
             "title": "Available Tools"
+          },
+          "capability_snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CaseCapabilitySnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "history_digest": {
             "$ref": "#/components/schemas/HistoryDigest"
@@ -1887,6 +3402,162 @@
           "READ_ONLY"
         ],
         "title": "ToolRisk"
+      },
+      "TraceField": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "value"
+        ],
+        "title": "TraceField"
+      },
+      "TraceItem": {
+        "properties": {
+          "trace_id": {
+            "type": "string",
+            "title": "Trace Id"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/TraceKind"
+          },
+          "occurred_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occurred At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/TraceField"
+            },
+            "type": "array",
+            "title": "Fields",
+            "default": []
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Refs",
+            "default": []
+          },
+          "related_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Related Refs",
+            "default": []
+          },
+          "warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warning"
+          },
+          "historical": {
+            "type": "boolean",
+            "title": "Historical",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "trace_id",
+          "kind",
+          "status"
+        ],
+        "title": "TraceItem"
+      },
+      "TraceKind": {
+        "type": "string",
+        "enum": [
+          "CaseCreated",
+          "ContextSnapshot",
+          "PlannerDecision",
+          "CALL_TOOL",
+          "Observation",
+          "EvidencePublished",
+          "ResumeWork",
+          "RemediationProposed",
+          "Approval",
+          "Effect",
+          "Recovery",
+          "Evaluation",
+          "Closed",
+          "RouteRevision",
+          "RegistrySource",
+          "KnowledgeRetrieval",
+          "WAIT",
+          "ESCALATE"
+        ],
+        "title": "TraceKind"
+      },
+      "TracePage": {
+        "properties": {
+          "frame_id": {
+            "type": "string",
+            "title": "Frame Id"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/TraceItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "frame_id",
+          "items",
+          "total"
+        ],
+        "title": "TracePage"
       },
       "UICase": {
         "properties": {
@@ -2342,6 +4013,41 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VisibleAuthority": {
+        "properties": {
+          "claim_type": {
+            "$ref": "#/components/schemas/ClaimType"
+          },
+          "authority_level": {
+            "$ref": "#/components/schemas/AuthorityLevel"
+          },
+          "subject_binding_required": {
+            "type": "boolean",
+            "title": "Subject Binding Required"
+          },
+          "identity_binding_required": {
+            "type": "boolean",
+            "title": "Identity Binding Required"
+          },
+          "freshness_requirement": {
+            "$ref": "#/components/schemas/Freshness"
+          },
+          "completeness_requirement": {
+            "$ref": "#/components/schemas/Completeness"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "claim_type",
+          "authority_level",
+          "subject_binding_required",
+          "identity_binding_required",
+          "freshness_requirement",
+          "completeness_requirement"
+        ],
+        "title": "VisibleAuthority"
       }
     },
     "securitySchemes": {

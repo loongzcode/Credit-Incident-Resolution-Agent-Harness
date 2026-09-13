@@ -1,3 +1,4 @@
+import { displayLabel } from '../utils/labels';
 import { Collapse, Tag } from 'antd';
 import type { Fact } from '../types';
 import { timeText, valueText } from '../utils/format';
@@ -13,14 +14,14 @@ function category(f: Fact) {
 }
 export function CurrentFactsPanel({ facts, onEvidence }: { facts: Fact[]; onEvidence: (id: string) => void }) {
   const present = groups.filter(group => facts.some(f => category(f) === group));
-  return <Panel title="Current Facts" extra={<Tag>UNTRUSTED DATA · {facts.length}</Tag>}>
-    {!facts.length ? <NoData text="No eligible current facts · UNKNOWN" /> : <div className="facts-scroll"><Collapse ghost defaultActiveKey={present} items={present.map(group => ({
-      key: group, label: <strong>{group} <span className="muted">/ {facts.filter(f => category(f) === group).length}</span></strong>,
+  return <Panel title="当前事实" extra={<Tag>不可信外部数据 · {facts.length}</Tag>}>
+    {!facts.length ? <NoData text="尚无符合条件的当前事实 · 状态未知" /> : <div className="facts-scroll"><Collapse ghost defaultActiveKey={present} items={present.map(group => ({
+      key: group, label: <strong>{displayLabel(group)} <span className="muted">/ {facts.filter(f => category(f) === group).length}</span></strong>,
       children: facts.filter(f => category(f) === group).map(f => <article className="fact" key={f.evidence_refs.join(',')}>
-        <div className="fact-title"><code>{f.claim_type}</code><strong>{valueText(f.value)}</strong></div>
-        <div className="meta">{f.source.tool} · {f.source.source_kind} <StatusTag value={f.freshness} /><Tag>{f.completeness}</Tag></div>
+        <div className="fact-title"><code>{displayLabel(f.claim_type)}</code><strong>{valueText(f.value)}</strong></div>
+        <div className="meta">{displayLabel(f.source.tool)} · {displayLabel(f.source.source_kind)} <StatusTag value={f.freshness} /><Tag>{displayLabel(f.completeness)}</Tag></div>
         <div className="meta">{timeText(f.business_time)} · {f.subject.identifier}{f.subject.field ? ` / ${f.subject.field}` : ''}</div>
-        {f.claim_type === 'MESSAGE_ERROR_CODE' && <Tag>UNTRUSTED DATA</Tag>}
+        {f.claim_type === 'MESSAGE_ERROR_CODE' && <Tag>不可信外部数据</Tag>}
         <EvidenceRefs refs={f.evidence_refs} onSelect={onEvidence} />
       </article>),
     }))} /></div>}

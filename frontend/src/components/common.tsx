@@ -1,3 +1,4 @@
+import { displayLabel } from '../utils/labels';
 import { Alert, Button, Card, Empty, Skeleton, Tag } from 'antd';
 import type { ReactNode } from 'react';
 import { errorMessage } from '../api/caseApi';
@@ -7,7 +8,7 @@ export function StatusTag({ value }: { value: string }) {
     MISMATCH: 'error', SAFETY_CRITICAL: 'error', UNKNOWN: 'warning', POSSIBLE: 'warning',
     ELIMINATED: 'default', DISCRIMINATING: 'warning', CURRENT: 'success', STALE: 'warning',
     INVESTIGATING: 'processing', OPEN: 'warning' };
-  return <Tag color={colors[value]}>{value}</Tag>;
+  return <Tag color={colors[value]}>{displayLabel(value)}</Tag>;
 }
 export function Panel({ title, extra, children, className = '' }: { title: string; extra?: ReactNode; children: ReactNode; className?: string }) {
   return <Card className={`panel ${className}`} title={<h2>{title}</h2>} extra={extra}>{children}</Card>;
@@ -22,6 +23,6 @@ export function QueryPanel({ title, pending, error, children }: { title: string;
   return <>{children}</>;
 }
 export function EvidenceRefs({ refs, onSelect }: { refs: string[]; onSelect: (id: string) => void }) {
-  return refs.length ? <div className="refs">{refs.map(id => <Button type="link" key={id} onClick={() => onSelect(id)} title={id}>{id}</Button>)}</div> : <span className="muted">No evidence refs</span>;
+  return refs.length ? <div className="refs">{refs.map(id => <Button type="link" key={id} onClick={() => onSelect(id)} title={id}>{id}</Button>)}</div> : <span className="muted">暂无证据引用</span>;
 }
-export function NoData({ text = 'No observations available' }: { text?: string }) { return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={text} />; }
+export function NoData({ text = '暂无观测记录' }: { text?: string }) { return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={text} />; }
