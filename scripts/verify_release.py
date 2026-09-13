@@ -29,6 +29,7 @@ def summary(path):
 
 def main():
     parser = argparse.ArgumentParser(); parser.add_argument('--workers',default='4')
+    parser.add_argument('--local-tests-only', action='store_true', help='Incomplete preflight; never marks release passed')
     args = parser.parse_args()
     if git('status','--porcelain'):
         raise SystemExit('Commit all source changes before release verification')
@@ -45,24 +46,35 @@ def main():
         ('frontend',[npm,'test','--','--reporter=junit','--outputFile='+str(out/'frontend.xml')],ROOT/'frontend','frontend.xml'),
         ('build',[npm,'run','build'],ROOT/'frontend',None),
     ]
-    report = dict(commit_sha=sha,migration_revision=HEAD,started_at=datetime.now(timezone.utc).isoformat(),checks={})
+    if not args.local_tests_only:
+        for target in ('api','worker','frontend'):
+            command = ['docker','build','--build-arg','VCS_REF='+sha,'-t','credit-harness-'+target+':'+sha]
+            command += ['-f','deploy/frontend.Dockerfile'] if target=='frontend' else ['--target',target]
+            commands.append((target+'_image',command+['.'],ROOT,None))
+    report = dict(commit_sha=sha,scope='local-tests-only' if args.local_tests_only else 'release-candidate',github_run_id=os.environ.get('GITHUB_RUN_ID'),migration_revision=HEAD,started_at=datetime.now(timezone.utc).isoformat(),checks={})
     for name,command,cwd,xml in commands:
         if git('rev-parse','HEAD') != sha or git('status','--porcelain'):
             report['source_changed']=True; break
         print('RUNNING '+name,flush=True)
         log = out/(name+'.log')
         with log.open('w',encoding='utf-8') as f:
-            result = subprocess.run(command,cwd=cwd,stdout=f,stderr=subprocess.STDOUT,timeout=3600)
-        check = dict(exit_code=result.returncode,log_sha256=hashlib.sha256(log.read_bytes()).hexdigest())
+            try:
+                result = subprocess.run(command,cwd=cwd,stdout=f,stderr=subprocess.STDOUT,timeout=3600)
+                exit_code = result.returncode
+            except (OSError, subprocess.TimeoutExpired):
+                f.write("CHECK_UNAVAILABLE_OR_TIMEOUT\n")
+                exit_code = 1
+        check = dict(exit_code=exit_code,log_sha256=hashlib.sha256(log.read_bytes()).hexdigest())
         if xml and (out/xml).exists(): check.update(summary(out/xml))
         report['checks'][name] = check
         print(name+': '+json.dumps(check),flush=True)
     report['same_final_sha'] = git('rev-parse','HEAD')==sha and not git('status','--porcelain')
-    report['passed'] = report['same_final_sha'] and len(report['checks'])==len(commands) and all(c['exit_code']==0 for c in report['checks'].values())
+    report['checks_passed'] = report['same_final_sha'] and len(report['checks'])==len(commands) and all(c['exit_code']==0 for c in report['checks'].values())
+    report['passed'] = report['checks_passed'] and not args.local_tests_only
     report['timestamp'] = datetime.now(timezone.utc).isoformat()
-    (out/'release-verification.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
-    print(str(out/'release-verification.json'),flush=True)
-    raise SystemExit(0 if report['passed'] else 1)
+    (out/('local-verification.json' if args.local_tests_only else 'release-verification.json')).write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+    print(str(out/('local-verification.json' if args.local_tests_only else 'release-verification.json')),flush=True)
+    raise SystemExit(0 if report['checks_passed'] else 1)
 
 
 if __name__=='__main__': main()

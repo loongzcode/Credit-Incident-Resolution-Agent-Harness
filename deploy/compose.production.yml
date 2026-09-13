@@ -1,11 +1,6 @@
 # Supply secrets through a deployment secret manager; no default production credentials.
 x-worker: &worker
   image: credit-harness-worker:${RELEASE_SHA:?required}
-  env_file: ${PRODUCTION_ENV_FILE:?required}
-  volumes:
-    - ${TOOL_BINDINGS_FILE_HOST:?required}:/run/secrets/tool-bindings.json:ro
-  environment:
-    TOOL_BINDINGS_FILE: /run/secrets/tool-bindings.json
   restart: unless-stopped
   stop_grace_period: 135s
   read_only: true
@@ -21,7 +16,7 @@ services:
     stop_grace_period: 45s
   api:
     image: credit-harness-api:${RELEASE_SHA:?required}
-    env_file: ${PRODUCTION_ENV_FILE:?required}
+    env_file: ${API_ENV_FILE:?required}
     restart: unless-stopped
     read_only: true
     tmpfs: [/tmp]
@@ -33,15 +28,27 @@ services:
       retries: 3
   agent:
     <<: *worker
+    env_file: ${AGENT_ENV_FILE:?required}
+    volumes:
+      - ${TOOL_BINDINGS_FILE_HOST:?required}:/run/secrets/tool-bindings.json:ro
+    environment:
+      TOOL_BINDINGS_FILE: /run/secrets/tool-bindings.json
     command: [python, -m, credit_harness.production.workers, agent]
   orchestration:
     <<: *worker
+    env_file: ${ORCHESTRATION_ENV_FILE:?required}
+    volumes:
+      - ${TOOL_BINDINGS_FILE_HOST:?required}:/run/secrets/tool-bindings.json:ro
+    environment:
+      TOOL_BINDINGS_FILE: /run/secrets/tool-bindings.json
     command: [python, -m, credit_harness.production.workers, orchestration]
   recovery:
     <<: *worker
+    env_file: ${RECOVERY_ENV_FILE:?required}
     command: [python, -m, credit_harness.production.workers, recovery]
   embedding:
     <<: *worker
+    env_file: ${EMBEDDING_ENV_FILE:?required}
     command: [python, -m, credit_harness.production.workers, embedding]
   frontend:
     image: credit-harness-frontend:${RELEASE_SHA:?required}

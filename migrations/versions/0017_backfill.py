@@ -9,16 +9,7 @@ branch_labels = depends_on = None
 
 def upgrade():
     op.execute("UPDATE investigation_safe_traces SET projection_version = '1' WHERE projection_version IS NULL")
-    traces = sa.table('investigation_safe_traces', sa.column('trace_id',sa.String), sa.column('payload',sa.JSON))
-    for identity, original in op.get_bind().execute(sa.select(traces.c.trace_id,traces.c.payload)):
-        payload = dict(original)
-        if 'trace_trust_class' not in payload:
-            status = payload.get('status')
-            payload['trace_trust_class'] = ('ORGANIZATIONAL_GUIDANCE' if status == 'ORGANIZATIONAL_GUIDANCE'
-                else 'VERIFIED_HISTORICAL_GUIDANCE' if status == 'VERIFIED_HISTORICAL_GUIDANCE'
-                else 'HISTORICAL_EVALUATION' if payload.get('kind') == 'EvaluationReport' and payload.get('historical')
-                else 'CURRENT_OPERATIONAL')
-            op.get_bind().execute(traces.update().where(traces.c.trace_id==identity).values(payload=payload))
+    # Historical audit payloads remain byte-for-byte untouched.
     # Changes committed by ANY writer invalidate completeness, including source
     # revocation and index deletion. Reconcile, never retrieval, scans documents.
     for table, kind in (("organizational_skills", "SKILL"), ("verified_incident_experiences", "EXPERIENCE"),

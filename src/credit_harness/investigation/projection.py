@@ -26,10 +26,14 @@ def stored_trace(payload, version):
         return item
     if version != '1':
         raise ValueError('unsupported trace projection version')
+    trust = (Trust.ORGANIZATIONAL_GUIDANCE if item.status == "ORGANIZATIONAL_GUIDANCE" else
+        Trust.HISTORICAL_EVALUATION if item.kind == K.EVALUATION and item.historical else
+        Trust.VERIFIED_HISTORICAL_GUIDANCE if item.kind == K.KNOWLEDGE and item.historical
+            and item.status == "VERIFIED_HISTORICAL_GUIDANCE" else Trust.CURRENT_OPERATIONAL)
     pattern = re.compile(r'\b(EXPERIENCE|SPACE)-[a-f0-9]{20}\b')
     projected = tuple(field.model_copy(update={'value': pattern.sub(
         lambda match: alias('legacy:'+match.group(),match.group(1)),field.value)}) for field in item.fields)
-    return item.model_copy(update={'trace_id':alias('legacy:'+item.trace_id,item.kind.value),'fields':projected})
+    return item.model_copy(update={'trace_id':alias('legacy:'+item.trace_id,item.kind.value),'fields':projected, 'trace_trust_class':trust})
 
 
 def fields(payload, names):

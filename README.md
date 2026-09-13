@@ -465,3 +465,5 @@ cd ..
 ```
 
 API 边界、权限、Frame 一致性、类型生成、S6/S8 截图和验收说明见 [生产调查控制台文档](docs/ui-console.md)。安全数据示例见 [S6 Frame](docs/examples/step16-s6-frame.json) / [S8 Frame](docs/examples/step16-s8-frame.json)，可运行 `python scripts/export_investigation_frames.py` 从真实 synthetic 调查重新导出。
+
+Step 17.1 实现进程配置/依赖隔离、历史审计原文保留、有限指标读取及同 SHA 镜像发布验收。部署先运行 python -m scripts.deploy_production --check-only。详见 [生产运行手册](docs/production-operations.md)。

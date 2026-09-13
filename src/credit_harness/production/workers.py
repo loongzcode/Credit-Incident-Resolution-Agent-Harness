@@ -56,8 +56,6 @@ class DeploymentTicks:
         self.next_reconcile = 0.
 
     def operational(self, kind):
-        from credit_harness.investigation.cache import SQLFrameCache
-        SQLFrameCache(self.c.engine).prune()
         if kind == 'recovery':
             from credit_harness.orchestration.repository import lock_case
             from credit_harness.orchestration.effect_work import ensure_recovery_work
@@ -117,9 +115,9 @@ def main():
     parser.add_argument("kind", choices=("agent", "orchestration", "recovery", "embedding"))
     args = parser.parse_args()
     configure_logging()
-    from .settings import ProductionSettings
+    from .settings import WORKER_SETTINGS
     from .wiring import create_components
-    settings = ProductionSettings.from_env()
+    settings = WORKER_SETTINGS[args.kind].from_env()
     components = create_components(settings, args.kind)
     ticks = DeploymentTicks(components, settings, uuid4().hex)
     tick = ticks.embedding if args.kind == "embedding" else lambda: ticks.operational(args.kind)

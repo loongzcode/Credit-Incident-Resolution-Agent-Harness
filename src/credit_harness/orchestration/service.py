@@ -18,15 +18,26 @@ from .routing import VERIFICATION_TOOLS
 
 class DurableCaseOrchestrator:
     """One explicit tick / one work item. No background daemon or automatic L2."""
-    def __init__(self, repository, evidence, executor, runtime, evaluator, closure, *, effect_recovery=None):
+    def __init__(self, repository, evidence, executor, runtime, evaluator, closure, *, effect_recovery=None, allowed_work_types=None):
         cases = repository.cases
-        if (executor.cases is not cases or runtime.cases is not cases or evaluator.cases is not cases
-                or executor.evidence is not evidence or runtime.evidence is not evidence):
+        allowed = frozenset(T) if allowed_work_types is None else frozenset(allowed_work_types)
+        if not allowed or not allowed <= set(T):
+            raise ValueError("explicit supported work types required")
+        if T.VERIFICATION_REQUIRED in allowed and (executor is None or closure is None):
+            raise ValueError("verification dependencies required")
+        if allowed & {T.INVESTIGATION_RESUME, T.OPERATOR_FOLLOWUP} and runtime is None:
+            raise ValueError("agent runtime required")
+        if T.RECOVERY_RECHECK in allowed and allowed_work_types is not None and effect_recovery is None:
+            raise ValueError("effect recovery required")
+        if (evaluator.cases is not cases
+                or any(dep is not None and (dep.cases is not cases or dep.evidence is not evidence)
+                    for dep in (executor, runtime))):
             raise ValueError("worker dependencies must share Case boundary")
+        self.allowed_work_types = allowed
         self.repository, self.evidence, self.executor = repository, evidence, executor
         self.runtime, self.evaluator = runtime, evaluator
         self.resume_service = CaseResumeService(repository, evidence, effect_recovery=effect_recovery, evaluator=evaluator)
-        self.handoff = EvaluationHandoffService(repository, closure)
+        self.handoff = EvaluationHandoffService(repository, closure) if closure is not None else None
         self.reports = EvaluationRepository(cases)
 
     def tick(self, worker_id):
@@ -35,6 +46,8 @@ class DurableCaseOrchestrator:
 
     def process(self, claim):
         repo = self.repository
+        if repo.get(claim.work_item_id).work_type not in self.allowed_work_types:
+            raise OrchestrationError("work type is not owned by this process")
         if repo.get(claim.work_item_id).work_type == T.RECOVERY_RECHECK:
             return self._recheck(claim)
         work = self.resume_service.resume(claim)

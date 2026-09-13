@@ -27,9 +27,9 @@ def build(local=False):
         engine = open_engine(url or 'sqlite:///.local/registry-admin.db')
         create_schema(engine); create_harness_schema(engine)
     else:
-        from credit_harness.production.settings import ProductionSettings, StartupConfigurationError
+        from credit_harness.production.settings import RegistryAdminSettings, StartupConfigurationError
         from credit_harness.production.app import production_engine, schema_ready
-        settings = ProductionSettings.from_env()
+        settings = RegistryAdminSettings.from_env()
         engine = production_engine(settings)
         if not schema_ready(engine):
             raise StartupConfigurationError('DATABASE_SCHEMA_NOT_READY')
@@ -45,7 +45,7 @@ def build(local=False):
             print(f'LOCAL ONLY {actor}: {token}', flush=True)
         identity = LocalIdentityProvider(tokens, expires_at=now + timedelta(hours=2))
     else:
-        mappings = json.loads(os.environ['REGISTRY_GROUP_ROLE_MAPPING'])
+        mappings = settings.registry_group_role_mapping
         identity = OIDCIdentityProvider(issuer=settings.oidc_issuer,
             audience=settings.registry_admin_audience, jwks_url=settings.oidc_jwks_url)
     service = RegistryAdministration(engine, os.environ.get('REGISTRY_TENANT_ID', 'demo') if local else settings.tenant, ApplicationAccess(mappings))
@@ -56,7 +56,7 @@ def build(local=False):
         if empty:
             version = service.admin.register(synthetic_registry(service.tenant_id), actor='local-bootstrap')
             service.admin.activate(version, expected_version=None, actor='local-bootstrap')
-    origins = tuple(os.environ.get('REGISTRY_ALLOWED_ORIGINS', 'http://127.0.0.1:5173,http://localhost:5173').split(',')) if local else settings.allowed_origins
+    origins = tuple(os.environ.get('REGISTRY_ALLOWED_ORIGINS', 'http://127.0.0.1:5173,http://localhost:5173').split(',')) if local else settings.admin_allowed_origins
     return create_admin_app(service, identity, allowed_origins=origins, local_mode=local)
 
 
