@@ -1,9 +1,10 @@
 name: release-candidate
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
   verify:
+    name: release-candidate / verify
     runs-on: ubuntu-24.04
     services:
       postgres:
@@ -29,11 +30,6 @@ jobs:
       - run: PGPASSWORD=synthetic-ci-only psql -h 127.0.0.1 -U harness_test -d harness_test -c 'CREATE EXTENSION IF NOT EXISTS vector'
       - run: npm ci --prefix frontend
       - run: python -m scripts.verify_release
-      - name: Build same-source images
-        run: |
-          docker build --target api --build-arg VCS_REF=$(git rev-parse HEAD) -t credit-harness-api:$(git rev-parse HEAD) .
-          docker build --target worker --build-arg VCS_REF=$(git rev-parse HEAD) -t credit-harness-worker:$(git rev-parse HEAD) .
-          docker build -f deploy/frontend.Dockerfile -t credit-harness-frontend:$(git rev-parse HEAD) .
       - uses: actions/upload-artifact@v4
         if: always()
         with:

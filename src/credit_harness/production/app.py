@@ -10,7 +10,7 @@ from credit_harness.evidence.repository import EvidenceRepository
 from credit_harness.investigation.cache import SQLFrameCache
 from credit_harness.investigation.identity import OIDCInvestigationIdentityProvider, InvestigationAccess
 from credit_harness.registry.tables import RegistryHeadRow, RegistryVersionRow
-from .settings import ProductionSettings, StartupConfigurationError
+from .settings import InvestigationApiSettings, StartupConfigurationError
 from .schema import HEAD
 from .tables import WorkerHeartbeatRow
 from .telemetry import configure_logging, OperationalMetrics
@@ -61,11 +61,25 @@ def build_app(settings, *, engine=None, identity=None):
             cursor_key=settings.key_bytes("frame_cursor_hmac_key"),
             previous_cursor_key=settings.key_bytes("frame_cursor_previous_key"),
             alias_key=settings.key_bytes("identity_alias_hmac_key")))
-    from contextlib import asynccontextmanager
+    import asyncio
+    from contextlib import asynccontextmanager, suppress
     @asynccontextmanager
     async def lifespan(app):
-        yield
-        engine.dispose()
+        async def cleanup():
+            while True:
+                await asyncio.sleep(60)
+                try:
+                    await asyncio.to_thread(SQLFrameCache(engine).prune)
+                except Exception:
+                    logging.getLogger("harness").warning("", extra={"event":"frame_cleanup_failed"})
+        task = asyncio.create_task(cleanup())
+        try:
+            yield
+        finally:
+            task.cancel()
+            with suppress(asyncio.CancelledError):
+                await task
+            engine.dispose()
     app.router.lifespan_context = lifespan
     metrics = OperationalMetrics()
     app.state.metrics = metrics
@@ -111,4 +125,4 @@ def build_app(settings, *, engine=None, identity=None):
 
 def create_app():
     configure_logging()
-    return build_app(ProductionSettings.from_env())
+    return build_app(InvestigationApiSettings.from_env())

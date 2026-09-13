@@ -4,7 +4,7 @@ from sqlalchemy import MetaData
 from credit_harness.persistence.store import Base
 from credit_harness.retrieval.tables import RetrievalBase
 
-HEAD = "0017_contract"
+HEAD = "0017_1_metrics"
 
 
 def metadata():

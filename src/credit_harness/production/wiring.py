@@ -1,6 +1,5 @@
 """Trusted deployment manifest wires existing clients; never loads Oracle state."""
 import json
-import os
 from pathlib import Path
 from types import SimpleNamespace
 from pydantic import BaseModel, ConfigDict, SecretStr, Field
@@ -28,27 +27,9 @@ class AdapterBinding(BaseModel):
     case_credentials: dict[str, SecretStr] = Field(repr=False)
 
 
-def create_components(settings, kind):
-    engine = production_engine(settings)
-    if not schema_ready(engine):
-        raise StartupConfigurationError("DATABASE_SCHEMA_NOT_READY")
-    cases = CaseRepository(engine, settings.tenant)
-    evidence = EvidenceRepository(cases)
-    if kind == "embedding":
-        from credit_harness.memory.skills import SQLSkillRepository
-        from credit_harness.memory.repository import SQLExperienceRepository
-        from credit_harness.retrieval.source import MemorySources
-        from credit_harness.retrieval.repository import PgVectorRepository
-        from credit_harness.retrieval.indexer import EmbeddingIndexer
-        from credit_harness.adapters.openai_embedding import OpenAIEmbeddingProvider
-        from openai import OpenAI
-        provider = OpenAIEmbeddingProvider(model_id=settings.embedding_model, dimension=settings.embedding_dimension,
-            client=OpenAI(timeout=settings.http_timeout_seconds, max_retries=0))
-        vector = PgVectorRepository(MemorySources(SQLSkillRepository(engine, settings.tenant), SQLExperienceRepository(cases)))
-        return SimpleNamespace(engine=engine, vector=vector, indexer=EmbeddingIndexer(vector, provider,
-            clock=utc_now, lease_seconds=settings.worker_lease_seconds))
+def read_catalog(settings, engine, cases):
     try:
-        manifest = json.loads(Path(os.environ["TOOL_BINDINGS_FILE"]).read_text(encoding="utf-8"))
+        manifest = json.loads(Path(settings.tool_bindings_file).read_text(encoding="utf-8"))
         bindings = [AdapterBinding.model_validate(item) for item in manifest]
         factories = {}
         for binding in bindings:
@@ -72,46 +53,100 @@ def create_components(settings, kind):
         raise StartupConfigurationError("TRUSTED_TOOL_BINDINGS_INVALID") from None
     resolver = CapabilityResolver(RegistryRepository(engine, settings.tenant))
     cases.registry_guard = RegistryDispatchGuard(resolver, TrustedAdapterResolver(factories))
-    catalog = RegistryBackedCatalog(resolver)
-    from credit_harness.agent.runtime import InvestigationAgentRuntime
-    from credit_harness.planner.service import PlannerService
-    from credit_harness.adapters.openai_planner import OpenAIPlannerModel
-    from credit_harness.investigation.trace_store import SQLInvestigationTraceStore
-    from credit_harness.evaluation.evaluator import IndependentEvaluator
-    from credit_harness.evaluation.closure import VerifiedClosureService
-    from credit_harness.orchestration.repository import WorkRepository
-    from credit_harness.orchestration.service import DurableCaseOrchestrator
-    from credit_harness.authorization.store import SQLApprovalStore
-    from credit_harness.recovery.repository import RecoveryRepository
-    from credit_harness.recovery.models import RecoveryPolicy
-    from credit_harness.recovery.service import SideEffectRecoveryCoordinator
-    from credit_harness.adapters.synthetic_effect_resolver import SyntheticEffectStatusResolver
+    return RegistryBackedCatalog(resolver)
+
+
+class UnavailableGuidance:
+    def build_result(self, snapshot):
+        from credit_harness.memory.models import GuidanceBuildResult, GuidanceBuildStatus, GuidanceDegradation
+        return GuidanceBuildResult(bundle=None, status=GuidanceBuildStatus.RETRIEVAL_FAILED,
+            degradation=GuidanceDegradation.NONE)
+
+
+def embedding_provider(config, timeout):
+    from credit_harness.adapters.openai_embedding import OpenAIEmbeddingProvider
     from openai import OpenAI
-    executor = CaseToolExecutor(cases, evidence, lambda _: None)  # guard is mandatory
-    trace = SQLInvestigationTraceStore(cases, alias_key=settings.key_bytes("identity_alias_hmac_key"))
+    return OpenAIEmbeddingProvider(model_id=config.embedding_model, dimension=config.embedding_dimension,
+        client=OpenAI(api_key=config.openai_api_key.get_secret_value(), timeout=timeout, max_retries=0))
+
+
+def vector_repository(engine, cases, registry=None):
     from credit_harness.memory.skills import SQLSkillRepository
     from credit_harness.memory.repository import SQLExperienceRepository
     from credit_harness.retrieval.source import MemorySources
     from credit_harness.retrieval.repository import PgVectorRepository
-    from credit_harness.retrieval.service import HybridRetrievalService
-    from credit_harness.adapters.openai_embedding import OpenAIEmbeddingProvider
-    from credit_harness.investigation.trace_store import TracedGuidanceProvider, SQLSafePlannerAuditStore
-    hybrid = HybridRetrievalService(PgVectorRepository(MemorySources(
-        SQLSkillRepository(engine, settings.tenant), SQLExperienceRepository(cases), resolver.repository)),
-        OpenAIEmbeddingProvider(model_id=settings.embedding_model, dimension=settings.embedding_dimension,
-            client=OpenAI(timeout=settings.http_timeout_seconds, max_retries=0)))
-    planner = PlannerService(OpenAIPlannerModel(client=OpenAI(timeout=settings.http_timeout_seconds, max_retries=0)),
-        audit=SQLSafePlannerAuditStore(trace),
-        guidance_provider=TracedGuidanceProvider(hybrid.guidance_provider(), trace, hybrid=hybrid))
-    runtime = InvestigationAgentRuntime(cases, evidence, ReasoningContextAssembler(catalog=catalog), planner, executor, trace_store=trace)
-    evaluator = IndependentEvaluator(cases, catalog=catalog)
+    return PgVectorRepository(MemorySources(SQLSkillRepository(engine, cases.tenant_id),
+        SQLExperienceRepository(cases), registry))
+
+
+def optional_guidance(settings, engine, cases, catalog, trace):
+    # Parse optional embedding separately: invalid dimension/model/provider never
+    # invalidates the required Planner configuration or fabricates guidance.
+    try:
+        from .settings import EmbeddingProviderSettings
+        from credit_harness.retrieval.service import HybridRetrievalService
+        from credit_harness.investigation.trace_store import TracedGuidanceProvider
+        config = EmbeddingProviderSettings.from_env()
+        hybrid = HybridRetrievalService(vector_repository(engine, cases, catalog.resolver.repository),
+            embedding_provider(config, settings.http_timeout_seconds))
+        return TracedGuidanceProvider(hybrid.guidance_provider(), trace, hybrid=hybrid)
+    except Exception:
+        return UnavailableGuidance()
+
+
+def create_components(settings, kind):
+    from .settings import WORKER_SETTINGS
+    if kind not in WORKER_SETTINGS or type(settings) is not WORKER_SETTINGS[kind]:
+        raise StartupConfigurationError("PROCESS_CONFIGURATION_MISMATCH")
+    engine = production_engine(settings)
+    if not schema_ready(engine):
+        raise StartupConfigurationError("DATABASE_SCHEMA_NOT_READY")
+    cases = CaseRepository(engine, settings.tenant)
+    if kind == "embedding":
+        from credit_harness.retrieval.indexer import EmbeddingIndexer
+        provider = embedding_provider(settings, settings.http_timeout_seconds)
+        vector = vector_repository(engine, cases)
+        return SimpleNamespace(engine=engine, vector=vector, indexer=EmbeddingIndexer(vector, provider,
+            clock=utc_now, lease_seconds=settings.worker_lease_seconds))
+    from credit_harness.evaluation.evaluator import IndependentEvaluator
+    from credit_harness.evaluation.closure import VerifiedClosureService
+    from credit_harness.orchestration.repository import WorkRepository
+    from credit_harness.orchestration.service import DurableCaseOrchestrator
+    from credit_harness.orchestration.models import WorkType as T
+    from credit_harness.recovery.models import RecoveryPolicy
+    evidence = EvidenceRepository(cases)
     recovery_policy = RecoveryPolicy(lease_seconds=settings.worker_lease_seconds)
     work = WorkRepository(cases, lease_seconds=settings.worker_lease_seconds, recovery_policy=recovery_policy)
-    # Current environment contains synthetic effects only. This resolver performs
-    # lookup, has no dispatch method, and never introduces a new money movement.
-    effect_resolver = SyntheticEffectStatusResolver(engine, settings.tenant)
-    recovery = SideEffectRecoveryCoordinator(RecoveryRepository(SQLApprovalStore(cases), effect_resolver.capability,
-        policy=recovery_policy), effect_resolver)
+    if kind == "recovery":
+        from credit_harness.authorization.store import SQLApprovalStore
+        from credit_harness.recovery.repository import RecoveryRepository
+        from credit_harness.recovery.service import SideEffectRecoveryCoordinator
+        from credit_harness.adapters.synthetic_effect_resolver import SyntheticEffectStatusResolver
+        effect_resolver = SyntheticEffectStatusResolver(engine, settings.tenant)
+        recovery = SideEffectRecoveryCoordinator(RecoveryRepository(SQLApprovalStore(cases), effect_resolver.capability,
+            policy=recovery_policy), effect_resolver)
+        # Evaluator computes progress only; no read dispatch or planner exists.
+        orchestrator = DurableCaseOrchestrator(work, evidence, None, None, IndependentEvaluator(cases), None,
+            effect_recovery=recovery, allowed_work_types={T.RECOVERY_RECHECK})
+        return SimpleNamespace(engine=engine, cases=cases, work=work, recovery=recovery, orchestrator=orchestrator)
+    catalog = read_catalog(settings, engine, cases)
+    executor = CaseToolExecutor(cases, evidence, lambda _: None)  # registry guard mandatory
+    evaluator = IndependentEvaluator(cases, catalog=catalog)
+    runtime = None
+    if kind == "agent":
+        from credit_harness.agent.runtime import InvestigationAgentRuntime
+        from credit_harness.planner.service import PlannerService
+        from credit_harness.adapters.openai_planner import OpenAIPlannerModel
+        from credit_harness.investigation.trace_store import SQLInvestigationTraceStore, SQLSafePlannerAuditStore
+        from openai import OpenAI
+        trace = SQLInvestigationTraceStore(cases, alias_key=settings.key_bytes("identity_alias_hmac_key"))
+        planner = PlannerService(OpenAIPlannerModel(model_name=settings.planner_model,
+            client=OpenAI(api_key=settings.openai_api_key.get_secret_value(), timeout=settings.http_timeout_seconds, max_retries=0)),
+            audit=SQLSafePlannerAuditStore(trace),
+            guidance_provider=optional_guidance(settings, engine, cases, catalog, trace))
+        runtime = InvestigationAgentRuntime(cases, evidence, ReasoningContextAssembler(catalog=catalog),
+            planner, executor, trace_store=trace)
+    allowed = {T.INVESTIGATION_RESUME, T.OPERATOR_FOLLOWUP} if kind == "agent" else {T.VERIFICATION_REQUIRED}
     orchestrator = DurableCaseOrchestrator(work, evidence, executor, runtime, evaluator,
-        VerifiedClosureService(evaluator), effect_recovery=recovery)
-    return SimpleNamespace(engine=engine, work=work, orchestrator=orchestrator, recovery=recovery, cases=cases)
+        VerifiedClosureService(evaluator), allowed_work_types=allowed)
+    return SimpleNamespace(engine=engine, work=work, orchestrator=orchestrator, cases=cases)

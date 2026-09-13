@@ -6,7 +6,7 @@ from sqlalchemy import text, select, update
 from sqlalchemy.orm import Session
 from fastapi.testclient import TestClient
 from tests.test_production_migrations import migration_engine, upgrade
-from credit_harness.production.settings import ProductionSettings
+from credit_harness.production.settings import InvestigationApiSettings
 from credit_harness.production.app import build_app, readiness
 from credit_harness.production.tables import WorkerHeartbeatRow
 from credit_harness.investigation.identity import OIDCInvestigationIdentityProvider
@@ -17,11 +17,11 @@ from credit_harness.registry.fixtures import synthetic_registry
 
 def settings():
     key = base64.b64encode(b'synthetic-test-only-key-000000000').decode()
-    return ProductionSettings(database_url='postgresql+psycopg://synthetic:fake@localhost/test',tenant='demo',
-        oidc_issuer='https://sso.test',oidc_audience='investigation',registry_admin_audience='registry',
+    return InvestigationApiSettings(database_url='postgresql+psycopg://synthetic:fake@localhost/test',tenant='demo',
+        oidc_issuer='https://sso.test',oidc_audience='investigation',
         oidc_jwks_url='https://sso.test/jwks',oidc_group_roles={'operators':('SUPERVISOR',)},
-        frame_cursor_hmac_key=key,identity_alias_hmac_key=key,capability_signing_secret='synthetic-only-secret-000000000000',
-        embedding_model='synthetic',embedding_dimension=64,allowed_origins=('https://console.test',),required_workers=())
+        frame_cursor_hmac_key=key,identity_alias_hmac_key=key,
+        allowed_origins=('https://console.test',),required_workers=())
 
 
 @pytest.mark.parametrize('audience,scope,valid', [('investigation','case.investigate',True),
@@ -92,8 +92,13 @@ def test_production_worker_wiring_starts_without_ddl_or_network(migration_engine
     def capture(c,cursor,statement,*args): sql.append(statement)
     event.listen(engine,'before_cursor_execute',capture)
     try:
-        components = wiring.create_components(settings(),kind)
-        ticks = DeploymentTicks(components,settings(),'synthetic-worker')
+        from credit_harness.production.settings import WORKER_SETTINGS
+        values = settings().model_dump()
+        values.update(openai_api_key='synthetic-offline-no-network', planner_model='synthetic-planner',
+            embedding_model='synthetic', embedding_dimension=64, tool_bindings_file=str(manifest))
+        config = WORKER_SETTINGS[kind].model_validate({k:v for k,v in values.items() if k in WORKER_SETTINGS[kind].model_fields})
+        components = wiring.create_components(config,kind)
+        ticks = DeploymentTicks(components,config,'synthetic-worker')
         ticks.heartbeat(kind,'IDLE')
         ticks.embedding() if kind=='embedding' else ticks.operational(kind)
     finally: event.remove(engine,'before_cursor_execute',capture)

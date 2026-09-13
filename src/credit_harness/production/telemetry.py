@@ -57,8 +57,7 @@ class OperationalMetrics:
         from credit_harness.recovery.tables import AgentCheckpointRow, EffectRecoveryAttemptRow
         from credit_harness.evaluation.tables import EvaluationReportRow
         from credit_harness.retrieval.tables import IndexJobRow
-        from credit_harness.investigation.trace_store import InvestigationTraceRow
-        from credit_harness.investigation.models import TraceKind
+        from .tables import RetrievalMetricRow
         with Session(engine) as session:
             def count(table, *conditions):
                 return session.scalar(select(func.count()).select_from(table).where(*conditions))
@@ -78,17 +77,8 @@ class OperationalMetrics:
                     EvaluationReportRow.case_id.in_(cases), EvaluationReportRow.payload["overall_verdict"].as_string() == verdict)
             for state in ("PENDING", "FAILED"):
                 values["index_job_" + state.lower()] = count(IndexJobRow, IndexJobRow.tenant_id == tenant, IndexJobRow.status == state)
-            latency = []
-            for payload in session.scalars(select(InvestigationTraceRow.payload).where(
-                    InvestigationTraceRow.tenant_id == tenant,
-                    InvestigationTraceRow.payload["kind"].as_string() == TraceKind.KNOWLEDGE.value)):
-                for field in payload.get("fields", ()):
-                    if field["name"] == "latency_ms":
-                        try:
-                            latency.append(float(field["value"])/1000)
-                        except ValueError:
-                            pass
-            values["retrieval_latency_seconds_sum"] = sum(latency)
-            values["retrieval_latency_seconds_count"] = len(latency)
+            retrieval = session.get(RetrievalMetricRow, tenant)
+            values["retrieval_latency_seconds_sum"] = retrieval.latency_sum_seconds if retrieval else 0
+            values["retrieval_latency_seconds_count"] = retrieval.latency_count if retrieval else 0
         # Current-state counts are gauges, even legacy requested names end in total.
         return "".join(f"# TYPE {key} gauge\n{key} {value}\n" for key, value in sorted(values.items()))

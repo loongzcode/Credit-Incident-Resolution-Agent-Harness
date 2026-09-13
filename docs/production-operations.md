@@ -4,7 +4,7 @@
 
 ## 数据库升级与权限
 
-生产进程使用 `ProductionSettings` 创建标记为 `production_runtime` 的 PostgreSQL Engine。所有历史 `create_*_schema` 入口在该 Engine 上停止 bootstrap；启动检查 Alembic HEAD，不匹配直接拒绝。测试 fixture 保留快速建表。
+生产进程使用 `进程专用 Settings` 创建标记为 `production_runtime` 的 PostgreSQL Engine。所有历史 `create_*_schema` 入口在该 Engine 上停止 bootstrap；启动检查 Alembic HEAD，不匹配直接拒绝。测试 fixture 保留快速建表。
 
 迁移身份独立于 API/Worker 数据库身份：迁移身份持有 schema owner、扩展和索引管理权限；运行身份只得到其部署职责所需的表/sequence DML，不授予 schema CREATE、数据库 CREATE 或扩展管理权限。不要使用数据库超级用户运行应用。密钥和数据库 URL 通过 Secret Manager 注入，不写镜像、仓库或命令参数。
 
@@ -14,8 +14,9 @@
 | --- | --- |
 | `0016_baseline` | 固定的 Step 16 全表 DDL；PostgreSQL 安装 vector；SpaceHead 初始行 |
 | `0017_expand` | 共享 Frame、Worker 心跳、迁移审计、检索 generation/completeness、Space 操作审计；nullable projection_version 与索引 |
-| `0017_backfill` | 旧 Trace 版本/信任分类回填；主表与向量表变更触发 generation 失效 |
+| `0017_backfill` | 只回填旧 Trace 版本，不改写 payload；主表与向量表变更触发 generation 失效 |
 | `0017_contract` | 激活 projection_version 非空约束，写入迁移审计 |
+| `0017_1_metrics` | 新增 retrieval count/sum 聚合表 |
 
 迁移不是应用启动任务。先在备份恢复的副本中演练，再由单个迁移作业执行：
 
@@ -125,7 +126,7 @@ Top-K 每种 DocumentType 一次主表 batch load；逐条验证 hash/status/sco
 
 | 数据 | 保留策略 |
 | --- | --- |
-| Frame | 默认 300 秒；Worker 周期清理过期行；分页不续期 |
+| Frame | 默认 300 秒；API lifespan 每 60 秒清理过期行；分页不续期 |
 | Safe Trace / Planner audit | 默认保留 90 天在线，随后按企业审核归档；本阶段不自动删除金融调查审计 |
 | IndexJob | active/failed 保留用于恢复；completed 可在 30 天后经管理作业归档，但须能通过 reconcile 重建 |
 | Evidence / Closure / Effect | 遵从企业业务主数据策略，Step 17 不自动删除 |
@@ -147,4 +148,47 @@ python -m scripts.verify_release --workers 4
 
 输出 `.local/release/<SHA>/release-verification.json`，记录实际退出码、JUnit passed/skipped/failed、日志 SHA256、迁移 revision 和时间。脚本在每项测试前后检查 clean HEAD，任何改动或漏跑都不能产生 passed=true。该报告是 CI artifact，不反向提交到同一个 SHA；否则提交本身会改变被验证的 SHA。源码变化必须重新提交并完整重跑。
 
-本机没有 Docker 时不能宣称容器已构建；CI 容器结果单独查看。依赖固定在 requirements.lock 与 npm package-lock.json；后续升级依赖同样走完整门禁。
+没有 Docker 时使用 --local-tests-only；完整发布报告还必须包含三个镜像构建通过。依赖固定在 requirements.lock 与 npm package-lock.json；后续升级依赖同样走完整门禁。
+
+## Step 17.1：进程隔离
+
+DatabaseSettings 共享 PostgreSQL/tenant/pool/timeout 验证，Settings 共享环境变量解析。进程模型 extra=forbid，装配入口要求与 kind 完全一致的配置类型。
+
+| 进程 | 配置模型 | 专有必需配置 |
+| --- | --- | --- |
+| API | InvestigationApiSettings | Investigation OIDC/group roles、Frame HMAC、Alias HMAC、ALLOWED_ORIGINS |
+| Admin | RegistryAdminSettings | issuer/JWKS、REGISTRY_ADMIN_AUDIENCE、REGISTRY_GROUP_ROLE_MAPPING、ADMIN_ALLOWED_ORIGINS |
+| Agent | AgentWorkerSettings | PLANNER_MODEL、OPENAI_API_KEY、Alias HMAC、Tool binding |
+| Orchestration | OrchestrationWorkerSettings | Tool binding、Work lease/timeout |
+| Recovery | RecoveryWorkerSettings | 数据库、Work lease/timeout |
+| Embedding | EmbeddingWorkerSettings | OpenAI key、embedding model/dimension、lease/reconcile |
+
+API/Admin 不接受 capability signing、Planner、Embedding 或 Tool binding。Embedding 不接受 Planner、OIDC、Frame/Alias、Capability、Tool binding。六个进程都没有签发/验证写 Capability 的职责，因此均不注入 CAPABILITY_SIGNING_SECRET。Recovery 只使用账本身份做 lookup，不重新签发 Capability。
+
+Recovery 没有 Planner、Embedding、Hybrid Retrieval、Agent runtime 或 Read Executor；其 Evaluator 仅计算恢复进度。Orchestration 只接受 VERIFICATION_REQUIRED，无 Agent runtime。INVESTIGATION_RESUME/OPERATOR_FOLLOWUP 由 Agent Worker 接管。Orchestrator 在处理前检查 WorkType，误路由直接拒绝，保持 effect-bound recovery fence。
+
+Agent 的 Planner 必需配置与可选 Embedding 分开解析。可选配置缺失、格式不合法或 provider 构造失败返回 RETRIEVAL_FAILED/no guidance；运行时检索失败沿用既有安全降级。不伪造经验、不改变金融状态或硬策略。Provider 调用有 timeout，异常正文不外泄。
+
+### 配置与 audience 部署门禁
+
+使用 deploy 下六份独立 env.example，只允许 literal KEY=value（JSON 字段保留 JSON），不做 shell 执行或变量插值。Secret Manager 生成对应进程专用文件，路径通过 API_ENV_FILE、ADMIN_ENV_FILE、AGENT_ENV_FILE、ORCHESTRATION_ENV_FILE、RECOVERY_ENV_FILE、EMBEDDING_ENV_FILE 提供。
+
+支持的部署入口：先运行 python -m scripts.deploy_production --check-only，再运行 python -m scripts.deploy_production。
+
+入口验证必需字段，拒绝每份文件中不属于该进程的字段，同时比较 API/Admin audience，要求不同。独立进程不能在不共享部署信息的情况下判断对方 audience；跨进程不变量由部署入口检查，两边仍各自验证 token audience/scope。不要绕过预检直接 docker compose up。控制平面持有配置文件，API/Admin 不互相接收 Secret。
+
+Compose 仅给 Agent/Orchestration 挂 Tool binding；OpenAI key 只属于 Agent/Embedding。Alias HMAC 用于 Agent 安全 Trace 和 API 展示，不是 Capability。共享镜像代码不代表共享凭证。
+
+### 历史审计和指标
+
+0017_backfill 不再 UPDATE payload，只标识 projection_version=1。stored_trace 在内存中根据 kind/status/historical 推导信任分类；真正旧版 kind=Evaluation、historical=true 显示 HISTORICAL_EVALUATION。旧 SHA 别名读取时重新 HMAC，不覆写原文。已经执行过旧版 payload 改写的数据库无法凭空恢复原字节，需要原备份；补丁保证从原始 0016 基线升级不再改写历史。
+
+检索记录和 retrieval_metrics 累加在同一事务。只有 Trace INSERT RETURNING 证明首次插入，才对同租户 count/sum 原子 upsert；重复提交不重复计数，回滚不留孤立指标。scrape 通过租户主键读取一行，不读 Knowledge Trace payload。聚合从新版本启用开始，不扫描历史；它是运行指标，不是业务证据。
+
+### 完整发布证明
+
+verify_release 默认运行 static、lint、SQLite full、PostgreSQL+pgvector full、frontend full、TypeScript/Vite、API/Worker/Frontend Docker build。三个构建使用同 HEAD revision label/tag；镜像失败或 Docker 不可用时 passed=false。每项检查前及最终核对 clean HEAD，结果写入 artifact，包含 GitHub run ID。
+
+没有 Docker 时只能 --local-tests-only，生成 local-verification.json，其中 passed=false，不得冒充完整发布证明。
+
+main ruleset 要求 PR、required check release-candidate / verify、strict/up-to-date、禁止 force push/删除。是否启用以 GitHub 查询为准，YAML 不代表远端规则生效。最终报告链接真实 Actions run 与同 SHA artifact，不能沿用旧计数。

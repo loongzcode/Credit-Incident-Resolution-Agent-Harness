@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from functools import wraps
 from credit_harness.context.budget import digest
 from .privacy import alias_scope
+from credit_harness.production.tables import RetrievalMetricRow
 from sqlalchemy import JSON, String, ForeignKey, Index
 from sqlalchemy.orm import Mapped, mapped_column, Session
 from credit_harness.persistence.store import Base
@@ -50,6 +51,7 @@ class SQLInvestigationTraceStore:
         if runtime_managed(self.cases.engine):
             return
         InvestigationTraceRow.__table__.create(self.cases.engine, checkfirst=True)
+        RetrievalMetricRow.__table__.create(self.cases.engine, checkfirst=True)
 
     @tenant_projection
     def record_guidance(self, snapshot, bundle):
@@ -112,6 +114,9 @@ class SQLInvestigationTraceStore:
     @tenant_projection
     def record_retrieval(self, *, case_id, snapshot_id, telemetry: RetrievalTelemetry):
         telemetry = RetrievalTelemetry.model_validate(telemetry.model_dump())
+        import math
+        if not math.isfinite(telemetry.latency_ms) or telemetry.latency_ms < 0:
+            raise ValueError("invalid retrieval latency")
         data = telemetry.model_dump()
         data["embedding_space"] = alias(data["embedding_space"], "SPACE") if data["embedding_space"] else "UNAVAILABLE"
         data["selected_experience_ids"] = ", ".join(alias(e, "EXPERIENCE") for e in telemetry.selected_experience_ids)
@@ -119,17 +124,17 @@ class SQLInvestigationTraceStore:
         data["snapshot_id"] = snapshot_id
         self._save(case_id, [entry(TraceKind.KNOWLEDGE, digest(dict(case=case_id, snapshot=snapshot_id, telemetry=data)), "RECORDED", data, tuple(data),
             at=datetime.now(timezone.utc), historical=True, trust=TraceTrustClass.CURRENT_OPERATIONAL,
-            warning="Retrieval telemetry; not current Evidence")])
+            warning="Retrieval telemetry; not current Evidence")], latency_seconds=telemetry.latency_ms/1000)
 
     @tenant_projection
     def record_turn(self, case_id, run_id, turn, session=None):
         items = planner_items({"run_id": run_id, "turns": [turn.model_dump(mode="json")]})
         self._save(case_id, items, session=session)
 
-    def _save(self, case_id, items, session=None):
+    def _save(self, case_id, items, session=None, *, latency_seconds=None):
         if session is None:
             with Session(self.cases.engine) as current, current.begin():
-                self._save(case_id, items, current)
+                self._save(case_id, items, current, latency_seconds=latency_seconds)
             return
         self.cases._row(session, case_id)
         from credit_harness.retrieval.indexer import insert_for
@@ -138,9 +143,15 @@ class SQLInvestigationTraceStore:
             # Case isolation is part of storage identity, even if two Cases
             # retrieve exactly the same organizational guidance.
             identity = digest(dict(tenant=self.cases.tenant_id, case=case_id, trace=safe.trace_id))
-            session.execute(insert_for(self.cases.engine, InvestigationTraceRow).values(
+            inserted = session.execute(insert_for(self.cases.engine, InvestigationTraceRow).values(
                 trace_id=identity, case_id=case_id, tenant_id=self.cases.tenant_id,
-                projection_version='2', payload=safe.model_dump(mode="json")).on_conflict_do_nothing(index_elements=["trace_id"]))
+                projection_version='2', payload=safe.model_dump(mode="json")).on_conflict_do_nothing(index_elements=["trace_id"]).returning(InvestigationTraceRow.trace_id)).scalar_one_or_none()
+            if inserted is not None and latency_seconds is not None:
+                session.execute(insert_for(self.cases.engine, RetrievalMetricRow).values(
+                    tenant_id=self.cases.tenant_id, latency_count=1, latency_sum_seconds=latency_seconds
+                ).on_conflict_do_update(index_elements=["tenant_id"], set_={
+                    "latency_count": RetrievalMetricRow.latency_count+1,
+                    "latency_sum_seconds": RetrievalMetricRow.latency_sum_seconds+latency_seconds}))
 
 
 class TracedGuidanceProvider:

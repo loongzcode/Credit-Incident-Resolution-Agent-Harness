@@ -17,7 +17,7 @@ from credit_harness.investigation.models import FrameStale, TraceTrustClass, Tra
 from credit_harness.investigation.privacy import alias_scope, alias
 from credit_harness.investigation.trace_store import SQLInvestigationTraceStore, InvestigationTraceRow
 from credit_harness.production.workers import WorkerLoop
-from credit_harness.production.settings import ProductionSettings, StartupConfigurationError
+from credit_harness.production.settings import InvestigationApiSettings, StartupConfigurationError
 from credit_harness.production.telemetry import SafeJSONFormatter, sanitize_log
 from credit_harness.api.ui import create_production_ui_app
 from credit_harness.persistence.store import token_hash, create_schema
@@ -192,7 +192,7 @@ def test_runtime_schema_bootstrap_never_executes_ddl(engine):
 def test_production_config_fail_fast_and_safe(monkeypatch):
     monkeypatch.delenv('DATABASE_URL', raising=False)
     monkeypatch.setenv('FRAME_CURSOR_HMAC_KEY', 'sk-secret-do-not-print')
-    with pytest.raises(StartupConfigurationError) as e: ProductionSettings.from_env()
+    with pytest.raises(StartupConfigurationError) as e: InvestigationApiSettings.from_env()
     assert str(e.value) == 'PRODUCTION_CONFIGURATION_INVALID'
 
 

@@ -43,3 +43,10 @@ class SpaceAdminAuditRow(Base):
     from_space: Mapped[str] = mapped_column(String(64))
     to_space: Mapped[str] = mapped_column(String(64))
     created_at: Mapped[float] = mapped_column(Float)
+
+
+class RetrievalMetricRow(Base):
+    __tablename__ = "retrieval_metrics"
+    tenant_id: Mapped[str] = mapped_column(String(128), primary_key=True)
+    latency_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    latency_sum_seconds: Mapped[float] = mapped_column(Float, nullable=False)
